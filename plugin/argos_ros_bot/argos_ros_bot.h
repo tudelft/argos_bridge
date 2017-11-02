@@ -13,6 +13,7 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_colored_blob_omnidirectional_camera_sensor.h>
+#include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_sensor.h>
 //#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_gripper_actuator.h>
 
 #include <ros/ros.h>
@@ -75,12 +76,13 @@ private:
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;
   CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmniCam;
+  CCI_RangeAndBearingSensor* m_pcRangeBearing;
 //  CCI_FootBotGripperActuator* m_pcGripper;
 
   // The following constant values were copied from the argos source tree from
   // the file src/plugins/robots/foot-bot/simulator/footbot_entity.cpp
-  static const Real HALF_BASELINE = 0.07f; // Half the distance between wheels
-  static const Real WHEEL_RADIUS = 0.029112741f;
+  static constexpr Real HALF_BASELINE = 0.07f; // Half the distance between wheels
+  static constexpr Real WHEEL_RADIUS = 0.029112741f;
 
   /*
    * The following variables are used as parameters for the
@@ -109,6 +111,9 @@ private:
 
   // Proximity sensor publisher
   ros::Publisher proximityPub;
+
+  // Range and Bearing sensor publisher
+  ros::Publisher rangebearingPub;
 
   // Subscriber for cmd_vel (Twist message) topic.
   ros::Subscriber cmdVelSub;

@@ -3,6 +3,8 @@
 #include "argos_bridge/PuckList.h"
 #include "argos_bridge/Proximity.h"
 #include "argos_bridge/ProximityList.h"
+#include "argos_bridge/Rangebearing.h"
+#include "argos_bridge/RangebearingList.h"
 
 /* Include the controller definition */
 #include "argos_ros_bot.h"
@@ -37,6 +39,7 @@ CArgosRosBot::CArgosRosBot() :
   m_pcWheels(NULL),
   m_pcProximity(NULL),
   m_pcOmniCam(NULL),
+  m_pcRangeBearing(NULL),
 //  m_pcGripper(NULL),
   stopWithoutSubscriberCount(10),
   stepsSinceCallback(0),
@@ -48,11 +51,13 @@ CArgosRosBot::CArgosRosBot() :
 
 void CArgosRosBot::Init(TConfigurationNode& t_node) {
   // Create the topics to publish
-  stringstream puckListTopic, proximityTopic;
+  stringstream puckListTopic, proximityTopic, rangebearingTopic;
   puckListTopic << "/" << GetId() << "/puck_list";
   proximityTopic << "/" << GetId() << "/proximity";
+  rangebearingTopic << "/" << GetId() << "/rangebearing";
   puckListPub = nodeHandle->advertise<PuckList>(puckListTopic.str(), 1);
   proximityPub = nodeHandle->advertise<ProximityList>(proximityTopic.str(), 1);
+  rangebearingPub = nodeHandle->advertise<RangebearingList>(rangebearingTopic.str(), 1);
 
   // Create the subscribers
   stringstream cmdVelTopic;//, gripperTopic;
@@ -65,6 +70,7 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   m_pcWheels = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
   m_pcProximity = GetSensor<CCI_FootBotProximitySensor>("footbot_proximity");
   m_pcOmniCam = GetSensor<CCI_ColoredBlobOmnidirectionalCameraSensor>("colored_blob_omnidirectional_camera");
+  m_pcRangeBearing = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 //  m_pcGripper = GetActuator<CCI_FootBotGripperActuator>("footbot_gripper");
 
   m_pcOmniCam->Enable();
@@ -118,7 +124,21 @@ void CArgosRosBot::ControlStep() {
 //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
 
+   /*Get readings from range and bearing sensor */
+
+   const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
+   RangebearingList RabList;
+   RabList.n = tRabReads.size();
+   for (size_t i = 0; i < RabList.n; ++i) {
+      Rangebearing Rab;
+      Rab.range = tRabReads[i].Range;
+      Rab.angle = tRabReads[i].HorizontalBearing.GetValue();
+      RabList.Rangebearings.push_back(Rab);
+   }
+
+
   proximityPub.publish(proxList);
+  rangebearingPub.publish(RabList);
 
   // Wait for any callbacks to be called.
   ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
