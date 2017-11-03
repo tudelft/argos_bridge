@@ -13,10 +13,13 @@
 /* 2D vector definition */
 #include <argos3/core/utility/math/vector2.h>
 
-#include <iostream>
 #include <sstream>
+#include <string>
+#include <iostream>
 
 #include <ros/callback_queue.h>
+
+#include <math.h>
 
 using namespace std;
 using namespace argos_bridge;
@@ -51,26 +54,48 @@ CArgosRosBot::CArgosRosBot() :
 
 void CArgosRosBot::Init(TConfigurationNode& t_node) {
   // Create the topics to publish
-  stringstream puckListTopic, proximityTopic, rangebearingTopic;
+  stringstream puckListTopic, proximityTopic, rangebearingTopic, poseTopic;
   puckListTopic << "/" << GetId() << "/puck_list";
   proximityTopic << "/" << GetId() << "/proximity";
   rangebearingTopic << "/" << GetId() << "/rangebearing";
+  poseTopic << "/" << GetId() << "/position";
   puckListPub = nodeHandle->advertise<PuckList>(puckListTopic.str(), 1);
   proximityPub = nodeHandle->advertise<ProximityList>(proximityTopic.str(), 1);
   rangebearingPub = nodeHandle->advertise<RangebearingList>(rangebearingTopic.str(), 1);
+  posePub = nodeHandle->advertise<geometry_msgs::PoseStamped>(poseTopic.str(), 1);
+
 
   // Create the subscribers
   stringstream cmdVelTopic;//, gripperTopic;
+
   cmdVelTopic << "/" << GetId() << "/cmd_vel";
 //  gripperTopic << "/" << GetId() << "/gripper";
   cmdVelSub = nodeHandle->subscribe(cmdVelTopic.str(), 1, &CArgosRosBot::cmdVelCallback, this);
 //  gripperSub = nodeHandle->subscribe(gripperTopic.str(), 1, &CArgosRosBot::gripperCallback, this);
+
+  // Create the subscribers
+//, gripperTopic;
+  for(int n=0;n<NUMOFBOTS;n++)
+  {
+	  stringstream otherBotPoseTopic;
+  otherBotPoseTopic << "/bot" << to_string(n) << "/position";
+  cout<<otherBotPoseTopic.str()<<endl;
+
+//  gripperTopic << "/" << GetId() << "/gripper";
+  otherBotSub[n] = nodeHandle->subscribe(otherBotPoseTopic.str(), 1, &CArgosRosBot::otherBotPoseCallback, this);
+  }
+
+
+
+//  gripperSub = nodeHandle->subscribe(gripperTopic.str(), 1, &CArgosRosBot::gripperCallback, this);
+
 
   // Get sensor/actuator handles
   m_pcWheels = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
   m_pcProximity = GetSensor<CCI_FootBotProximitySensor>("footbot_proximity");
   m_pcOmniCam = GetSensor<CCI_ColoredBlobOmnidirectionalCameraSensor>("colored_blob_omnidirectional_camera");
   m_pcRangeBearing = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
+  m_pcPositioning = GetSensor<CCI_PositioningSensor>("positioning");
 //  m_pcGripper = GetActuator<CCI_FootBotGripperActuator>("footbot_gripper");
 
   m_pcOmniCam->Enable();
@@ -121,11 +146,13 @@ void CArgosRosBot::ControlStep() {
     prox.angle = tProxReads[i].Angle.GetValue();
     proxList.proximities.push_back(prox);
 
+    proximityPub.publish(proxList);
+
+
 //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
 
-   /*Get readings from range and bearing sensor */
-
+/*   Get readings from range and bearing sensor
    const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
    RangebearingList RabList;
    RabList.n = tRabReads.size();
@@ -136,9 +163,22 @@ void CArgosRosBot::ControlStep() {
       RabList.Rangebearings.push_back(Rab);
    }
 
+   rangebearingPub.publish(RabList);*/
 
-  proximityPub.publish(proxList);
-  rangebearingPub.publish(RabList);
+   /*Read out position of bot*/
+   geometry_msgs::PoseStamped PosQuat;
+   const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
+   PosQuat.header.frame_id = GetId();
+   PosQuat.pose.position.x = sPosRead.Position.GetX();
+   PosQuat.pose.position.y = sPosRead.Position.GetY();
+   PosQuat.pose.position.z = sPosRead.Position.GetZ();
+   PosQuat.pose.orientation.x = 0;
+   PosQuat.pose.orientation.y = 0;
+   PosQuat.pose.orientation.z = 0;
+   PosQuat.pose.orientation.w = 0;
+
+   posePub.publish(PosQuat);
+
 
   // Wait for any callbacks to be called.
   ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
@@ -154,8 +194,60 @@ void CArgosRosBot::ControlStep() {
   m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 }
 
+
+
+void CArgosRosBot::otherBotPoseCallback(const geometry_msgs::PoseStamped& pose){
+
+
+	static RangebearingList RabList;
+	RabList.n = NUMOFBOTS-1;
+
+	geometry_msgs::PoseStamped PosQuat;
+	const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
+
+	int currentId;
+
+	string c;
+	std::stringstream iss1(GetId());
+	iss1 >>  c >> currentId;
+	int otherId;
+	std::stringstream iss2(pose.header.frame_id);
+	iss2  >> c >> otherId;
+
+	cout<<iss1.str()<<"  "<< iss2.str()<<" "<<currentId<<" "<<otherId<<endl;
+
+
+	float x =  sPosRead.Position.GetX();
+	float y =  sPosRead.Position.GetY();
+
+	float range, angle;
+	if(pose.header.frame_id!=GetId())
+	{
+		Rangebearing Rab;
+
+		range = sqrt(pow(pose.pose.position.x -x,2) + pow(pose.pose.position.y -y,2));
+		angle = atan((pose.pose.position.y -y)/(pose.pose.position.x -x));
+
+		Rab.range = range;
+		Rab.angle = angle;
+
+
+		/*  	  if(otherId<currentId)
+  	  {
+  		  RabList.Rangebearings[otherId].range=range;
+  		  RabList.Rangebearings[otherId].angle=angle;
+  	  } else {
+  		  RabList.Rangebearings[otherId-1].range=range;
+  		  RabList.Rangebearings[otherId-1].angle=angle;
+  	  }*/
+		cout<<range<<" "<<angle<<endl;
+	}
+
+	rangebearingPub.publish(RabList);
+}
+
 void CArgosRosBot::cmdVelCallback(const geometry_msgs::Twist& twist) {
-  cout << "cmdVelCallback: " << GetId() << endl;
+ // cout << "cmdVelCallback: " << GetId() << endl;
 
   Real v = twist.linear.x;  // Forward speed
   Real w = twist.angular.z; // Rotational speed

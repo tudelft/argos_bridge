@@ -14,14 +14,19 @@
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_colored_blob_omnidirectional_camera_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_sensor.h>
+#include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
+
 //#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_gripper_actuator.h>
 
 #include <ros/ros.h>
 #include <string>
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "std_msgs/Bool.h"
 
 using namespace argos;
+
+#define NUMOFBOTS 3
 
 class CArgosRosBot : public CCI_Controller {
 
@@ -66,6 +71,8 @@ public:
    */
   void cmdVelCallback(const geometry_msgs::Twist& twist);
 
+  void otherBotPoseCallback(const geometry_msgs::PoseStamped& pose);
+
   /*
    * The callback method for getting the desired state of the gripper.
    */
@@ -77,6 +84,8 @@ private:
   CCI_FootBotProximitySensor* m_pcProximity;
   CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmniCam;
   CCI_RangeAndBearingSensor* m_pcRangeBearing;
+  CCI_PositioningSensor* m_pcPositioning;
+
 //  CCI_FootBotGripperActuator* m_pcGripper;
 
   // The following constant values were copied from the argos source tree from
@@ -115,8 +124,15 @@ private:
   // Range and Bearing sensor publisher
   ros::Publisher rangebearingPub;
 
+  // Position and angle sensor publisher
+  ros::Publisher posePub;
+
   // Subscriber for cmd_vel (Twist message) topic.
   ros::Subscriber cmdVelSub;
+  ros::Subscriber otherBotSub[NUMOFBOTS];
+
+
+
 
   // Subscriber for gripper (Bool message) topic.
 //  ros::Subscriber gripperSub;

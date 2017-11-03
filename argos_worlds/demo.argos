@@ -26,7 +26,7 @@
         <range_and_bearing implementation="medium"
                            medium="rab"
                            show_rays="true" />
-
+        <positioning implementation="default" />
       </sensors>
       <!-- After the following number of time steps without receiving a
            commanded velocity, the robots will stop. -->
