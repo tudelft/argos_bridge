@@ -19,7 +19,16 @@
 //#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_gripper_actuator.h>
 
 #include <ros/ros.h>
+ #include <tf/transform_broadcaster.h>
+
 #include <string>
+#include "argos_bridge/Puck.h"
+#include "argos_bridge/PuckList.h"
+#include "argos_bridge/Proximity.h"
+#include "argos_bridge/ProximityList.h"
+#include "argos_bridge/Rangebearing.h"
+#include "argos_bridge/RangebearingList.h"
+
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "std_msgs/Bool.h"
@@ -130,6 +139,10 @@ private:
   // Subscriber for cmd_vel (Twist message) topic.
   ros::Subscriber cmdVelSub;
   ros::Subscriber otherBotSub[NUMOFBOTS];
+
+
+  geometry_msgs::PoseStamped PosQuat;
+  argos_bridge::RangebearingList RabList;
 
 
 

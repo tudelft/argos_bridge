@@ -1,10 +1,4 @@
 // ROS Stuff #include "ros/ros.h"
-#include "argos_bridge/Puck.h"
-#include "argos_bridge/PuckList.h"
-#include "argos_bridge/Proximity.h"
-#include "argos_bridge/ProximityList.h"
-#include "argos_bridge/Rangebearing.h"
-#include "argos_bridge/RangebearingList.h"
 
 /* Include the controller definition */
 #include "argos_ros_bot.h"
@@ -20,6 +14,8 @@
 #include <ros/callback_queue.h>
 
 #include <math.h>
+#include "tf/LinearMath/Transform.h"
+
 
 using namespace std;
 using namespace argos_bridge;
@@ -62,7 +58,7 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   puckListPub = nodeHandle->advertise<PuckList>(puckListTopic.str(), 1);
   proximityPub = nodeHandle->advertise<ProximityList>(proximityTopic.str(), 1);
   rangebearingPub = nodeHandle->advertise<RangebearingList>(rangebearingTopic.str(), 1);
-  posePub = nodeHandle->advertise<geometry_msgs::PoseStamped>(poseTopic.str(), 1);
+  posePub = nodeHandle->advertise<geometry_msgs::PoseStamped>(poseTopic.str(), 1000);
 
 
   // Create the subscribers
@@ -85,8 +81,6 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   otherBotSub[n] = nodeHandle->subscribe(otherBotPoseTopic.str(), 1, &CArgosRosBot::otherBotPoseCallback, this);
   }
 
-
-
 //  gripperSub = nodeHandle->subscribe(gripperTopic.str(), 1, &CArgosRosBot::gripperCallback, this);
 
 
@@ -99,6 +93,15 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
 //  m_pcGripper = GetActuator<CCI_FootBotGripperActuator>("footbot_gripper");
 
   m_pcOmniCam->Enable();
+
+
+  Rangebearing Rab;
+  Rab.angle = 0.0f;
+  Rab.range = 0.0f;
+
+  RabList.n = NUMOFBOTS-1;
+  for(int i = 0; i<NUMOFBOTS;i++)
+	  RabList.Rangebearings.push_back(Rab);
 
   /*
    * Parse the configuration file
@@ -166,16 +169,15 @@ void CArgosRosBot::ControlStep() {
    rangebearingPub.publish(RabList);*/
 
    /*Read out position of bot*/
-   geometry_msgs::PoseStamped PosQuat;
    const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
    PosQuat.header.frame_id = GetId();
    PosQuat.pose.position.x = sPosRead.Position.GetX();
    PosQuat.pose.position.y = sPosRead.Position.GetY();
    PosQuat.pose.position.z = sPosRead.Position.GetZ();
-   PosQuat.pose.orientation.x = 0;
-   PosQuat.pose.orientation.y = 0;
-   PosQuat.pose.orientation.z = 0;
-   PosQuat.pose.orientation.w = 0;
+   PosQuat.pose.orientation.x = sPosRead.Orientation.GetX();
+   PosQuat.pose.orientation.y = sPosRead.Orientation.GetY();
+   PosQuat.pose.orientation.z = sPosRead.Orientation.GetZ();
+   PosQuat.pose.orientation.w = sPosRead.Orientation.GetW();
 
    posePub.publish(PosQuat);
 
@@ -198,52 +200,65 @@ void CArgosRosBot::ControlStep() {
 
 void CArgosRosBot::otherBotPoseCallback(const geometry_msgs::PoseStamped& pose){
 
-
-	static RangebearingList RabList;
-	RabList.n = NUMOFBOTS-1;
-
-	geometry_msgs::PoseStamped PosQuat;
+	//geometry_msgs::PoseStamped PosQuat;
 	const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
 
-	int currentId;
-
-	string c;
+	//Extract number from name
+	int currentId, otherId;
+	char c;
 	std::stringstream iss1(GetId());
-	iss1 >>  c >> currentId;
-	int otherId;
+	iss1 >>  c >> c >> c >> currentId;
 	std::stringstream iss2(pose.header.frame_id);
-	iss2  >> c >> otherId;
+	iss2  >> c >> c >> c >> otherId;
 
-	cout<<iss1.str()<<"  "<< iss2.str()<<" "<<currentId<<" "<<otherId<<endl;
-
-
-	float x =  sPosRead.Position.GetX();
-	float y =  sPosRead.Position.GetY();
-
-	float range, angle;
-	if(pose.header.frame_id!=GetId())
+	// If the current ID is not the same the ID from the received message
+	if(otherId!=currentId)
 	{
-		Rangebearing Rab;
+		//Get the difference in poses to get the range
+		tf::Quaternion q_current(PosQuat.pose.orientation.x,
+				PosQuat.pose.orientation.y,
+				PosQuat.pose.orientation.z,
+				PosQuat.pose.orientation.w);
+		tf::Vector3 p_current(PosQuat.pose.position.x,
+				PosQuat.pose.position.y,
+				PosQuat.pose.position.z);
+		tf::Transform tf_current(q_current,p_current);
+		tf::Quaternion q_other(pose.pose.orientation.x,
+				pose.pose.orientation.y,
+				pose.pose.orientation.z,
+				pose.pose.orientation.w);
+		tf::Vector3 p_other(pose.pose.position.x,
+				pose.pose.position.y,
+				pose.pose.position.z);
+		tf::Transform tf_other(q_other,p_other);
+		tf::Transform tf_diff = tf_other.inverseTimes(tf_current);
+		double range = tf_diff.getOrigin().length();
 
-		range = sqrt(pow(pose.pose.position.x -x,2) + pow(pose.pose.position.y -y,2));
-		angle = atan((pose.pose.position.y -y)/(pose.pose.position.x -x));
+		//Get the bearing to the other bot
+		double yaw_current = tf::getYaw(tf_current.getRotation());
+		// Get position and change to range and angle
+		double x =  PosQuat.pose.position.x;
+		double y =  PosQuat.pose.position.y;
+		double angle = std::atan2(((double)pose.pose.position.y -y),((double)pose.pose.position.x -x));
+		double bearing=angle-yaw_current;
 
-		Rab.range = range;
-		Rab.angle = angle;
 
+		//Fil up the range bearing list  msg
+		//TODO: Right now this is not bearing but absolute angle!!
+		// Change to bearing by taking it relative from the current ID's angle
 
-		/*  	  if(otherId<currentId)
-  	  {
-  		  RabList.Rangebearings[otherId].range=range;
-  		  RabList.Rangebearings[otherId].angle=angle;
-  	  } else {
-  		  RabList.Rangebearings[otherId-1].range=range;
-  		  RabList.Rangebearings[otherId-1].angle=angle;
-  	  }*/
-		cout<<range<<" "<<angle<<endl;
+		if(otherId<currentId)
+		{
+
+			RabList.Rangebearings[otherId].range=range;
+			RabList.Rangebearings[otherId].angle=bearing;
+		} else {
+			RabList.Rangebearings[otherId-1].range=range;
+			RabList.Rangebearings[otherId-1].angle=bearing;
+		}
+
+		rangebearingPub.publish(RabList);
 	}
-
-	rangebearingPub.publish(RabList);
 }
 
 void CArgosRosBot::cmdVelCallback(const geometry_msgs::Twist& twist) {

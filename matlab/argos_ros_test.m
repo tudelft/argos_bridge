@@ -30,8 +30,9 @@ while(1)
    
    % Polar Plot relative positions other footbots  
    for i=1:rab_data.N
+
       polarplot(rab_data.Rangebearings(i).Angle, rab_data.Rangebearings(i).Range,'o')
-      rlim([0 300]) %Range only goes untill 300 cm (3 meter)
+      rlim([0 4]) %Range only goes untill 300 cm (3 meter)
       hold on,
    end
    hold off
