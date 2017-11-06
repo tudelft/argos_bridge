@@ -109,6 +109,14 @@
   <!-- * Visualization * -->
   <!-- ****************** -->
   <visualization>
-    <qt-opengl lua_editor="false"/>
+    <!--
+        This shows how to add customized drawing in the world
+        using the qt user functions.
+        Check 'argos3 -q qt-opengl' for more help.
+    -->
+    <qt-opengl>
+      <user_functions library="libidloop.so"
+                      label="id_qtuser_functions" />
+    </qt-opengl>
   </visualization>
 </argos-configuration>
