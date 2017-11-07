@@ -18,6 +18,7 @@ clear all;
 rabsub = rossubscriber('/bot0/rangebearing');
 cmd_vel_pub = rospublisher('/bot0/cmd_vel', 'geometry_msgs/Twist');
 
+proxsub = rossubscriber('/bot0/proximity');
 twist = rosmessage('geometry_msgs/Twist');
 rab_data = rosmessage('argos_bridge/RangebearingList');
 pause(2)
@@ -26,13 +27,17 @@ figure(1),
 while(1)
    % receive and send data
    %send(cmd_vel_pub, twist);
-   rab_data = receive(rabsub,1);
-   
+   proxdata = receive(proxsub,1);
+   % rab_data = receive(rabsub,1);
    % Polar Plot relative positions other footbots  
+
+   disp(proxdata.N)
+   disp(proxdata.Proximities)
    for i=1:rab_data.N
 
       polarplot(rab_data.Rangebearings(i).Angle, rab_data.Rangebearings(i).Range,'o')
       rlim([0 4]) %Range only goes untill 300 cm (3 meter)
+      
       hold on,
    end
    hold off

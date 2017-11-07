@@ -55,9 +55,9 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   proximityTopic << "/" << GetId() << "/proximity";
   rangebearingTopic << "/" << GetId() << "/rangebearing";
   poseTopic << "/" << GetId() << "/position";
-  puckListPub = nodeHandle->advertise<PuckList>(puckListTopic.str(), 1);
-  proximityPub = nodeHandle->advertise<ProximityList>(proximityTopic.str(), 1);
-  rangebearingPub = nodeHandle->advertise<RangebearingList>(rangebearingTopic.str(), 1);
+  puckListPub = nodeHandle->advertise<PuckList>(puckListTopic.str(), 1000);
+  proximityPub = nodeHandle->advertise<ProximityList>(proximityTopic.str(), 1000);
+  rangebearingPub = nodeHandle->advertise<RangebearingList>(rangebearingTopic.str(), 1000);
   posePub = nodeHandle->advertise<geometry_msgs::PoseStamped>(poseTopic.str(), 1000);
 
 
@@ -140,6 +140,7 @@ void CArgosRosBot::ControlStep() {
   puckListPub.publish(puckList);
 
   /* Get readings from proximity sensor */
+
   const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
   ProximityList proxList;
   proxList.n = tProxReads.size();
@@ -150,7 +151,6 @@ void CArgosRosBot::ControlStep() {
     proxList.proximities.push_back(prox);
 
     proximityPub.publish(proxList);
-
 
 //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
