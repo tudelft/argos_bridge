@@ -59,8 +59,6 @@ add_message_files(
  add_service_files(
    FILES
    argos_ros_start_sim.srv
-   argos_ros_stop_sim.srv
-   argos_ros_reset_sim.srv
  )
 
 ## Generate actions in the 'action' folder
