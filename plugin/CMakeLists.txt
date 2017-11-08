@@ -36,10 +36,14 @@ link_directories(${ARGOS_LIBRARY_DIRS})
 
 # Descend into the loop_functions directory
 add_subdirectory(loop_functions)
+add_subdirectory(simulation)
 
 # Descend into the embedding directory
 #add_subdirectory(embedding)
 
+add_executable(argos_ros_start_sim_server simulation/argos_ros_start_simulation.cpp)
+target_link_libraries(argos_ros_start_sim_server   argos3core_simulator ${catkin_LIBRARIES})
+add_dependencies(argos_ros_start_sim_server argos_bridge_gencpp)
 
 ### END
 

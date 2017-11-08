@@ -1,0 +1,3 @@
+bool start_argos
+---
+bool argos_has_started

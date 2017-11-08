@@ -55,12 +55,13 @@ add_message_files(
   RangebearingList.msg
 )
 
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+# Generate services in the 'srv' folder
+ add_service_files(
+   FILES
+   argos_ros_start_sim.srv
+   argos_ros_stop_sim.srv
+   argos_ros_reset_sim.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
