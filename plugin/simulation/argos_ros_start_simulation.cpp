@@ -9,6 +9,7 @@
 
 #include "ros/ros.h"
 #include "argos_bridge/argos_ros_start_sim.h"
+#include "std_srvs/Empty.h"
 
 #include <argos3/core/simulator/simulator.h>
 #include <argos3/core/utility/configuration/argos_configuration.h>
@@ -16,9 +17,10 @@
 
 
 // Start the ARGoS Simulator
-bool start_sim(argos_bridge::argos_ros_start_sim::Request  &req,
-		argos_bridge::argos_ros_start_sim::Response &res)
+bool start_sim(std_srvs::Empty::Request  &req,
+					std_srvs::Empty::Response &res)
 {
+	std::cout << "Sim started" << std::endl;
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
 	cSimulator.Reset();
 	cSimulator.Execute();
@@ -40,6 +42,7 @@ int main(int argc, char **argv)
 
 	//TODO: Make filename part of launch file
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+	//cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 	cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
 	cSimulator.LoadExperiment();
