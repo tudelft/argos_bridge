@@ -23,7 +23,6 @@ bool start_sim(std_srvs::Empty::Request  &req,
 	std::cout << "Sim started" << std::endl;
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
 	cSimulator.Reset();
-	cSimulator.Execute();
 	std::cout<<"ARGoS is finished"<<std::endl;
 
 
@@ -46,7 +45,8 @@ int main(int argc, char **argv)
 	cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
 	cSimulator.LoadExperiment();
-
+	cSimulator.Reset();
+	cSimulator.Execute();
 	ros::spin();
 
 	return 0;
