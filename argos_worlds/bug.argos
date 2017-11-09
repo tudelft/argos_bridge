@@ -5,7 +5,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="10"
+    <experiment length="300"
                 ticks_per_second="10"
                 random_seed="312" />
   </framework>
@@ -113,9 +113,9 @@
         Check 'argos3 -q qt-opengl' for more help.
     -->
 <!--Turn of GUI by commenting qt-opengl-->
-    <!--qt-opengl>
+    <qt-opengl>
       <user_functions library="libidloop.so"
                       label="id_qtuser_functions" />
-    </qt-opengl-->
+    </qt-opengl>
   </visualization>
 </argos-configuration>

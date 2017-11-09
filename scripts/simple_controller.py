@@ -68,7 +68,7 @@ class SimpleController:
         #
         # Handle state actions
         #
-        print "State: " + self.state
+        """print "State: " + self.state"""
         twist = None
         if self.state == "AVOID":
             if closestObs == None:
