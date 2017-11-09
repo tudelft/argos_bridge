@@ -1,3 +1,5 @@
 #eclipse files
 .project
 .cproject
+*~
+argos_worlds/rand_env_test.argos
