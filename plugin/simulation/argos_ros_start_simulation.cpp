@@ -8,7 +8,6 @@
 
 
 #include "ros/ros.h"
-#include "argos_bridge/argos_ros_start_sim.h"
 #include "std_srvs/Empty.h"
 
 #include <argos3/core/simulator/simulator.h>
@@ -46,20 +45,25 @@ int main(int argc, char **argv)
 
 	//TODO: Make filename part of launch file
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-	cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
-	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	//cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
 	cSimulator.LoadExperiment();
 
-	while(true) {
+        //Note to self, ros::ok() is a must for while loop in ROS!
+	while(ros::ok()) {
 
 		//Only execute when start_sim is received from service
-		while(!start_sim_bool) {}
+		if(!start_sim_bool)
+		{
 
+		}else
+		{
 		cSimulator.Reset();
 		cSimulator.Execute();
 
 		start_sim_bool = false;
+		}
 
 	}
 
