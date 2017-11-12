@@ -150,10 +150,11 @@ void CArgosRosBot::ControlStep() {
     prox.angle = tProxReads[i].Angle.GetValue();
     proxList.proximities.push_back(prox);
 
-    proximityPub.publish(proxList);
 
 //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
+  proximityPub.publish(proxList);
+
 
 /*   Get readings from range and bearing sensor
    const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
