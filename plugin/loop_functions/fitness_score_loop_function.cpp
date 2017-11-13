@@ -87,7 +87,7 @@ void FitnessScoreLoopFunction::PostExperiment()
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
   neat_ros::FinishedSim service_msg;
-  service_msg.request.fitness_score = distance;
+  service_msg.request.fitness_score = 100-distance;
   client.call(service_msg);
   std::cout<<"service has been send"<<std::endl;
 }
