@@ -23,7 +23,7 @@ ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
 FitnessScoreLoopFunction::FitnessScoreLoopFunction() :
-		    distance(0.), position_bots(2){
+		    distance(0.), position_bots(2), MAX_RANGE(28.5) {
 }
 FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
 }
@@ -87,7 +87,7 @@ void FitnessScoreLoopFunction::PostExperiment()
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
   neat_ros::FinishedSim service_msg;
-  service_msg.request.fitness_score = 100-distance;
+  service_msg.request.fitness_score = MAX_RANGE - distance;
   client.call(service_msg);
   std::cout<<"service has been send"<<std::endl;
 }

@@ -50,6 +50,8 @@ private:
   ros::Subscriber botPoseSub2;
   void calculateBotDistances();
   //Handle for the node
+
+  const double MAX_RANGE;
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_FITNESS_SCORE_LOOP_FUNCTION_H_ */
