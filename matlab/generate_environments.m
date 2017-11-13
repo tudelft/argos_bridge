@@ -47,7 +47,6 @@ for k=1:size(starting_location_agents,2)
 end
 
 % Initialize variables for loop
-agent_intended_direction = 0;
 random_number = 0;
 next_action = "go_straight";
 
