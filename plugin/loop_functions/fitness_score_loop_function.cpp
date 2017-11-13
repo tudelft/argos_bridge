@@ -104,11 +104,12 @@ void FitnessScoreLoopFunction::Reset(){
  *
  */
 void FitnessScoreLoopFunction::calculateBotDistances() {
+  distance = 0.0f;
   for(int i = 0; i < position_bots.size(); i++) {
 
       for(int j = (i + 1); j < position_bots.size(); j++) {
 
-	  Real dist = Distance(position_bots[i].position,
+	  float dist = Distance(position_bots[i].position,
 			       position_bots[j].position);
 	  if(dist > distance) distance = dist;
       }
