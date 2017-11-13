@@ -100,7 +100,7 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   Rab.range = 0.0f;
 
   RabList.n = NUMOFBOTS-1;
-  for(int i = 0; i<NUMOFBOTS;i++)
+  for(int i = 0; i<NUMOFBOTS-1;i++)
 	  RabList.Rangebearings.push_back(Rab);
 
   /*
