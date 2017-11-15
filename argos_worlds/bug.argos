@@ -83,7 +83,7 @@
   </foot-bot>
   <foot-bot id="bot1">
     <body position="9,9,0" orientation="0,0,0" />
-    <controller config="argos_ros_bot"/>
+    <controller config="argos_ros_bot_neat"/>
   </foot-bot>
 
     <!--

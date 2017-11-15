@@ -23,15 +23,15 @@ using namespace std;
 /****************************************/
 
 CArgosRosBotNEAT::CArgosRosBotNEAT() :
-  m_pcWheels(NULL),
-  m_pcProximity(NULL),
-  m_pcOmniCam(NULL),
-  m_pcRangeBearing(NULL),
-//  m_pcGripper(NULL),
-  stopWithoutSubscriberCount(10),
-  stepsSinceCallback(0),
-  leftSpeed(0),
-  rightSpeed(0)//,
+      m_pcWheels(NULL),
+      m_pcProximity(NULL),
+      m_pcOmniCam(NULL),
+      m_pcRangeBearing(NULL),
+      //  m_pcGripper(NULL),
+      stopWithoutSubscriberCount(10),
+      stepsSinceCallback(0),
+      leftSpeed(0),
+      rightSpeed(0)//,
 //  gripping(false)
 {
 }
@@ -60,7 +60,7 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
   //Initialise inputs
   for(int i = 1; i < m_net->inputs.size(); i++) {
 
-     net_inputs[i] = 1.0;
+      net_inputs[i] = 1.0;
 
   }
   /*
@@ -76,48 +76,51 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
 void CArgosRosBotNEAT::ControlStep() {
 
 
-   /* Get readings from proximity sensor */
-   const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
+  if(GetId()=="bot0")
+    {
+      /* Get readings from proximity sensor */
+      const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
 
-  // Get readings from range and bearing sensor
-   const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
+      // Get readings from range and bearing sensor
+      const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
 
-   /*Read out position of bot*/
-   const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
-   //sPosRead.Position.GetX();
-   //sPosRead.Orientation.GetX();
+      /*Read out position of bot*/
+      const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
+      //sPosRead.Position.GetX();
+      //sPosRead.Orientation.GetX();
 
 
-   std::vector<float> inputs(m_net->inputs.size());
-   int h =0;
-   for(int i = 0; i < tRabReads.size(); i++) {
-	 net_inputs[h+1] = tRabReads[i].Range;
-      h++;
-   }
-   for(int i = 0; i < tProxReads.size()+tRabReads.size(); i++) {
+      std::vector<float> inputs(m_net->inputs.size());
+      int h =0;
+      for(int i = 0; i < tRabReads.size(); i++) {
+	  net_inputs[h+1] = tRabReads[i].Range;
+	  h++;
+      }
+      for(int i = 0; i < tProxReads.size()+tRabReads.size(); i++) {
 
-	 net_inputs[h+1] = tProxReads[i].Value;
-       h++;
-   }
+	  net_inputs[h+1] = tProxReads[i].Value;
+	  h++;
+      }
 
-   m_net->load_sensors(inputs);
-   if (!(m_net->activate())) std::cout << "Inputs disconnected from output!";
+      m_net->load_sensors(inputs);
+      if (!(m_net->activate())) std::cout << "Inputs disconnected from output!";
 
-   //Get outputs
-   std::vector<double> outputs(m_net->outputs.size());
-   std::vector<NEAT::NNode*>::iterator it;
+      //Get outputs
+      std::vector<double> outputs(m_net->outputs.size());
+      std::vector<NEAT::NNode*>::iterator it;
 
-   for(it = m_net->outputs.begin(); it != m_net->outputs.end(); it++) {
+      for(it = m_net->outputs.begin(); it != m_net->outputs.end(); it++) {
 
-      outputs[it-m_net->outputs.begin()] = (*it)->activation;
-   }
+	  outputs[it-m_net->outputs.begin()] = (*it)->activation;
+      }
 
-   net_outputs = outputs;
+      net_outputs = outputs;
 
-   ConvertDifferentialDriveToSpeed(net_outputs[1], net_outputs[2]);
+      ConvertDifferentialDriveToSpeed(net_outputs[1], net_outputs[2]);
 
-  // Wait for any callbacks to be called.
-  m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
+      // Wait for any callbacks to be called.
+      m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
+    }
 }
 
 
@@ -139,11 +142,11 @@ void CArgosRosBotNEAT::ConvertDifferentialDriveToSpeed(Real linear_x, Real angul
 
 
 /*
-* This statement notifies ARGoS of the existence of the controller.
-* It binds the class passed as first argument to the string passed as
-* second argument.
-* The string is then usable in the configuration file to refer to this
-* controller.
+ * This statement notifies ARGoS of the existence of the controller.
+ * It binds the class passed as first argument to the string passed as
+ * second argument.
+ * The string is then usable in the configuration file to refer to this
+ * controller.
  * When ARGoS reads that string in the configuration file, it knows which
  * controller class to instantiate.
  * See also the configuration files for an example of how this is used.
