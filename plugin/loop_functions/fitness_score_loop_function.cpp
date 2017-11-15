@@ -33,41 +33,13 @@ FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
  */
 void FitnessScoreLoopFunction::Init(TConfigurationNode& t_node)
 {
-  // Create the subscribers
-  // TODO make this dependable on a global num_bot ?
-  std::string botPoseTopic1 ="/bot0/position";
-  std::string botPoseTopic2 ="/bot1/position";
-
-  if(ros::ok())
-    {
-      ros::NodeHandle n;
-      botPoseSub1 = n.subscribe(botPoseTopic1, 1000, & FitnessScoreLoopFunction::botPoseCallback, this);
-      botPoseSub2 = n.subscribe(botPoseTopic2, 1000, & FitnessScoreLoopFunction::botPoseCallback, this);
-    }
-
 
   distance= 0.0f;
+
+
 }
 
 
-/*botPoseCallback: Saves positions from bots, retrieved from rostopic
- *
- */
-void FitnessScoreLoopFunction::botPoseCallback(const geometry_msgs::PoseStamped& pose_stamped)
-{
-  //Extract number from topic name
-  int currentId;
-  char c;
-  std::stringstream iss2(pose_stamped.header.frame_id);
-  iss2  >> c >> c >> c >> currentId;
-
-  //Place bot's position, sorted on the bot's ID
-  struct position_bot_t position_bot;
-  position_bots[currentId].bot_id_number = currentId;
-  position_bots[currentId].position.SetX(pose_stamped.pose.position.x);
-  position_bots[currentId].position.SetY(pose_stamped.pose.position.y);
-  position_bots[currentId].position.SetZ(pose_stamped.pose.position.z);
-}
 
 /*PreStep: Execute a function at every step of the simulation
  *
@@ -76,7 +48,7 @@ void FitnessScoreLoopFunction::botPoseCallback(const geometry_msgs::PoseStamped&
  */
 void FitnessScoreLoopFunction::PreStep()
 {
-  calculateBotDistances();
+
 }
 
 /*PreStep: After the simulation, send the biggest distance between the footbots
@@ -84,20 +56,46 @@ void FitnessScoreLoopFunction::PreStep()
  */
 void FitnessScoreLoopFunction::PostExperiment()
 {
+
+
+
+
+  /* Get the map of all foot-bots from the space */
+  CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("foot-bot");
+  /* Go through them */
+  int id_it = 0;
+  for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+      it != tFBMap.end();
+      ++it) {
+     /* Create a pointer to the current foot-bot */
+     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+     struct position_bot_t position_bot;
+     position_bot.position =pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
+     position_bot.bot_id_number = id_it;
+     /* Add the current position of the foot-bot if it's sufficiently far from the last */
+     position_bots.push_back(position_bot);
+     id_it ++;
+     }
+
+
+  calculateBotDistances();
+
+
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
   neat_ros::FinishedSim service_msg;
   service_msg.request.fitness_score = MAX_RANGE - distance;
   client.call(service_msg);
-  std::cout<<"service has been send"<<std::endl;
+  std::cout<<"service has been send with "<<MAX_RANGE - distance <<std::endl;
 }
 
 /*Reset: reinitialize fitnesscore
  *
  */
 void FitnessScoreLoopFunction::Reset(){
-
   distance= 0.0f;
+  position_bots.clear();
+
 }
 
 /*calculateBotDistances: calculateBotDistances and saves the largest one

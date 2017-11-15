@@ -46,7 +46,7 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
   m_pcPositioning = GetSensor<CCI_PositioningSensor>("positioning");
   m_pcOmniCam->Enable();
 
-  std::ifstream iFile ("ibug_working_directory/starting_genomes/start_genome");
+  std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
   //org = new NEAT::Organism(0.0, genom, 1);
   NEAT::Genome *start_genome = new NEAT::Genome(1,iFile);
   NEAT::Organism *neatOrg = new NEAT::Organism(0.0,start_genome,1);
