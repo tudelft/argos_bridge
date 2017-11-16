@@ -6,6 +6,8 @@
  */
 
 #include "random_environment_generator.h"
+#include <chrono>
+
 
 using namespace std;
 using namespace cv;
@@ -16,30 +18,72 @@ RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   environment_height(10),
   change_agent_gostraight(0.85f),
   wanted_corridor_percentage(0.40f),
-  room_percentage(0.3f) {}
+  room_percentage(0.3f),
+  total_boxes_generated(0){}
 
 void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 {
   srand(time(NULL));
 
+
+  const CVector3& cArenaSize = CSimulator::GetInstance().GetSpace().GetArenaSize();
+
+
+  environment_width = (int)(cArenaSize.GetX()/2);
+  environment_height=(int)(cArenaSize.GetY()/2);
+
+  CSpace::TMapPerType& tFBMap = CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+  /* Go through them */
+  int i = 0;
+  for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+      it != tFBMap.end();
+      ++it) {
+
+     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+     CVector3 pos_bot;
+     pos_bot = pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
+     vector<int> initial_bot_position{0,0};
+     initial_bot_position.at(0)=pos_bot.GetX()/2+environment_width/2;
+     initial_bot_position.at(1)=pos_bot.GetY()/2+environment_width/2;
+     initial_bot_positions.push_back(initial_bot_position);
+  }
+
   generateEnvironment();
+
 
 }
 
 void RandomEnvironmentGenerator::Reset()
 {
-  CSpace::TMapPerType &tBoxMap = GetSpace().GetEntitiesByType("box");
 
-  for (CSpace::TMapPerType::iterator it = tBoxMap.begin(); it != tBoxMap.end(); ++it) {
-    CBoxEntity *pcBox = any_cast<CBoxEntity *>(it->second);
-    RemoveEntity(*pcBox);
-  }
+ CLoopFunctions loopfunction;
 
-  generateEnvironment();
+ for(int i = 0;i<total_boxes_generated+1;i++){
+  // CSpace *cspace;
+
+
+   auto start_time = std::chrono::high_resolution_clock::now();
+
+   //CallEntityOperation<CSpaceOperationRemoveEntity, CSpace, void>(*cspace, *boxEntities.at(i));
+    loopfunction.RemoveEntity(*boxEntities.at(i));
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto time = end_time - start_time;
+
+    std::cout << "It took " <<
+      std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";
+ }
+    boxEntities.clear();
+    total_boxes_generated =0;
+
+
+
+    generateEnvironment();
+
+
+
 }
 void RandomEnvironmentGenerator::Destroy()
 {
-  destroyAllWindows();
 }
 
 void RandomEnvironmentGenerator::generateEnvironment(void)
@@ -104,18 +148,8 @@ void RandomEnvironmentGenerator::initializeAgents(void)
   // initial robot positions, place agent where they are
   vector<vector<int>> circ_action_init{{0, 1}, {1, 0}, {0, -1}, { -1, 0}};
 
-  initial_bot_positions.resize(2);
-  initial_bot_positions.at(0).resize(2);
-  initial_bot_positions.at(1).resize(2);
 
-  vector<int> bot_1_position = {3, 0};
-  vector<int> bot_2_position = {6, 9};
-
-  initial_bot_positions.at(0) = bot_1_position;
-  initial_bot_positions.at(1) = bot_2_position;
-
-
-  for (int it = 0; it < 2; it++) {
+  for (int it = 0; it < initial_bot_positions.size(); it++) {
     environment_grid.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1)).is_agent_present = true;
 
     std::rotate(circ_action_init.begin(), circ_action_init.begin() + it, circ_action_init.end());
@@ -285,13 +319,23 @@ void RandomEnvironmentGenerator::makeRandomOpenings()
 void RandomEnvironmentGenerator::putBlocksInEnvironment()
 {
 
-  CBoxEntity *boxEntity;
+  CBoxEntity* boxEntity;
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
   CQuaternion boxEntityRot{0, 0, 0, 0};
 
   std::ostringstream box_name;
 
+/*  if(i<total_boxes_generated)
+  {
+    loop_function.MoveEntity(boxEntities.at(i)->GetEmbodiedEntity(),boxEntityPos,boxEntityRot);
+  }else
+  {
+    CBoxEntity *boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
+    loop_function.AddEntity(*boxEntity);
+    boxEntities.push_back(boxEntity);
+  }*/
 
+  CLoopFunctions loopfunction;
   int i = 0;
   for (int itx = 0; itx < environment_width * 20; itx++) {
     for (int ity = 0; ity < environment_height * 20; ity++) {
@@ -301,14 +345,18 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
         vector<double> argos_coordinates{(double)(itx - environment_width * 10) / 10.0f, (double)(ity - environment_height * 10) / 10.0f};
         CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
         boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
-        AddEntity(*boxEntity);
+
+        loopfunction.AddEntity(*boxEntity);
+
+        boxEntities.push_back(boxEntity);
+
 
         i++;
       }
 
     }
   }
+  total_boxes_generated=i-1;
 
 }
 
-REGISTER_LOOP_FUNCTIONS(RandomEnvironmentGenerator, "random_environment_generator");

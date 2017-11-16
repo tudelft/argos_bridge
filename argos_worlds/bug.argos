@@ -20,10 +20,13 @@
       </actuators>
       <sensors>
         <footbot_proximity implementation="default" show_rays="true"/>
+        <colored_blob_omnidirectional_camera implementation="rot_z_only"
+                                             medium="leds" show_rays="true"/>
         <range_and_bearing implementation="medium"
                            medium="rab"
                            show_rays="true"
                            rab_range="30"/>
+        <positioning implementation="default" />
       </sensors>
       <!-- After the following number of time steps without receiving a
            commanded velocity, the robots will stop. -->
@@ -36,10 +39,9 @@
   <!-- * Loop functions * -->
   <!-- ****************** -->
 
-  <loop_functions library="libfitness_score.so"
-                  label="fitness_score_loop_function"/>
-  <loop_functions library="librandom_environment.so"
-                  label="random_environment_generator"/>
+  <loop_functions library="libmaster_loop.so"
+                  label="master_loop_function"/>
+
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
@@ -85,14 +87,14 @@
       </entity>
     </distribute-->
 
-    <!-- Distribute walls-->
+    <!-- Distribute walls>
      <distribute>
       <position method="uniform" min="-10,-10,0" max="10,10,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <entity quantity="40" max_trials="100">
         <box id="b" size="0.2,3,0.5" movable="false" />
       </entity>
-    </distribute>
+    </distribute-->
 
   </arena>
 

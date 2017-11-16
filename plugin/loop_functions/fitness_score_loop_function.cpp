@@ -95,7 +95,6 @@ void FitnessScoreLoopFunction::PostExperiment()
 void FitnessScoreLoopFunction::Reset(){
   distance= 0.0f;
   position_bots.clear();
-
 }
 
 /*calculateBotDistances: calculateBotDistances and saves the largest one

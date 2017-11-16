@@ -33,7 +33,7 @@ struct position_bot_t{
   CVector3 position;
 };
 
-class FitnessScoreLoopFunction : public CLoopFunctions {
+class FitnessScoreLoopFunction {
 public:
   FitnessScoreLoopFunction();
   virtual ~FitnessScoreLoopFunction();

@@ -30,6 +30,18 @@ target_link_libraries(random_environment
   ${OpenCV_LIBS} 
 )
 
+add_library(master_loop SHARED master_loop_function.cpp master_loop_function.h)
+find_package( OpenCV REQUIRED )
+target_link_libraries(master_loop
+  random_environment
+  fitness_score
+  argos3core_simulator
+  argos3plugin_simulator_entities
+  argos3plugin_simulator_media
+  argos3plugin_simulator_footbot
+  ${OpenCV_LIBS} 
+)
+
 if(ARGOS_COMPILE_QTOPENGL)
    target_link_libraries(fitness_score
    argos3plugin_simulator_qtopengl

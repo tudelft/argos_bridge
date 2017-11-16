@@ -11,6 +11,8 @@
 //ARGoS libraries
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/plugins/simulator/entities/box_entity.h>
+#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
+
 #include <argos3/core/simulator/entity/entity.h>
 
 
@@ -29,6 +31,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <stdio.h>
 #include <ctime>
+#include <chrono>
 
 using namespace argos;
 
@@ -38,7 +41,7 @@ struct grid_element_status_t {
   bool is_corridor_present;
 };
 
-class RandomEnvironmentGenerator : public CLoopFunctions
+class RandomEnvironmentGenerator
 {
 public:
   RandomEnvironmentGenerator();
@@ -74,6 +77,7 @@ private:
   cv::Mat corridor_contours_img;
   float room_percentage;
   int total_boxes_generated;
+  std::vector<CBoxEntity*> boxEntities;
 
 
 
