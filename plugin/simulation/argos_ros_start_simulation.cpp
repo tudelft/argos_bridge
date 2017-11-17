@@ -42,7 +42,6 @@ int main(int argc, char **argv)
 	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
   	cSimulator.LoadExperiment();
-	start_sim_bool = true;
 
   	//Note to self, ros::ok() is a must for while loop in ROS!
   	while(ros::ok()) {
@@ -51,18 +50,16 @@ int main(int argc, char **argv)
 		if(start_sim_bool) {
 
 	      cSimulator.Reset();
-			// std::cout << "..End outside" <<std::endl;
 			std::cout << "Start sim.." << std::endl;
 	      cSimulator.Execute();
 			std::cout << "..End sim" << std::endl;
-			//std::cout << "Start outside.." <<std::endl;
 	      start_sim_bool = false;
 
 	 	}
 
   }
 
-  //spin_thread.join();
+  spin_thread.join();
 
   return 0;
 }

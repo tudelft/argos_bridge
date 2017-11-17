@@ -76,11 +76,7 @@ private:
 
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;
-  //CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmniCam;
   CCI_RangeAndBearingSensor* m_pcRangeBearing;
-  //CCI_PositioningSensor* m_pcPositioning;
-
-//  CCI_FootBotGripperActuator* m_pcGripper;
 
   // The following constant values were copied from the argos source tree from
   // the file src/plugins/robots/foot-bot/simulator/footbot_entity.cpp
@@ -105,10 +101,6 @@ private:
   // Most recent left and right wheel speeds, converted from the ROS twist
   // message.
   Real leftSpeed, rightSpeed;
-
-  // The state of the gripper.
-//  bool gripping;
-
 
   NEAT::Network* m_net;
 

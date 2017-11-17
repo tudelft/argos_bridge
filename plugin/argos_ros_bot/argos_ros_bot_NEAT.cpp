@@ -60,10 +60,7 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
   // Get sensor/actuator handles
   m_pcWheels = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
   m_pcProximity = GetSensor<CCI_FootBotProximitySensor>("footbot_proximity");
-  //m_pcOmniCam = GetSensor<CCI_ColoredBlobOmnidirectionalCameraSensor>("colored_blob_omnidirectional_camera");
   m_pcRangeBearing = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
-  //m_pcPositioning = GetSensor<CCI_PositioningSensor>("positioning");
-  //m_pcOmniCam->Enable();
 
   /*
    * Parse the configuration file
@@ -85,24 +82,15 @@ void CArgosRosBotNEAT::ControlStep() {
       // Get readings from range and bearing sensor
       const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
 
-      //int h =0;
-      std::cout << "Range & Bearing size: " << tRabReads.size() << std::endl;
       for(int i = 0; i < tRabReads.size(); i++) {
-         //std::cout << tRabReads[i].Range << std::endl;
         net_inputs[i+1] = tRabReads[i].Range;
-        //h++;
-        //std::cout << "Read" << i << std::endl;
       }
-      //std::cout << tProxReads.size() << std::endl;
-      for(int i = 0; i < tProxReads.size(); i++) {
-        //std::cout << tProxReads[i].Value << std::endl;
-        net_inputs[i+tRabReads.size()+1] = tProxReads[i].Value;
-        //h++;
-        //std::cout << h << std::endl;
-        //std::cout << "Read" << i <<std::endl;
-      }
-      //std::cout << std::endl;
 
+      for(int i = 0; i < tProxReads.size(); i++) {
+        net_inputs[i+tRabReads.size()+1] = tProxReads[i].Value;
+      }
+
+      //Net input testing
       // for(int i =0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
@@ -120,6 +108,7 @@ void CArgosRosBotNEAT::ControlStep() {
 
       }
 
+      //Net output testing
       //std::cout << net_outputs[0] << std::endl;
       //std::cout << net_outputs[1] << std::endl;
 
@@ -127,7 +116,7 @@ void CArgosRosBotNEAT::ControlStep() {
 
       // Wait for any callbacks to be called.
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
-
+      
     }
 
 }
