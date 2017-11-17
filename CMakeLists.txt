@@ -58,7 +58,7 @@ add_message_files(
 # Generate services in the 'srv' folder
  add_service_files(
    FILES
-   argos_ros_start_sim.srv
+   StartSim.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -107,7 +107,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES argos_bridge
   CATKIN_DEPENDS roscpp std_msgs tf
-  DEPENDS message_runtime 
+  DEPENDS message_runtime
 )
 
 ###########

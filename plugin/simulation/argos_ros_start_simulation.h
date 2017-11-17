@@ -10,7 +10,8 @@
 
 //ROS include files
 #include "ros/ros.h"
-#include "std_srvs/Empty.h"
+//#include "std_srvs/Empty.h"
+#include "neat_ros/StartSim.h"
 
 //ARGoS include files
 #include <argos3/core/simulator/simulator.h>
@@ -27,8 +28,8 @@ using namespace argos;
 
 
 void startSimServiceThread();
-bool start_sim(std_srvs::Empty::Request  &req,
-	       std_srvs::Empty::Response &res);
+bool start_sim(neat_ros::StartSim::Request  &req,
+	       		neat_ros::StartSim::Response &res);
 
 
 #endif /* ARGOS_BRIDGE_PLUGIN_SIMULATION_ARGOS_ROS_START_SIMULATION_H_ */

@@ -8,15 +8,15 @@
 #include "argos_ros_start_simulation.h"
 
 bool start_sim_bool = false;
-
+int regen_env;
 
 
 // Start the ARGoS Simulator via callaback
-bool start_sim(std_srvs::Empty::Request  &req,
-	       std_srvs::Empty::Response &res)
+bool start_sim(neat_ros::StartSim::Request  &req,
+	       		neat_ros::StartSim::Response &res)
 {
   start_sim_bool = true;
-  return true;
+  regen_env = req.regenerate_env;
 }
 
 //Thread to listen for start sim service
@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 
 	//TODO: Make filename part of launch file
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-	//cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
-	cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
   	cSimulator.LoadExperiment();
 
