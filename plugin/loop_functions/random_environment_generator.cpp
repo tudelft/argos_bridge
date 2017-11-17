@@ -56,21 +56,18 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 void RandomEnvironmentGenerator::Reset()
 {
 
+ cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
  for(int i = 0;i<total_boxes_generated+1;i++){
-  // CSpace *cspace;
+   //auto start_time = std::chrono::high_resolution_clock::now();
 
-
-   auto start_time = std::chrono::high_resolution_clock::now();
-
-   //CallEntityOperation<CSpaceOperationRemoveEntity, CSpace, void>(*cspace, *boxEntities.at(i));
     loopfunction.RemoveEntity(*boxEntities.at(i));
-    auto end_time = std::chrono::high_resolution_clock::now();
+    /* auto end_time = std::chrono::high_resolution_clock::now();
     auto time = end_time - start_time;
 
     std::cout << "It took " <<
-      std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";
+      std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";*/
  }
     boxEntities.clear();
     total_boxes_generated =0;

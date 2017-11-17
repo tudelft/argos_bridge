@@ -19,6 +19,8 @@
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/core/utility/math/vector3.h>
+#include <argos3/core/simulator/entity/entity.h>
+
 
 
 //Standard C++ libraries

@@ -57,8 +57,11 @@ void FitnessScoreLoopFunction::PreStep()
 void FitnessScoreLoopFunction::PostExperiment()
 {
 
+
+
+
   /* Get the map of all foot-bots from the space */
-  CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+  CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("foot-bot");
   /* Go through them */
   int id_it = 0;
   for(CSpace::TMapPerType::iterator it = tFBMap.begin();
@@ -92,6 +95,7 @@ void FitnessScoreLoopFunction::PostExperiment()
 void FitnessScoreLoopFunction::Reset(){
   distance= 0.0f;
   position_bots.clear();
+
 }
 
 /*calculateBotDistances: calculateBotDistances and saves the largest one
@@ -112,3 +116,9 @@ void FitnessScoreLoopFunction::calculateBotDistances() {
 
 
 
+<<<<<<< 41f7a25f46949cf14cd685746f196e0756259a4f
+REGISTER_LOOP_FUNCTIONS(FitnessScoreLoopFunction, "fitness_score_loop_function");
+=======
+
+
+>>>>>>> [loopfunction] Made a master loop function for both random environment maker as fitnesscore function

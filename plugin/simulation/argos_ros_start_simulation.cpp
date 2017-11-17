@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 
 	//TODO: Make filename part of launch file
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-	cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
-	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	//cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
   	cSimulator.LoadExperiment();
 
