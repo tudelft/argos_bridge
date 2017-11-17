@@ -34,7 +34,7 @@ Network::Network(std::vector<NNode*> in,std::vector<NNode*> out,std::vector<NNod
   inputs=in;
   outputs=out;
   all_nodes=all;
-  name=0;   //Defaults to no name  ..NOTE: TRYING TO PRINT AN EMPTY NAME CAN CAUSE A CRASH                                    
+  name=0;   //Defaults to no name  ..NOTE: TRYING TO PRINT AN EMPTY NAME CAN CAUSE A CRASH
   numnodes=-1;
   numlinks=-1;
   net_id=netid;
@@ -51,7 +51,7 @@ Network::Network(int netid) {
 		}
 
 Network::Network(int netid, bool adaptval) {
-  name=0; //Defaults to no name                                                                                               
+  name=0; //Defaults to no name
   numnodes=-1;
   numlinks=-1;
   net_id=netid;
@@ -111,7 +111,7 @@ void Network::flush_check() {
 	std::vector<NNode*>::iterator location;
 	std::vector<NNode*> seenlist;  //List of nodes not to doublecount
 
-	for(curnode=outputs.begin();curnode!=outputs.end();++curnode) {    
+	for(curnode=outputs.begin();curnode!=outputs.end();++curnode) {
         location= std::find(seenlist.begin(),seenlist.end(),(*curnode));
 		if (location==seenlist.end()) {
 			seenlist.push_back(*curnode);
@@ -159,6 +159,7 @@ void Network::print_links_tofile(char *filename) {
 // Activates the net such that all outputs are active
 // Returns true on success;
 bool Network::activate() {
+
 	std::vector<NNode*>::iterator curnode;
 	std::vector<Link*>::iterator curlink;
 	double add_amount;  //For adding to the activesum
@@ -167,7 +168,7 @@ bool Network::activate() {
 
 	//cout<<"Activating network: "<<this->genotype<<endl;
 
-	//Keep activating until all the outputs have become active 
+	//Keep activating until all the outputs have become active
 	//(This only happens on the first activation, because after that they
 	// are always active)
 
@@ -183,7 +184,7 @@ bool Network::activate() {
 		}
 		//std::cout<<"Outputs are off"<<std::endl;
 
-		// For each node, compute the sum of its incoming activation 
+		// For each node, compute the sum of its incoming activation
 		for(curnode=all_nodes.begin();curnode!=all_nodes.end();++curnode) {
 			//Ignore SENSORS
 
@@ -193,7 +194,7 @@ bool Network::activate() {
 				(*curnode)->activesum=0;
 				(*curnode)->active_flag=false;  //This will tell us if it has any active inputs
 
-				// For each incoming connection, add the activity from the connection to the activesum 
+				// For each incoming connection, add the activity from the connection to the activesum
 				for(curlink=((*curnode)->incoming).begin();curlink!=((*curnode)->incoming).end();++curlink) {
 					//Handle possible time delays
 					if (!((*curlink)->time_delay)) {
@@ -211,11 +212,11 @@ bool Network::activate() {
 
 				} //End for over incoming links
 
-			} //End if (((*curnode)->type)!=SENSOR) 
+			} //End if (((*curnode)->type)!=SENSOR)
 
 		} //End for over all nodes
 
-		// Now activate all the non-sensor nodes off their incoming activation 
+		// Now activate all the non-sensor nodes off their incoming activation
 		for(curnode=all_nodes.begin();curnode!=all_nodes.end();++curnode) {
 
 			if (((*curnode)->type)!=SENSOR) {
@@ -254,54 +255,54 @@ bool Network::activate() {
 
 	  //std::cout << "ADAPTING" << std:endl;
 
-	  // ADAPTATION:  Adapt weights based on activations 
+	  // ADAPTATION:  Adapt weights based on activations
 	  for(curnode=all_nodes.begin();curnode!=all_nodes.end();++curnode) {
 	    //Ignore SENSORS
-	    
+
 	    //cout<<"On node "<<(*curnode)->node_id<<endl;
-	    
+
 	    if (((*curnode)->type)!=SENSOR) {
-	      
-	      // For each incoming connection, perform adaptation based on the trait of the connection 
+
+	      // For each incoming connection, perform adaptation based on the trait of the connection
 	      for(curlink=((*curnode)->incoming).begin();curlink!=((*curnode)->incoming).end();++curlink) {
-		
+
 		if (((*curlink)->trait_id==2)||
 		    ((*curlink)->trait_id==3)||
 		    ((*curlink)->trait_id==4)) {
-		  
+
 		  //In the recurrent case we must take the last activation of the input for calculating hebbian changes
 		  if ((*curlink)->is_recurrent) {
 		    (*curlink)->weight=
 		      hebbian((*curlink)->weight,maxweight,
-			      (*curlink)->in_node->last_activation, 
+			      (*curlink)->in_node->last_activation,
 			      (*curlink)->out_node->get_active_out(),
 			      (*curlink)->params[0],(*curlink)->params[1],
 			      (*curlink)->params[2]);
-		    
-		    
+
+
 		  }
 		  else { //non-recurrent case
 		    (*curlink)->weight=
 		      hebbian((*curlink)->weight,maxweight,
-			      (*curlink)->in_node->get_active_out(), 
+			      (*curlink)->in_node->get_active_out(),
 			      (*curlink)->out_node->get_active_out(),
 			      (*curlink)->params[0],(*curlink)->params[1],
 			      (*curlink)->params[2]);
 		  }
 		}
-		
-	      }
-	      
-	    }
-	    
-	  }
-	  
-	} //end if (adaptable)
 
-	return true;  
+	      }
+
+	    }
+
+	  }
+
+	} //end if (adaptable)
+   
+	return true;
 }
 
-// THIS WAS NOT USED IN THE FINAL VERSION, AND NOT FULLY IMPLEMENTED,   
+// THIS WAS NOT USED IN THE FINAL VERSION, AND NOT FULLY IMPLEMENTED,
 // BUT IT SHOWS HOW SOMETHING LIKE THIS COULD BE INITIATED
 // Note that checking networks for loops in general in not necessary
 // and therefore I stopped writing this function
@@ -403,7 +404,7 @@ void Network::load_sensors(const std::vector<float> &sensvals) {
 }
 
 
-// Takes and array of output activations and OVERRIDES 
+// Takes and array of output activations and OVERRIDES
 // the outputs' actual activations with these values (for adaptation)
 void Network::override_outputs(double* outvals) {
 
@@ -431,7 +432,7 @@ void Network::give_name(char *newname) {
 
 // The following two methods recurse through a network from outputs
 // down in order to count the number of nodes and links in the network.
-// This can be useful for debugging genotype->phenotype spawning 
+// This can be useful for debugging genotype->phenotype spawning
 // (to make sure their counts correspond)
 
 int Network::nodecount() {
@@ -518,14 +519,14 @@ void Network::destroy() {
 	std::vector<NNode*>::iterator location;
 	std::vector<NNode*> seenlist;  //List of nodes not to doublecount
 
-	// Erase all nodes from all_nodes list 
+	// Erase all nodes from all_nodes list
 
 	for(curnode=all_nodes.begin();curnode!=all_nodes.end();++curnode) {
 		delete (*curnode);
 	}
 
 
-	// ----------------------------------- 
+	// -----------------------------------
 
 	//  OLD WAY-the old way collected the nodes together and then deleted them
 
@@ -565,7 +566,7 @@ void Network::destroy_helper(NNode *curnode,std::vector<NNode*> &seenlist) {
 
 }
 
-// This checks a POTENTIAL link between a potential in_node and potential out_node to see if it must be recurrent 
+// This checks a POTENTIAL link between a potential in_node and potential out_node to see if it must be recurrent
 bool Network::is_recur(NNode *potin_node,NNode *potout_node,int &count,int thresh) {
 	std::vector<Link*>::iterator curlink;
 
@@ -609,7 +610,7 @@ int Network::max_depth() {
   std::vector<NNode*>::iterator curoutput; //The current output we are looking at
   int cur_depth; //The depth of the current node
   int max=0; //The max depth
-  
+
   for(curoutput=outputs.begin();curoutput!=outputs.end();curoutput++) {
     cur_depth=(*curoutput)->depth(0,this);
     if (cur_depth>max) max=cur_depth;
@@ -618,4 +619,3 @@ int Network::max_depth() {
   return max;
 
 }
-

@@ -86,7 +86,7 @@ void FitnessScoreLoopFunction::PostExperiment()
   neat_ros::FinishedSim service_msg;
   service_msg.request.fitness_score = MAX_RANGE - distance;
   client.call(service_msg);
-  std::cout<<"service has been send with "<<MAX_RANGE - distance <<std::endl;
+  //std::cout<<"service has been send with "<<MAX_RANGE - distance <<std::endl;
 }
 
 /*Reset: reinitialize fitnesscore
@@ -117,7 +117,3 @@ void FitnessScoreLoopFunction::calculateBotDistances() {
 
 
 REGISTER_LOOP_FUNCTIONS(FitnessScoreLoopFunction, "fitness_score_loop_function");
-
-
-
-

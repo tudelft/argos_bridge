@@ -76,9 +76,9 @@ private:
 
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;
-  CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmniCam;
+  //CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmniCam;
   CCI_RangeAndBearingSensor* m_pcRangeBearing;
-  CCI_PositioningSensor* m_pcPositioning;
+  //CCI_PositioningSensor* m_pcPositioning;
 
 //  CCI_FootBotGripperActuator* m_pcGripper;
 

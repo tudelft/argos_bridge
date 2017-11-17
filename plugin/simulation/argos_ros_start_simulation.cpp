@@ -30,33 +30,39 @@ void startSimServiceThread() {
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "argos_ros_start_sim");
+	ros::init(argc, argv, "argos_ros_start_sim");
 
 
-  //Start listening for start_sim service
-  boost::thread spin_thread(&startSimServiceThread);
+	//Start listening for start_sim service
+	boost::thread spin_thread(&startSimServiceThread);
 
-  //TODO: Make filename part of launch file
-  argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-  cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
-  //cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	//TODO: Make filename part of launch file
+	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+	cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
 
-  cSimulator.LoadExperiment();
+  	cSimulator.LoadExperiment();
+	start_sim_bool = true;
 
-  //Note to self, ros::ok() is a must for while loop in ROS!
-  while(ros::ok()) {
+  	//Note to self, ros::ok() is a must for while loop in ROS!
+  	while(ros::ok()) {
 
-      //Only execute when start_sim is received from service
-      if(!start_sim_bool)
-	{
+   	//Only execute when start_sim is received from service
+		if(start_sim_bool) {
 
-	}else
-	  {
-	    cSimulator.Reset();
-	    cSimulator.Execute();
-	    start_sim_bool = false;
-	  }
+	      cSimulator.Reset();
+			// std::cout << "..End outside" <<std::endl;
+			std::cout << "Start sim.." << std::endl;
+	      cSimulator.Execute();
+			std::cout << "..End sim" << std::endl;
+			//std::cout << "Start outside.." <<std::endl;
+	      start_sim_bool = false;
+
+	 	}
+
   }
+
+  //spin_thread.join();
 
   return 0;
 }
