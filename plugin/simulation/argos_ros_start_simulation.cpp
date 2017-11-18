@@ -36,10 +36,13 @@ int main(int argc, char **argv)
 	//Start listening for start_sim service
 	boost::thread spin_thread(&startSimServiceThread);
 
-	//TODO: Make filename part of launch file
+
+  std::string path = ros::package::getPath("argos_bridge");
+
+
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-	cSimulator.SetExperimentFileName("/home/james/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
-	//cSimulator.SetExperimentFileName("/home/knmcguire/Documents/Software/catkin_ws/src/argos_bridge/argos_worlds/bug.argos");
+  std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/bug.argos"<<std::endl;
+	cSimulator.SetExperimentFileName(path + "/argos_worlds/bug.argos");
 
   	cSimulator.LoadExperiment();
 

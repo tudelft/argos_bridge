@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   roscpp
   tf
+  roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -106,7 +107,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES argos_bridge
-  CATKIN_DEPENDS roscpp std_msgs tf
+  CATKIN_DEPENDS roscpp std_msgs tf roslib
   DEPENDS message_runtime
 )
 

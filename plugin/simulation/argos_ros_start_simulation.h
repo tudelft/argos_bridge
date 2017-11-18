@@ -10,6 +10,8 @@
 
 //ROS include files
 #include "ros/ros.h"
+#include <ros/package.h>
+
 //#include "std_srvs/Empty.h"
 #include "neat_ros/StartSim.h"
 

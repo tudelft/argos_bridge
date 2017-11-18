@@ -41,6 +41,8 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>roslib</depend>
+  
   <depend>std_msgs</depend>
 
   <depend>roscpp</depend>
