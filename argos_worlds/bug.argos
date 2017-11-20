@@ -126,7 +126,7 @@
 <!--Turn of GUI by commenting qt-opengl-->
     <!-- <qt-opengl>
      <camera>
-        <placement idx="0" position="-9,-9,2" look_at="0,0,0" lens_focal_length="20" />
+        <placement idx="0" position="-5.5,-5.5,3" look_at="-4,-4,0" lens_focal_length="20" />
       </camera>
       <user_functions library="libidloop.so"
                       label="id_qtuser_functions" />

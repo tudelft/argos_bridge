@@ -53,9 +53,9 @@ int main(int argc, char **argv)
 		if(start_sim_bool) {
 
 	      cSimulator.Reset();
-			std::cout << "Start sim.." << std::endl;
+			//std::cout << "Start sim.." << std::endl;
 	      cSimulator.Execute();
-			std::cout << "..End sim" << std::endl;
+			//std::cout << "..End sim" << std::endl;
 	      start_sim_bool = false;
 
 	 	}

@@ -25,14 +25,23 @@ using namespace std;
 CArgosRosBotNEAT::CArgosRosBotNEAT() :
       m_pcWheels(NULL),
       m_pcProximity(NULL),
-      //m_pcOmniCam(NULL),
       m_pcRangeBearing(NULL),
-      //  m_pcGripper(NULL),
       stopWithoutSubscriberCount(10),
       stepsSinceCallback(0),
       leftSpeed(0),
-      rightSpeed(0)//,
-//  gripping(false)
+      rightSpeed(0),
+      NET_INPUT_LOWER_BOUND(0.0),
+      NET_INPUT_UPPER_BOUND(1.0),
+      RANGE_SENSOR_LOWER_BOUND(0.0),
+      RANGE_SENSOR_UPPER_BOUND(1350.0),
+      NET_OUTPUT_LOWER_BOUND(0.0),
+      NET_OUTPUT_UPPER_BOUND(1.0),
+      MIN_LINEAR_VEL(0.0),
+      MAX_LINEAR_VEL(0.25),
+      MIN_ANGULAR_VEL(0.0),
+      MAX_ANGULAR_VEL(360.0),
+      PROX_SENSOR_LOWER_BOUND(0.0),
+      PROX_SENSOR_UPPER_BOUND(0.1)
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -83,14 +92,19 @@ void CArgosRosBotNEAT::ControlStep() {
       const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
 
       for(int i = 0; i < tRabReads.size(); i++) {
-        net_inputs[i+1] = tRabReads[i].Range;
+        net_inputs[i+1] = mapValueIntoRange(tRabReads[i].Range,
+                                            RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
+                                            NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
       }
 
       for(int i = 0; i < tProxReads.size(); i++) {
-        net_inputs[i+tRabReads.size()+1] = tProxReads[i].Value;
+        net_inputs[i+tRabReads.size()+1] = mapValueIntoRange(tProxReads[i].Value,
+                                                             PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
       }
 
-      //Net input testing
+      // std::cout << "----------" <<std::endl;
+      // //Net input testing
       // for(int i =0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
@@ -100,23 +114,21 @@ void CArgosRosBotNEAT::ControlStep() {
       if (!(m_net->activate())) std::cout << "Inputs disconnected from output!";
 
       //Get outputs
-      std::vector<NEAT::NNode*>::iterator it;
 
-      for(it = m_net->outputs.begin(); it != m_net->outputs.end(); it++) {
+      //Linear velocity - mapped to a maximum speed
+      net_outputs[0] = mapValueIntoRange(m_net->outputs[0]->activation,
+                                         NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                         MIN_LINEAR_VEL, MAX_LINEAR_VEL);
 
-         net_outputs[it-m_net->outputs.begin()] = (*it)->activation;
-
-      }
-
-      //Net output testing
-      //std::cout << net_outputs[0] << std::endl;
-      //std::cout << net_outputs[1] << std::endl;
-
+      //Angular velocity - mapped to a maximum turning speed
+      net_outputs[1] = mapValueIntoRange(m_net->outputs[1]->activation,
+                                         NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                         MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
+	
       ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
-
-      // Wait for any callbacks to be called.
+     
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
-      
+
     }
 
 }
@@ -126,15 +138,30 @@ void CArgosRosBotNEAT::ControlStep() {
 
 void CArgosRosBotNEAT::ConvertDifferentialDriveToSpeed(Real linear_x, Real angular_z) {
 
-  Real v = linear_x;// Forward speed
+  Real v = linear_x * 100;// Forward speed
   Real w = angular_z; // Rotational speed
+
+  //34.34 with lin_vel = 1.0 and angular_vel = 0.0
 
   // Use the kinematics of a differential-drive robot to derive the left
   // and right wheel speeds.
-  leftSpeed = (v - HALF_BASELINE * w) / WHEEL_RADIUS;
-  rightSpeed = (v + HALF_BASELINE * w) / WHEEL_RADIUS;
+  leftSpeed = v - HALF_BASELINE * w;
+  rightSpeed = v + HALF_BASELINE * w;
 
   stepsSinceCallback = 0;
+}
+
+double CArgosRosBotNEAT::mapValueIntoRange(const double input, const double input_start,
+                                           const double input_end, const double output_start,
+                                           const double output_end) {
+
+   if(input > input_end) return 1.0;
+
+   double slope = (output_end - output_start) / (input_end - input_start);
+   double output = output_start + slope * (input - input_start);
+
+   return output;
+
 }
 
 void CArgosRosBotNEAT::Reset() {

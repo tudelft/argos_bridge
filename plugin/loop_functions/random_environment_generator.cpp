@@ -56,7 +56,7 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 void RandomEnvironmentGenerator::Reset()
 {
 
- cout<<"Regenerate Environment"<<endl;
+ //cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
  for(int i = 0;i<total_boxes_generated+1;i++){
@@ -356,4 +356,3 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
   total_boxes_generated=i-1;
 
 }
-

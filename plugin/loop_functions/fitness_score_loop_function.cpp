@@ -23,7 +23,7 @@ ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
 FitnessScoreLoopFunction::FitnessScoreLoopFunction() :
-		    distance(0.), position_bots(2), MAX_RANGE(28.5) {
+		    distance(0.), position_bots(2), MAX_RANGE(14.2) {
 }
 FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
 }
@@ -109,6 +109,3 @@ void FitnessScoreLoopFunction::calculateBotDistances() {
       }
   }
 }
-
-
-

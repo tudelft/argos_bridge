@@ -74,6 +74,24 @@ public:
 
 private:
 
+   double mapValueIntoRange(const double input, const double input_start,
+                            const double input_end, const double output_start,
+                            const double output_end);
+
+   const double NET_INPUT_LOWER_BOUND;
+   const double NET_INPUT_UPPER_BOUND;
+   const double RANGE_SENSOR_LOWER_BOUND;
+   const double RANGE_SENSOR_UPPER_BOUND;
+
+   const double NET_OUTPUT_LOWER_BOUND;
+   const double NET_OUTPUT_UPPER_BOUND;
+   const double MIN_LINEAR_VEL;
+   const double MAX_LINEAR_VEL;
+   const double MIN_ANGULAR_VEL;
+   const double MAX_ANGULAR_VEL;
+   const double PROX_SENSOR_LOWER_BOUND;
+   const double PROX_SENSOR_UPPER_BOUND;
+
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;
   CCI_RangeAndBearingSensor* m_pcRangeBearing;
@@ -81,7 +99,7 @@ private:
   // The following constant values were copied from the argos source tree from
   // the file src/plugins/robots/foot-bot/simulator/footbot_entity.cpp
   static constexpr Real HALF_BASELINE = 0.07f; // Half the distance between wheels
-  static constexpr Real WHEEL_RADIUS = 0.029112741f;
+  //static constexpr Real WHEEL_RADIUS = 0.029112741f;
 
   /*
    * The following variables are used as parameters for the
