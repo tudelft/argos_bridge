@@ -56,6 +56,8 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 void RandomEnvironmentGenerator::Reset()
 {
 
+  srand(time(NULL));
+
  //cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
@@ -106,6 +108,8 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
       makeBinaryImageCorridors();
     }
     checkConnectivity();
+    if(!corridors_are_connected)
+      srand(time(NULL));
   }
 
   makeBoundariesCorridors();
