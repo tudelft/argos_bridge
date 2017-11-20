@@ -41,7 +41,9 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       MIN_ANGULAR_VEL(0.0),
       MAX_ANGULAR_VEL(360.0),
       PROX_SENSOR_LOWER_BOUND(0.0),
-      PROX_SENSOR_UPPER_BOUND(0.1)
+      PROX_SENSOR_UPPER_BOUND(0.1),
+      BEARING_SENSOR_LOWER_BOUND(-M_PI),
+      BEARING_SENSOR_UPPER_BOUND(M_PI)
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -91,14 +93,19 @@ void CArgosRosBotNEAT::ControlStep() {
       // Get readings from range and bearing sensor
       const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
 
+      //Include inputs for both the range and the bearing
       for(int i = 0; i < tRabReads.size(); i++) {
-        net_inputs[i+1] = mapValueIntoRange(tRabReads[i].Range,
+        net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
+                                            NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+        net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
+                                            BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
       }
 
+      //Proximity sensor inputs
       for(int i = 0; i < tProxReads.size(); i++) {
-        net_inputs[i+tRabReads.size()+1] = mapValueIntoRange(tProxReads[i].Value,
+        net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
                                                              PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
                                                              NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
       }
@@ -124,9 +131,9 @@ void CArgosRosBotNEAT::ControlStep() {
       net_outputs[1] = mapValueIntoRange(m_net->outputs[1]->activation,
                                          NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                          MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
-	
+
       ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
-     
+
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
     }

@@ -82,6 +82,10 @@ private:
    const double NET_INPUT_UPPER_BOUND;
    const double RANGE_SENSOR_LOWER_BOUND;
    const double RANGE_SENSOR_UPPER_BOUND;
+   const double PROX_SENSOR_LOWER_BOUND;
+   const double PROX_SENSOR_UPPER_BOUND;
+   const double BEARING_SENSOR_LOWER_BOUND;
+   const double BEARING_SENSOR_UPPER_BOUND;
 
    const double NET_OUTPUT_LOWER_BOUND;
    const double NET_OUTPUT_UPPER_BOUND;
@@ -89,8 +93,6 @@ private:
    const double MAX_LINEAR_VEL;
    const double MIN_ANGULAR_VEL;
    const double MAX_ANGULAR_VEL;
-   const double PROX_SENSOR_LOWER_BOUND;
-   const double PROX_SENSOR_UPPER_BOUND;
 
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;
