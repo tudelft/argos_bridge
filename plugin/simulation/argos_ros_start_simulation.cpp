@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 
   	//Note to self, ros::ok() is a must for while loop in ROS!
   	while(ros::ok()) {
-		std::cout << "Running.." << std::endl;
    	//Only execute when start_sim is received from service
 		if(start_sim_bool) {
 

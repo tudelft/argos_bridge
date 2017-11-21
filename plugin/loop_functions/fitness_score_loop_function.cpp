@@ -23,7 +23,8 @@ ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
 FitnessScoreLoopFunction::FitnessScoreLoopFunction() :
-		    distance(0.), position_bots(2), MAX_RANGE(14.2) {
+		    distance(0.), position_bots(2), MAX_RANGE(14.2),
+		    no_son_of_mine(false){
 }
 FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
 }
@@ -35,10 +36,31 @@ void FitnessScoreLoopFunction::Init(TConfigurationNode& t_node)
 {
 
   distance= 0.0f;
+  no_son_of_mine =  false;
 
 
 }
 
+/****************************************/
+//COPIED FROM space.cpp
+/****************************************/
+
+static CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity) {
+   /* Is the entity embodied itself? */
+   CEmbodiedEntity* pcEmbodiedTest = dynamic_cast<CEmbodiedEntity*>(pc_entity);
+   if(pcEmbodiedTest != NULL) {
+      return pcEmbodiedTest;
+   }
+   /* Is the entity composable with an embodied component? */
+   CComposableEntity* pcComposableTest = dynamic_cast<CComposableEntity*>(pc_entity);
+   if(pcComposableTest != NULL) {
+      if(pcComposableTest->HasComponent("body")) {
+         return &(pcComposableTest->GetComponent<CEmbodiedEntity>("body"));
+      }
+   }
+   /* No embodied entity found */
+   return NULL;
+}
 
 
 /*PreStep: Execute a function at every step of the simulation
@@ -48,6 +70,20 @@ void FitnessScoreLoopFunction::Init(TConfigurationNode& t_node)
  */
 void FitnessScoreLoopFunction::PreStep()
 {
+  /* Get the map of all foot-bots from the space */
+  CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+  /* Go through them */
+  for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+      it != tFBMap.end();
+      ++it) {
+     /* Create a pointer to the current foot-bot */
+     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+     CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
+     if(embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
+     {
+       no_son_of_mine = true;
+     }
+  }
 
 }
 
@@ -77,11 +113,17 @@ void FitnessScoreLoopFunction::PostExperiment()
 
   calculateBotDistances();
 
+  double fitness_score = MAX_RANGE - distance;;
+  if(no_son_of_mine)
+  {
+    fitness_score = fitness_score/10;
+  }
+
 
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
   neat_ros::FinishedSim service_msg;
-  service_msg.request.fitness_score = MAX_RANGE - distance;
+  service_msg.request.fitness_score = fitness_score;
   client.call(service_msg);
   //std::cout<<"service has been send with "<<MAX_RANGE - distance <<std::endl;
 }
@@ -92,6 +134,8 @@ void FitnessScoreLoopFunction::PostExperiment()
 void FitnessScoreLoopFunction::Reset(){
   distance= 0.0f;
   position_bots.clear();
+  no_son_of_mine =  false;
+
 }
 
 /*calculateBotDistances: calculateBotDistances and saves the largest one

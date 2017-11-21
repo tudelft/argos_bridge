@@ -20,6 +20,7 @@
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/core/utility/math/vector3.h>
 #include <argos3/core/simulator/entity/entity.h>
+#include <argos3/core/simulator/entity/embodied_entity.h>
 
 
 
@@ -53,6 +54,7 @@ private:
   ros::Subscriber botPoseSub2;
   void calculateBotDistances();
   //Handle for the node
+  bool no_son_of_mine;
 
   const double MAX_RANGE;
 };
