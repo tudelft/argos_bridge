@@ -1,4 +1,4 @@
-/*
+#/*
  * argos_ros_start_simulation.cpp
  *
  *  Created on: Nov 8, 2017
@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "argos_ros_start_sim");
 
-
 	//Start listening for start_sim service
 	boost::thread spin_thread(&startSimServiceThread);
 
@@ -48,7 +47,7 @@ int main(int argc, char **argv)
 
   	//Note to self, ros::ok() is a must for while loop in ROS!
   	while(ros::ok()) {
-
+		std::cout << "Running.." << std::endl;
    	//Only execute when start_sim is received from service
 		if(start_sim_bool) {
 
