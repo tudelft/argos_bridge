@@ -16,15 +16,16 @@ using namespace cv;
 RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   environment_width(10),
   environment_height(10),
-  change_agent_gostraight(0.85f),
-  wanted_corridor_percentage(0.40f),
+  change_agent_gostraight(0.7f),
+  wanted_corridor_percentage(0.6f),
   room_percentage(0.3f),
-  total_boxes_generated(0){}
+  total_boxes_generated(0),
+  amount_of_openings(15){}
 
 void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 {
+  //TODO use the params of loop functions, if they exist
   srand(time(NULL));
-
 
   const CVector3& cArenaSize = CSimulator::GetInstance().GetSpace().GetArenaSize();
 
@@ -87,12 +88,13 @@ void RandomEnvironmentGenerator::Destroy()
 
 void RandomEnvironmentGenerator::generateEnvironment(void)
 {
-  bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
   corridors_are_connected = false;
 
   while (!corridors_are_connected) {
     initializeGrid();
     initializeAgents();
+    bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
+
     for (int it_total = 0; it_total < 100; it_total++) {
 
       findAgents();
@@ -107,6 +109,7 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
       }
       makeBinaryImageCorridors();
     }
+
     checkConnectivity();
     if(!corridors_are_connected)
       srand(time(NULL));
@@ -125,7 +128,6 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
 void RandomEnvironmentGenerator::initializeGrid(void)
 {
   vector<vector<int>> circ_action_init{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
-
   //Resizing environment grid
   environment_grid.resize(environment_width);
   for (int it = 0; it < environment_width; it++) {
@@ -153,7 +155,7 @@ void RandomEnvironmentGenerator::initializeAgents(void)
   for (int it = 0; it < initial_bot_positions.size(); it++) {
     environment_grid.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1)).is_agent_present = true;
 
-    std::rotate(circ_action_init.begin(), circ_action_init.begin() + it, circ_action_init.end());
+    std::rotate(circ_action_init.begin(), circ_action_init.begin() + std::rand()%4, circ_action_init.end());
     environment_grid.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1)).circ_action = circ_action_init;
 
   }
@@ -307,8 +309,8 @@ void RandomEnvironmentGenerator::makeRooms()
 void RandomEnvironmentGenerator::makeRandomOpenings()
 {
   RNG rng(0xFFFFFFFF);
-  int half_size_openings = 8;
-  for (int it = 0; it < 30; it++) {
+  int half_size_openings = 5;
+  for (int it = 0; it < amount_of_openings; it++) {
     vector<int> random_coordinate{rng.uniform(half_size_openings, environment_height * 20 - half_size_openings), rng.uniform(half_size_openings, environment_width * 20 - half_size_openings)};
     rectangle(corridor_contours_img, Point(random_coordinate.at(0) - half_size_openings, random_coordinate.at(1) - half_size_openings), Point(random_coordinate.at(0) + half_size_openings, random_coordinate.at(1) + half_size_openings), Scalar(0), CV_FILLED, 8, 0);
 

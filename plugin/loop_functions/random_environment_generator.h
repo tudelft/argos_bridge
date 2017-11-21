@@ -77,6 +77,7 @@ private:
   float room_percentage;
   int total_boxes_generated;
   std::vector<CBoxEntity*> boxEntities;
+  int amount_of_openings;
 
 
 
