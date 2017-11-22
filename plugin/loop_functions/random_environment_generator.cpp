@@ -20,16 +20,16 @@ RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   wanted_corridor_percentage(0.6f),
   room_percentage(0.3f),
   total_boxes_generated(0),
-  amount_of_openings(15){}
+  amount_of_openings(15),
+  environment_accepted(false){}
 
 void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 {
   //TODO use the params of loop functions, if they exist
-  srand(time(NULL));
 
   const CVector3& cArenaSize = CSimulator::GetInstance().GetSpace().GetArenaSize();
 
-
+  environment_accepted =false;
   environment_width = (int)(cArenaSize.GetX()/2);
   environment_height=(int)(cArenaSize.GetY()/2);
 
@@ -57,8 +57,6 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 void RandomEnvironmentGenerator::Reset()
 {
 
-  srand(time(NULL));
-
  //cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
@@ -74,11 +72,11 @@ void RandomEnvironmentGenerator::Reset()
  }
     boxEntities.clear();
     total_boxes_generated =0;
+    environment_accepted =false;
 
 
 
     generateEnvironment();
-
 
 
 }
@@ -89,37 +87,55 @@ void RandomEnvironmentGenerator::Destroy()
 void RandomEnvironmentGenerator::generateEnvironment(void)
 {
   corridors_are_connected = false;
+  rng = cv::getTickCount();
 
-  while (!corridors_are_connected) {
-    initializeGrid();
-    initializeAgents();
-    bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
+  while(!environment_accepted){
+    while (!corridors_are_connected) {
+      initializeGrid();
+      initializeAgents();
+      bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
 
-    for (int it_total = 0; it_total < 100; it_total++) {
+      for (int it_total = 0; it_total < 100; it_total++) {
 
-      findAgents();
+        findAgents();
 
-      for (int it = 0; it < current_agent_positions.size(); it++) {
-        decideNextAction(current_agent_positions.at(it));
-        setNextLocation(current_agent_positions.at(it));
+        for (int it = 0; it < current_agent_positions.size(); it++) {
+          decideNextAction(current_agent_positions.at(it));
+          setNextLocation(current_agent_positions.at(it));
 
+        }
+        if (getCorridorPercentage() > wanted_corridor_percentage) {
+          break;
+        }
+        makeBinaryImageCorridors();
       }
-      if (getCorridorPercentage() > wanted_corridor_percentage) {
-        break;
-      }
-      makeBinaryImageCorridors();
+
+      checkConnectivity();
+      if(!corridors_are_connected)
+        rng = cv::getTickCount();
     }
 
-    checkConnectivity();
-    if(!corridors_are_connected)
-      srand(time(NULL));
+    makeBoundariesCorridors();
+    makeRooms();
+    makeRandomOpenings();
+
+    cv::Rect border(cv::Point(0, 0), corridor_contours_img.size());
+    rectangle(corridor_contours_img, border, Scalar(255), 2);
+    namedWindow( "Environment", WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Environment", corridor_contours_img );                   // Show our image inside it.
+    char key = (char)waitKey(0);
+    if(key=='y')
+    {
+      environment_accepted=true;
+      break;
+    }else
+    {
+      rng = cv::getTickCount();
+      corridors_are_connected = false;
+    }
+
   }
 
-  makeBoundariesCorridors();
-  makeRooms();
-  makeRandomOpenings();
-  cv::Rect border(cv::Point(0, 0), corridor_contours_img.size());
-  rectangle(corridor_contours_img, border, Scalar(255), 2);
   putBlocksInEnvironment();
 
 }
@@ -182,7 +198,7 @@ void RandomEnvironmentGenerator::findAgents(void)
 
 void RandomEnvironmentGenerator::decideNextAction(std::vector<int> current_bot_position)
 {
-  float random_percentage = static_cast <float>(rand()) / static_cast <float>(RAND_MAX);
+  float random_percentage = rng.uniform(0.0f,1.0f);
   float percentage_rest = 1.0f - change_agent_gostraight;
 
   vector<vector<int>>circ_action_temp = environment_grid.at(current_bot_position.at(0)).at(current_bot_position.at(1)).circ_action;
@@ -308,12 +324,11 @@ void RandomEnvironmentGenerator::makeRooms()
 
 void RandomEnvironmentGenerator::makeRandomOpenings()
 {
-  RNG rng(0xFFFFFFFF);
+  RNG rng(cv::getTickCount());
   int half_size_openings = 5;
   for (int it = 0; it < amount_of_openings; it++) {
     vector<int> random_coordinate{rng.uniform(half_size_openings, environment_height * 20 - half_size_openings), rng.uniform(half_size_openings, environment_width * 20 - half_size_openings)};
     rectangle(corridor_contours_img, Point(random_coordinate.at(0) - half_size_openings, random_coordinate.at(1) - half_size_openings), Point(random_coordinate.at(0) + half_size_openings, random_coordinate.at(1) + half_size_openings), Scalar(0), CV_FILLED, 8, 0);
-
   }
 
 

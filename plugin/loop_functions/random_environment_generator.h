@@ -79,7 +79,8 @@ private:
   int total_boxes_generated;
   std::vector<CBoxEntity*> boxEntities;
   int amount_of_openings;
-
+  bool environment_accepted;
+  cv::RNG rng;
 
 
   bool corridors_are_connected;
