@@ -59,7 +59,7 @@ void RandomEnvironmentGenerator::Reset()
 
   srand(time(NULL));
 
- //cout<<"Regenerate Environment"<<endl;
+ cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
  for(int i = 0;i<total_boxes_generated+1;i++){
@@ -74,7 +74,6 @@ void RandomEnvironmentGenerator::Reset()
  }
     boxEntities.clear();
     total_boxes_generated =0;
-
 
 
     generateEnvironment();

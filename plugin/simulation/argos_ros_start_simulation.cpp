@@ -49,11 +49,12 @@ int main(int argc, char **argv)
   	while(ros::ok()) {
    	//Only execute when start_sim is received from service
 		if(start_sim_bool) {
-
+			std::cout << "Resetting.." <<std::endl;
 	      cSimulator.Reset();
-			//std::cout << "Start sim.." << std::endl;
+			std::cout << "..Resetted" << std::endl;
+			std::cout << "Start sim.." << std::endl;
 	      cSimulator.Execute();
-			//std::cout << "..End sim" << std::endl;
+			std::cout << "..End sim" << std::endl;
 	      start_sim_bool = false;
 
 	 	}

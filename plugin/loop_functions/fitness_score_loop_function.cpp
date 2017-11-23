@@ -113,7 +113,7 @@ void FitnessScoreLoopFunction::PostExperiment()
 
   calculateBotDistances();
 
-  double fitness_score = MAX_RANGE - distance;;
+  double fitness_score = MAX_RANGE - distance;
   if(no_son_of_mine)
   {
     fitness_score = fitness_score/10;
