@@ -11,6 +11,8 @@
 
 extern int regen_env;
 
+#define RANDOM_ENVIRONMENT_GEN_ON false
+
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
 // ARGoS.  However, we will have one instance of the CArgosRosBot class for each ARGoS robot.
@@ -35,7 +37,9 @@ MasterLoopFunction::~MasterLoopFunction(){
 void MasterLoopFunction::Init(TConfigurationNode& t_node)
 {
   fitnessScoreLoopFunction.Init(t_node);
+#if(RANDOM_ENVIRONMENT_GEN_ON)
  randomEnvironmentGenerator.Init( t_node);
+#endif
 }
 
 
@@ -46,9 +50,12 @@ void MasterLoopFunction::Reset(){
 
   fitnessScoreLoopFunction.Reset();
 
+#if(RANDOM_ENVIRONMENT_GEN_ON)
   if(regen_env==1) {
     randomEnvironmentGenerator.Reset();
   }
+#endif
+
 
 }
 
