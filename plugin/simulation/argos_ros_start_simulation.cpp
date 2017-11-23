@@ -49,9 +49,9 @@ int main(int argc, char **argv)
   	while(ros::ok()) {
    	//Only execute when start_sim is received from service
 		if(start_sim_bool) {
-			std::cout << "Resetting.." <<std::endl;
+			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
 	      cSimulator.Reset();
-			std::cout << "..Resetted" << std::endl;
+			std::cout << "..Sim resetted" << std::endl;
 			std::cout << "Start sim.." << std::endl;
 	      cSimulator.Execute();
 			std::cout << "..End sim" << std::endl;
