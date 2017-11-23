@@ -108,14 +108,22 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
         if (getCorridorPercentage() > wanted_corridor_percentage) {
           break;
         }
-        makeBinaryImageCorridors();
+
       }
 
       checkConnectivity();
+
       if(!corridors_are_connected)
         rng = cv::getTickCount();
     }
 
+/*    for (int itx = 0; itx < environment_width; itx++) {
+       for (int ity = 0; ity < environment_height; ity++) {
+           cout<<environment_grid.at(itx).at(ity).is_corridor_present<<" ";
+       }
+       cout<<" "<<endl;
+     }*/
+    makeBinaryImageCorridors();
     makeBoundariesCorridors();
     makeRooms();
     makeRandomOpenings();
@@ -255,6 +263,7 @@ float RandomEnvironmentGenerator::getCorridorPercentage()
 
   return (float)count_corridor / (float)(environment_width * environment_height);
 }
+
 void RandomEnvironmentGenerator::makeBinaryImageCorridors()
 {
 
@@ -269,7 +278,7 @@ void RandomEnvironmentGenerator::makeBinaryImageCorridors()
 }
 
 
-void RandomEnvironmentGenerator::checkConnectivity()
+void RandomEnvironmentGenerator::checkConnectivityOpenCV()
 {
   Mat labels;
   connectedComponents(bin_corridor_img, labels, 4, CV_16U);
@@ -285,6 +294,72 @@ void RandomEnvironmentGenerator::checkConnectivity()
     }
   }
 
+}
+
+
+const int dx[] = {+1, 0, -1, 0};
+const int dy[] = {0, +1, 0, -1};
+void RandomEnvironmentGenerator::dfs(int x, int y, int current_label) {
+  if (x < 0 || x == environment_width) return; // out of bounds
+  if (y < 0 || y == environment_height) return; // out of bounds
+  if (connectivity_labels.at(x).at(y) || !environment_grid.at(x).at(y).is_corridor_present) return; // already labeled or not marked with 1 in m
+
+  // mark the current cell
+  connectivity_labels.at(x).at(y) = current_label;
+
+  // recursively mark the neighbors
+  for (int direction = 0; direction < 4; ++direction)
+    dfs(x + dx[direction], y + dy[direction], current_label);
+}
+
+void RandomEnvironmentGenerator::checkConnectivity()
+{
+
+  vector<int> linked;
+  //Resizing connectivity_labels grid
+  connectivity_labels.resize(environment_width);
+  for (int it = 0; it < environment_width; it++) {
+    connectivity_labels[it].resize(environment_height);
+  }
+
+  for (int itx = 0; itx < environment_width; itx++) {
+    for (int ity = 0; ity < environment_height; ity++) {
+      connectivity_labels.at(itx).at(ity)=0;
+    }
+  }
+  vector<int> neighbors_labels;
+  int next_label = 0;
+
+  int component = 0;
+  for (int itx = 0; itx < environment_width; itx++) {
+    for (int ity = 0; ity < environment_height; ity++) {
+      if (!connectivity_labels.at(itx).at(ity)&&environment_grid.at(itx).at(ity).is_corridor_present)
+        {
+        dfs(itx, ity, ++component);
+        }
+    }
+  }
+
+/*
+  for (int itx = 0; itx < environment_width; itx++) {
+     for (int ity = 0; ity < environment_height; ity++) {
+         cout<<connectivity_labels.at(itx).at(ity)<<" ";
+     }
+     cout<<" "<<endl;
+   }
+*/
+
+  int label_at_first_location = connectivity_labels.at(initial_bot_positions.at(0).at(0)).at(initial_bot_positions.at(0).at(1));
+
+  for (int it = 1; it < initial_bot_positions.size(); it++) {
+    int label_at_second_location = connectivity_labels.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1));
+    if (label_at_first_location == label_at_second_location) {
+      corridors_are_connected = true;
+    } else {
+      corridors_are_connected = false;
+      break;
+    }
+  }
 }
 
 void RandomEnvironmentGenerator::makeBoundariesCorridors()

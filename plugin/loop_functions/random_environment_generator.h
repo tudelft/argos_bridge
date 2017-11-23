@@ -57,11 +57,14 @@ public:
   float getCorridorPercentage();
   void makeBinaryImageCorridors();
   void checkConnectivity();
+  void checkConnectivityOpenCV();
+
   void makeBoundariesCorridors();
   void makeRooms();
   void makeRandomOpenings();
   void putBlocksInEnvironment();
   void generateEnvironment();
+  void dfs(int x, int y, int current_label);
 
 
 private:
@@ -81,6 +84,8 @@ private:
   int amount_of_openings;
   bool environment_accepted;
   cv::RNG rng;
+  std::vector<std::vector<int>> connectivity_labels;
+
 
 
   bool corridors_are_connected;
