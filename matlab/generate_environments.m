@@ -224,6 +224,7 @@ if show_end_result
 
     figure,imshow(boundaries_with_holes)
 end
+imwrite(boundaries_with_holes,fullfile('..', 'argos_worlds', 'rand_env_test.png'))
 
 
 %%  Create Argos environment
