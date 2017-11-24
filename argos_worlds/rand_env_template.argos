@@ -14,7 +14,23 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <argos_ros_bot_controller id="argos_ros_bot" library="libargos_ros_bot.so">
+
+    <!--footbot_manualcontrol_controller id="argos_ros_bot_neat"
+                                      library="libfootbot_manualcontrol">
+      <actuators>
+        <differential_steering implementation="default" />
+        <leds implementation="default" medium="leds" />
+      </actuators>
+      <sensors />
+      <params>
+        <wheel_turning hard_turn_angle_threshold="90"
+                       soft_turn_angle_threshold="70"
+                       no_turn_angle_threshold="10"
+                       max_speed="10" />
+      </params>
+    </footbot_manualcontrol_controller-->
+
+    <argos_ros_bot_neat_controller id="argos_ros_bot_neat" library="libargos_ros_bot_neat.so">
       <actuators>
         <differential_steering implementation="default"/>
       </actuators>
@@ -24,14 +40,21 @@
                                              medium="leds" show_rays="true"/>
         <range_and_bearing implementation="medium"
                            medium="rab"
-                           show_rays="true" />
+                           show_rays="true"
+                           rab_range="30"/>
         <positioning implementation="default" />
       </sensors>
-      <!-- After the following number of time steps without receiving a
-           commanded velocity, the robots will stop. -->
       <params stopWithoutSubscriberCount="10" />
-    </argos_ros_bot_controller>
+    </argos_ros_bot_neat_controller>
   </controllers>
+
+
+  <!-- ****************** -->
+  <!-- * Loop functions * -->
+  <!-- ****************** -->
+
+  <loop_functions library="libmaster_loop.so"
+                  label="master_loop_function"/>
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
@@ -43,6 +66,7 @@
   <!-- ******************* -->
   <physics_engines>
     <dynamics2d id="dyn2d"/>
+    <!-- <pointmass3d id="pm3d" iterations="10" /> -->
   </physics_engines>
 
   <!-- ********* -->
@@ -63,12 +87,12 @@
         Check 'argos3 -q qt-opengl' for more help.
     -->
 <!--Turn of GUI by commenting qt-opengl-->
-    <qt-opengl>
+    <!--qt-opengl>
      <camera>
-        <placement idx="0" position="0,0,10" look_at="-0.2,0,0" lens_focal_length="20" />
+        <placement idx="0" position="-5.5,-5.5,3" look_at="-4,-4,0" lens_focal_length="20" />
       </camera>
       <user_functions library="libidloop.so"
                       label="id_qtuser_functions" />
-    </qt-opengl>
+    </qt-opengl-->
   </visualization>
 </argos-configuration>
