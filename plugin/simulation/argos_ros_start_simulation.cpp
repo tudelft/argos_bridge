@@ -38,26 +38,27 @@ int main(int argc, char **argv)
 
   std::string path = ros::package::getPath("argos_bridge");
 
-
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-  std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_env_test.argos"<<std::endl;
-	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_env_test.argos");
+  //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
+	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
 
   	cSimulator.LoadExperiment();
+	//start_sim_bool = true;
 
   	//Note to self, ros::ok() is a must for while loop in ROS!
-  	while(ros::ok()) {
+   	while(ros::ok()) {
+			//std::cout << "Running" << std::endl;
    	//Only execute when start_sim is received from service
-		if(start_sim_bool) {
-			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
-	      cSimulator.Reset();
-			std::cout << "..Sim resetted" << std::endl;
-			std::cout << "Start sim.." << std::endl;
-	      cSimulator.Execute();
-			std::cout << "..End sim" << std::endl;
-	      start_sim_bool = false;
+  if(start_sim_bool) {
+  	std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
+       cSimulator.Reset();
+  	std::cout << "..Sim resetted" << std::endl;
+  	std::cout << "Start sim.." << std::endl;
+       cSimulator.Execute();
+  	std::cout << "..End sim" << std::endl;
+       start_sim_bool = false;
 
-	 	}
+  	}
 
   }
 

@@ -27,6 +27,11 @@
 
 using namespace argos;
 
+struct SInitSetup {
+   CVector3 Position;
+   CQuaternion Orientation;
+};
+
 
 class MasterLoopFunction : public CLoopFunctions {
 public:
@@ -42,6 +47,11 @@ public:
 
 
 private:
+
+   void SetRobotPosition();
+   CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
+   CVector3 GetRobotPositionFromXML();
+
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_MASTER_LOOP_FUNCTION_H_ */

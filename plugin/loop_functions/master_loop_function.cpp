@@ -26,7 +26,7 @@ ros::NodeHandle* initROS() {
 ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
-MasterLoopFunction::MasterLoopFunction() {
+MasterLoopFunction::MasterLoopFunction(){
 }
 MasterLoopFunction::~MasterLoopFunction(){
 }
@@ -36,6 +36,7 @@ MasterLoopFunction::~MasterLoopFunction(){
  */
 void MasterLoopFunction::Init(TConfigurationNode& t_node)
 {
+
   fitnessScoreLoopFunction.Init(t_node);
 #if(RANDOM_ENVIRONMENT_GEN_ON)
  randomEnvironmentGenerator.Init( t_node);
@@ -48,6 +49,8 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
  */
 void MasterLoopFunction::Reset(){
 
+   SetRobotPosition();
+
   fitnessScoreLoopFunction.Reset();
 
 #if(RANDOM_ENVIRONMENT_GEN_ON)
@@ -56,6 +59,56 @@ void MasterLoopFunction::Reset(){
   }
 #endif
 
+
+}
+
+void MasterLoopFunction::SetRobotPosition() {
+
+   /* Get the map of all foot-bots from the space */
+   CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+   /* Go through them */
+   for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+       it != tFBMap.end();
+       ++it) {
+
+      /* Create a pointer to the current foot-bot */
+      CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
+
+      if(pcFB->GetId()=="bot0") {
+
+         SInitSetup robot_allocation;
+
+         CRadians cOrient = (CRadians)(((double)rand() / RAND_MAX) * 2 * M_PI);
+
+         //Get position from XML file
+         CVector3 rob_pos = GetRobotPositionFromXML();
+         robot_allocation.Position.Set(rob_pos.GetX(), rob_pos.GetY(), rob_pos.GetZ());
+         robot_allocation.Orientation.FromEulerAngles(
+            cOrient,        // rotation around Z
+            CRadians::ZERO, // rotation around Y
+            CRadians::ZERO  // rotation around X
+            );
+
+         while (!MoveEntity(
+                *embEntity,     // move the body of the robot
+                robot_allocation.Position,                // to this position
+                robot_allocation.Orientation,             // with this orientation
+                false                                 // this is not a check, leave the robot there
+            )) {
+
+                LOGERR << "Can't move robot in <"
+                          << robot_allocation.Position
+                          << ">, <"
+                          << robot_allocation.Orientation
+                          << ">"
+                          << std::endl;
+
+             }
+
+       }
+
+   }
 
 }
 
@@ -77,7 +130,65 @@ void MasterLoopFunction::PostExperiment()
 
 }
 
+CEmbodiedEntity* MasterLoopFunction::GetEmbodiedEntity(CEntity* pc_entity) {
+   /* Is the entity embodied itself? */
+   CEmbodiedEntity* pcEmbodiedTest = dynamic_cast<CEmbodiedEntity*>(pc_entity);
+   if(pcEmbodiedTest != NULL) {
+      return pcEmbodiedTest;
+   }
+   /* Is the entity composable with an embodied component? */
+   CComposableEntity* pcComposableTest = dynamic_cast<CComposableEntity*>(pc_entity);
+   if(pcComposableTest != NULL) {
+      if(pcComposableTest->HasComponent("body")) {
+         return &(pcComposableTest->GetComponent<CEmbodiedEntity>("body"));
+      }
+   }
+   /* No embodied entity found */
+   return NULL;
+}
 
+
+CVector3 MasterLoopFunction::GetRobotPositionFromXML() {
+
+   // Get robot position
+   try {
+
+      argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+
+      argos::TConfigurationNode& arena_node = GetNode(cSimulator.GetConfigurationRoot(), "arena");
+
+      argos::TConfigurationNodeIterator itArenaItem;
+      for(itArenaItem = itArenaItem.begin(&arena_node);
+          itArenaItem != itArenaItem.end();
+          ++itArenaItem) {
+
+             std::string arena_item_name;
+             GetNodeAttribute(*itArenaItem, "id", arena_item_name);
+
+             if(arena_item_name.compare("bot0") == 0) {
+
+                argos::TConfigurationNode& body_node = GetNode(*itArenaItem, "body");
+
+                CVector3 position;
+
+                GetNodeAttributeOrDefault(body_node, "position", position, CVector3());
+
+                return position;
+
+            }
+
+      }
+
+   }
+
+   catch(CARGoSException& ex) {
+
+      std::cout << "Can't get position of robot from XML file" << std::endl;
+
+   }
+
+
+}
 
 
 REGISTER_LOOP_FUNCTIONS(MasterLoopFunction, "master_loop_function");

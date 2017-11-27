@@ -18,15 +18,16 @@ for ((i=0; i<n; i++)); do
     echo -e "\t</group>"
 done >> $LAUNCH_FILE
 
-echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"argos_ros_start_sim_server\" output=\"screen\"  />"  >> $LAUNCH_FILE
+#echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"argos_ros_start_sim_server\" output=\"screen\" launch-prefix=\"gdb -ex run --args\" />"  >> $LAUNCH_FILE
+echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"argos_ros_start_sim_server\" output=\"screen\" />"  >> $LAUNCH_FILE
 #launch-prefix=\"gdb -ex run --args\"/>"
 #echo -e "<node pkg=\"argos_bridge\" type=\"random_environment_generator.py\" name=\"random_environment_generator\" output=\"screen\"/>"  >> $LAUNCH_FILE
 
 
 echo -e "<node pkg=\"neat_ros\" type=\"neat_ros_node\" name=\"neat_ros_node\" output=\"screen\" >"  >> $LAUNCH_FILE
-echo -e "<param name=\"input_file\" value=\"/neat_params.ne\" />"  >> $LAUNCH_FILE
-#echo -e "<param name=\"input_file\" value=\"/overall_winner\" />"  >> $LAUNCH_FILE
-#echo -e "<param name=\"input_file\" value=\"/gen_50_winner\" />"  >> $LAUNCH_FILE
+#echo -e "<param name=\"input_file\" value=\"/neat_params.ne\" />"  >> $LAUNCH_FILE
+echo -e "<param name=\"input_file\" value=\"/overall_winner\" />"  >> $LAUNCH_FILE
+#echo -e "<param name=\"input_file\" value=\"/gen_15_winner\" />"  >> $LAUNCH_FILE
 echo -e "</node>"  >> $LAUNCH_FILE
 
 

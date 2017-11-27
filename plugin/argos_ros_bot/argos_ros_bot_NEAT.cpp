@@ -133,7 +133,8 @@ void CArgosRosBotNEAT::ControlStep() {
                                          MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
       ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
-
+      //leftSpeed = 30;
+      //rightSpeed = 30;
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
     }
@@ -193,12 +194,12 @@ void CArgosRosBotNEAT::Reset() {
    net_inputs[0] = 1.0;                            //Bias node
 
    //Initialise inputs
-   for(int i = 1; i < m_net->inputs.size(); i++) {
-
-       net_inputs[i] = 1.0;
-       net_outputs[i] = 1.0;
-
-   }
+   // for(int i = 1; i < m_net->inputs.size(); i++) {
+   //
+   //     net_inputs[i] = 1.0;
+   //     net_outputs[i] = 1.0;
+   //
+   // }
 
 }
 
