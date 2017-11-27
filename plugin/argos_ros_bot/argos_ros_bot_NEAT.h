@@ -78,6 +78,8 @@ private:
                             const double input_end, const double output_start,
                             const double output_end);
 
+   double mapHorizontalAngle(double angle);
+
    const double NET_INPUT_LOWER_BOUND;
    const double NET_INPUT_UPPER_BOUND;
    const double RANGE_SENSOR_LOWER_BOUND;
@@ -93,6 +95,8 @@ private:
    const double MAX_LINEAR_VEL;
    const double MIN_ANGULAR_VEL;
    const double MAX_ANGULAR_VEL;
+   const double MAX_WHEEL_SPEED;
+   const double MIN_WHEEL_SPEED;
 
   CCI_DifferentialSteeringActuator* m_pcWheels;
   CCI_FootBotProximitySensor* m_pcProximity;

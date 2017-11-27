@@ -43,7 +43,9 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       PROX_SENSOR_LOWER_BOUND(0.0),
       PROX_SENSOR_UPPER_BOUND(0.1),
       BEARING_SENSOR_LOWER_BOUND(-M_PI),
-      BEARING_SENSOR_UPPER_BOUND(M_PI)
+      BEARING_SENSOR_UPPER_BOUND(M_PI),
+      MAX_WHEEL_SPEED(7.5),
+      MIN_WHEEL_SPEED(-7.5)
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -98,10 +100,13 @@ void CArgosRosBotNEAT::ControlStep() {
         net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-        net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
-                                            BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
-                                            NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+      //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
+      //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
+      //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+        net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
       }
+
+      //std::cout << net_inputs.size() << std::endl;
 
       //Proximity sensor inputs
       for(int i = 0; i < tProxReads.size(); i++) {
@@ -123,18 +128,26 @@ void CArgosRosBotNEAT::ControlStep() {
       //Get outputs
 
       //Linear velocity - mapped to a maximum speed
-      net_outputs[0] = mapValueIntoRange(m_net->outputs[0]->activation,
-                                         NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-                                         MIN_LINEAR_VEL, MAX_LINEAR_VEL);
 
-      //Angular velocity - mapped to a maximum turning speed
-      net_outputs[1] = mapValueIntoRange(m_net->outputs[1]->activation,
-                                         NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-                                         MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
+      // net_outputs[0] = mapValueIntoRange(m_net->outputs[0]->activation,
+      //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+      //                                    MIN_LINEAR_VEL, MAX_LINEAR_VEL);
+      //
+      // //Angular velocity - mapped to a maximum turning speed
+      // net_outputs[1] = mapValueIntoRange(m_net->outputs[1]->activation,
+      //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+      //                                    MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
-      ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
-      //leftSpeed = 30;
-      //rightSpeed = 30;
+      leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
+                                          NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                          MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+
+      rightSpeed = mapValueIntoRange(m_net->outputs[1]->activation,
+                                          NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                          MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+
+      //ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
+
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
     }
@@ -142,7 +155,11 @@ void CArgosRosBotNEAT::ControlStep() {
 }
 
 
+double CArgosRosBotNEAT::mapHorizontalAngle(double angle) {
 
+   return abs(1/M_PI * angle);
+
+}
 
 void CArgosRosBotNEAT::ConvertDifferentialDriveToSpeed(Real linear_x, Real angular_z) {
 

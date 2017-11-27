@@ -6,10 +6,14 @@
  */
 
 #include "argos_ros_start_simulation.h"
+#include "neat_ros/FinishedSim.h"
+
+#include "../loop_functions/fitness_score_loop_function.h"
 
 bool start_sim_bool = false;
 int regen_env;
 
+extern double global_fitness_variable;
 
 // Start the ARGoS Simulator via callaback
 bool start_sim(neat_ros::StartSim::Request  &req,
@@ -25,6 +29,17 @@ void startSimServiceThread() {
   ros::NodeHandle n;
   ros::ServiceServer service1 = n.advertiseService("start_sim", &start_sim);
   ros::spin();
+}
+
+void sendFinishedService() {
+
+	ros::NodeHandle n;
+   ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
+   neat_ros::FinishedSim service_msg;
+   service_msg.request.fitness_score = global_fitness_variable;
+	//std::cout << global_fitness_variable << std::endl;
+   client.call(service_msg);
+
 }
 
 
@@ -45,20 +60,25 @@ int main(int argc, char **argv)
   	cSimulator.LoadExperiment();
 	//start_sim_bool = true;
 
+	ros::Rate loop_rate(100);
+
   	//Note to self, ros::ok() is a must for while loop in ROS!
-   	while(ros::ok()) {
+   while(ros::ok()) {
 			//std::cout << "Running" << std::endl;
    	//Only execute when start_sim is received from service
-  if(start_sim_bool) {
-  	std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
-       cSimulator.Reset();
-  	std::cout << "..Sim resetted" << std::endl;
-  	std::cout << "Start sim.." << std::endl;
-       cSimulator.Execute();
-  	std::cout << "..End sim" << std::endl;
-       start_sim_bool = false;
+  		if(start_sim_bool) {
+  			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
+       	cSimulator.Reset();
+  			std::cout << "..Sim resetted" << std::endl;
+  			std::cout << "Start sim.." << std::endl;
+       	cSimulator.Execute();
+  			std::cout << "..End sim" << std::endl;
+       	start_sim_bool = false;
+			sendFinishedService();
 
-  	}
+  		} 
+
+		loop_rate.sleep();
 
   }
 

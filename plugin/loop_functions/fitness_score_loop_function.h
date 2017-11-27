@@ -22,14 +22,14 @@
 #include <argos3/core/simulator/entity/entity.h>
 #include <argos3/core/simulator/entity/embodied_entity.h>
 
-
-
 //Standard C++ libraries
 #include <iostream>
 #include <sstream>
 #include <string>
 
 using namespace argos;
+
+double global_fitness_variable;
 
 struct position_bot_t{
   int bot_id_number;

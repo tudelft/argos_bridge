@@ -9,6 +9,8 @@
 
 #include "fitness_score_loop_function.h"
 
+
+
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
 // ARGoS.  However, we will have one instance of the CArgosRosBot class for each ARGoS robot.
@@ -119,13 +121,8 @@ void FitnessScoreLoopFunction::PostExperiment()
     fitness_score = fitness_score/10;
   }
 
+  global_fitness_variable = fitness_score;
 
-  ros::NodeHandle n;
-  ros::ServiceClient client = n.serviceClient<neat_ros::FinishedSim>("finished_sim");
-  neat_ros::FinishedSim service_msg;
-  service_msg.request.fitness_score = fitness_score;
-  client.call(service_msg);
-  //std::cout<<"service has been send with "<<MAX_RANGE - distance <<std::endl;
 }
 
 /*Reset: reinitialize fitnesscore
