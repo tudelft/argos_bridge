@@ -5,7 +5,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="120"
+    <experiment length="180"
                 ticks_per_second="10"
                 random_seed="312" />
   </framework>
@@ -73,13 +73,14 @@
  <body position="-5,0,0" orientation="0,0,0"/>
 </box>
 <foot-bot id="bot0">
-<body position="-3.5,-3.5,0" orientation="0,0,0" />
+<body position="-4,-4,0" orientation="-270,0,0" />
 <controller config="argos_ros_bot_neat"/>
 </foot-bot>
 <foot-bot id="bot1">
 <body position="4,4,0" orientation="-90,0,0" />
 <controller config="argos_ros_bot_neat"/>
 </foot-bot>
+<box id="1" size="0.2,7,0.5" movable="false"> <body position="-3,-1.5,0" orientation="0,0,0"/> </box>
 </arena>
 
   <!-- ******************* -->

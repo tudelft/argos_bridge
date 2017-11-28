@@ -55,7 +55,8 @@ int main(int argc, char **argv)
 
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
   //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
-	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
+	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
+	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
 
   	cSimulator.LoadExperiment();
 	//start_sim_bool = true;
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
        	start_sim_bool = false;
 			sendFinishedService();
 
-  		} 
+  		}
 
 		loop_rate.sleep();
 

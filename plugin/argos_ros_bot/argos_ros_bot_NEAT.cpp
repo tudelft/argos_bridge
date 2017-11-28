@@ -37,15 +37,15 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       NET_OUTPUT_LOWER_BOUND(0.0),
       NET_OUTPUT_UPPER_BOUND(1.0),
       MIN_LINEAR_VEL(0.0),
-      MAX_LINEAR_VEL(0.25),
+      MAX_LINEAR_VEL(0.075),
       MIN_ANGULAR_VEL(0.0),
-      MAX_ANGULAR_VEL(360.0),
+      MAX_ANGULAR_VEL(40),
       PROX_SENSOR_LOWER_BOUND(0.0),
       PROX_SENSOR_UPPER_BOUND(0.1),
       BEARING_SENSOR_LOWER_BOUND(-M_PI),
       BEARING_SENSOR_UPPER_BOUND(M_PI),
-      MAX_WHEEL_SPEED(7.5),
-      MIN_WHEEL_SPEED(-7.5)
+      MAX_WHEEL_SPEED(10),
+      MIN_WHEEL_SPEED(-10)
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -147,6 +147,11 @@ void CArgosRosBotNEAT::ControlStep() {
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
 
       //ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
+      //ConvertDifferentialDriveToSpeed(0.075, 50);
+
+      //leftSpeed = 7.5;
+      //rightSpeed = 7.5;
+      //std::cout << leftSpeed << " " << rightSpeed << std::endl;
 
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
