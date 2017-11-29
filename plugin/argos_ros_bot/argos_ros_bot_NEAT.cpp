@@ -151,7 +151,7 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //leftSpeed = 7.5;
       //rightSpeed = 7.5;
-      //std::cout << leftSpeed << " " << rightSpeed << std::endl;
+      //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
 
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 

@@ -118,7 +118,27 @@ void MasterLoopFunction::SetRobotPosition() {
  */
 void MasterLoopFunction::PreStep()
 {
-  fitnessScoreLoopFunction.PreStep();
+  // Print Trajectory 
+
+  // fitnessScoreLoopFunction.PreStep();
+  // /* Get the map of all foot-bots from the space */
+  // CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+  // /* Go through them */
+  // for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+  //     it != tFBMap.end();
+  //     ++it) {
+  //
+  //    /* Create a pointer to the current foot-bot */
+  //    CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+  //    CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
+  //
+  //    if(pcFB->GetId()=="bot0") {
+  //
+  //       std::cout << embEntity->GetOriginAnchor().Position << std::endl;
+  //
+  //     }
+  //
+  // }
 }
 
 /*PreStep: Before the simulation,
