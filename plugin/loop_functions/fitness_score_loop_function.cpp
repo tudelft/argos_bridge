@@ -123,6 +123,8 @@ void FitnessScoreLoopFunction::PostExperiment()
 
   global_fitness_variable = fitness_score;
 
+  std::cout << fitness_score << std::endl;
+
 }
 
 /*Reset: reinitialize fitnesscore
