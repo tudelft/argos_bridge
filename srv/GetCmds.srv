@@ -1,0 +1,6 @@
+argos_bridge/ProximityList proxList
+argos_bridge/RangebearingList RabList
+geometry_msgs/PoseStamped PosQuat
+bool reset
+---
+geometry_msgs/Twist cmd_vel

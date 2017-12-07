@@ -65,7 +65,7 @@ public:
    * so the function could have been omitted. It's here just for
    * completeness.
    */
-  virtual void Reset() {}
+  virtual void Reset();
 
   /*
    * Called to cleanup what done by Init() when the experiment finishes.
@@ -116,6 +116,7 @@ private:
 
   // The number of time steps since the last callback.
   int stepsSinceCallback;
+  int globalSteps;
 
   // Most recent left and right wheel speeds, converted from the ROS twist
   // message.
@@ -143,6 +144,11 @@ private:
 
   geometry_msgs::PoseStamped PosQuat;
   argos_bridge::RangebearingList RabList;
+
+  ros::ServiceClient client;
+
+
+  bool first_run;
 
 
 

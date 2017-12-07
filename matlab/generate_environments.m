@@ -15,15 +15,15 @@ clc
 clear all
 
 %Defined variables
-width_environment = 5;
-height_environment = 5;
+width_environment = 10;
+height_environment = 10;
 resolution=2;
-starting_location_agents = [1,1;5,5];
-chance_agent_gostraight = 0.6;
-density_corridor = 0.45;
+starting_location_agents = [1,1;10,10];
+chance_agent_gostraight = 0.80;
+density_corridor = 0.5;
 density_openings = 0.5;
-size_opening = 8;
-opening_percentage = 0.03;
+size_opening = 15;
+opening_percentage = 0.04;
 size_rooms = 2;
 iterations = 100;
 visualize_agents = true;
@@ -130,8 +130,7 @@ close all
 
 %Find the clusters of corridors
 corridor_bin=imbinarize(result_corridor);
-connected_corridors= bwconncomp(corridor_bin);
-
+connected_corridors= bwconncomp(corridor_bin,4);
 
 % Go through each cluster and see if the agents position is all in one of them
 found_connection=false;
@@ -180,9 +179,6 @@ for k=1:length(boundery_coord)
     end
 end
 
-
-
-
 if create_rooms
     for k=1:size_rooms*10:width_environment*10
         for m=1:height_environment*10
@@ -226,6 +222,7 @@ if show_end_result
 end
 imwrite(boundaries_with_holes,fullfile('..', 'argos_worlds', 'rand_env_test.png'))
 
+imwrite(boundaries_with_holes,'rand_env_test.png')
 
 %%  Create Argos environment
 % Makes an ARGoS environment based on the random agent-based environment
@@ -237,7 +234,6 @@ imwrite(boundaries_with_holes,fullfile('..', 'argos_worlds', 'rand_env_test.png'
 % TO DO: put robots on postions
 %
 %
-
 if make_ARGoS_environment
     
     
@@ -264,7 +260,7 @@ if make_ARGoS_environment
             starting_location_agents(k,1)*resolution - 1 - width_environment/2*resolution,...
             starting_location_agents(k,2)*resolution -1- height_environment/2*resolution,...
             rotation(k)));
-        str_loc_bot = strcat(str_loc_bot,sprintf('\n<controller config="argos_ros_bot_neat"/>\n</foot-bot>'));
+        str_loc_bot = strcat(str_loc_bot,sprintf('\n<controller config="argos_ros_bot"/>\n</foot-bot>'));
     end
 
     

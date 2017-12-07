@@ -9,8 +9,6 @@
 
 #include "fitness_score_loop_function.h"
 
-
-
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
 // ARGoS.  However, we will have one instance of the CArgosRosBot class for each ARGoS robot.
@@ -36,6 +34,9 @@ FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
  */
 void FitnessScoreLoopFunction::Init(TConfigurationNode& t_node)
 {
+  ros::NodeHandle n;
+
+  send_end_of_sim_pub = n.advertise<std_msgs::Empty>("finished_sim_matlab", 1000);
 
   distance= 0.0f;
   no_son_of_mine =  false;
@@ -115,6 +116,11 @@ void FitnessScoreLoopFunction::PostExperiment()
 
   calculateBotDistances();
 
+  std::ofstream myfile;
+  myfile.open ("fitness.txt");
+  myfile << distance << ", " <<no_son_of_mine<<"\n";
+  myfile.close();
+
   double fitness_score = MAX_RANGE - distance;
   if(no_son_of_mine)
   {
@@ -123,7 +129,8 @@ void FitnessScoreLoopFunction::PostExperiment()
 
   global_fitness_variable = fitness_score;
 
-  std::cout << fitness_score << std::endl;
+  std_msgs::Empty empty_msg;
+  send_end_of_sim_pub.publish(empty_msg);
 
 }
 

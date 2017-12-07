@@ -26,7 +26,7 @@ ros::NodeHandle* initROS() {
 ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
-MasterLoopFunction::MasterLoopFunction(){
+MasterLoopFunction::MasterLoopFunction() {
 }
 MasterLoopFunction::~MasterLoopFunction(){
 }
@@ -36,8 +36,8 @@ MasterLoopFunction::~MasterLoopFunction(){
  */
 void MasterLoopFunction::Init(TConfigurationNode& t_node)
 {
-
   fitnessScoreLoopFunction.Init(t_node);
+  trajectoryLoopFunction.Init(t_node);
 #if(RANDOM_ENVIRONMENT_GEN_ON)
  randomEnvironmentGenerator.Init( t_node);
 #endif
@@ -52,7 +52,7 @@ void MasterLoopFunction::Reset(){
    SetRobotPosition();
 
   fitnessScoreLoopFunction.Reset();
-
+  trajectoryLoopFunction.Reset();
 #if(RANDOM_ENVIRONMENT_GEN_ON)
   if(regen_env==1) {
     randomEnvironmentGenerator.Reset();
@@ -118,9 +118,9 @@ void MasterLoopFunction::SetRobotPosition() {
  */
 void MasterLoopFunction::PreStep()
 {
-  // Print Trajectory 
+  trajectoryLoopFunction.PostStep();
+  fitnessScoreLoopFunction.PreStep();
 
-  // fitnessScoreLoopFunction.PreStep();
   // /* Get the map of all foot-bots from the space */
   // CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
   // /* Go through them */
@@ -147,6 +147,7 @@ void MasterLoopFunction::PreStep()
 void MasterLoopFunction::PostExperiment()
 {
   fitnessScoreLoopFunction.PostExperiment();
+  trajectoryLoopFunction.PostExperiment();
 
 }
 

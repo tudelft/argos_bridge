@@ -8,10 +8,12 @@ set(CMAKE_CXX_STANDARD 14)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
+  geometry_msgs
   message_generation
   roscpp
   tf
   roslib
+  
 )
 
 ## System dependencies are found with CMake's conventions
@@ -62,6 +64,7 @@ add_message_files(
  add_service_files(
    FILES
    StartSim.srv
+   GetCmds.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -75,6 +78,8 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
+  argos_bridge
 )
 
 ################################################
@@ -109,7 +114,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES argos_bridge
-  CATKIN_DEPENDS roscpp std_msgs tf roslib
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf roslib
   DEPENDS message_runtime
 )
 

@@ -13,6 +13,7 @@ clear all;
 % If new msgs are made, run the these lines and restart matlab
 %  folderpath = '/home/knmcguire/Documents/Software/catkin_ws/src'
 %  rosgenmsg(folderpath);
+rosinit
 
 % Subscriber and publishers
 rabsub = rossubscriber('/bot0/rangebearing');
@@ -42,5 +43,5 @@ while(1)
    end
    hold off
 end
-
+rosshutdown
 

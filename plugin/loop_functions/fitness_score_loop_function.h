@@ -13,6 +13,8 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "neat_ros/FinishedSim.h"
+#include "std_srvs/Empty.h"
+#include "std_msgs/Empty.h"
 
 
 //ARGoS libraries
@@ -57,6 +59,7 @@ private:
   bool no_son_of_mine;
 
   const double MAX_RANGE;
+  ros::Publisher send_end_of_sim_pub;
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_FITNESS_SCORE_LOOP_FUNCTION_H_ */

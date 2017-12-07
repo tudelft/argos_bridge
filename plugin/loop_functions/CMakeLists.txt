@@ -25,6 +25,19 @@ target_link_libraries(fitness_score
   argos3plugin_simulator_footbot
 )
 
+add_library(trajectory_loop_functions SHARED 
+  trajectory_loop_functions.h
+  trajectory_qtuser_functions.h
+  trajectory_loop_functions.cpp
+  trajectory_qtuser_functions.cpp)
+
+target_link_libraries(trajectory_loop_functions
+  argos3core_simulator
+  argos3plugin_simulator_entities
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_qtopengl
+  ${ARGOS_QTOPENGL_LIBRARIES})
+
 find_package( OpenCV REQUIRED )
 message(STATUS "OpenCV Libraries: " ${OpenCV_LIBS})
 if(OpenCV_FOUND)
@@ -43,6 +56,7 @@ add_library(master_loop SHARED master_loop_function.cpp master_loop_function.h)
 target_link_libraries(master_loop
   random_environment
   fitness_score
+  trajectory_loop_functions
   argos3core_simulator
   argos3plugin_simulator_entities
   argos3plugin_simulator_media

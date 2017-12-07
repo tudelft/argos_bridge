@@ -10,11 +10,16 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <vector>       // std::vector
+
 
 #include <ros/callback_queue.h>
 
 #include <math.h>
 #include "tf/LinearMath/Transform.h"
+
+
+#include "argos_bridge/GetCmds.h"
 
 
 using namespace std;
@@ -42,6 +47,7 @@ CArgosRosBot::CArgosRosBot() :
 //  m_pcGripper(NULL),
   stopWithoutSubscriberCount(10),
   stepsSinceCallback(0),
+  globalSteps(0),
   leftSpeed(0),
   rightSpeed(0)//,
 //  gripping(false)
@@ -66,8 +72,11 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
 
   cmdVelTopic << "/" << GetId() << "/cmd_vel";
 //  gripperTopic << "/" << GetId() << "/gripper";
-  cmdVelSub = nodeHandle->subscribe(cmdVelTopic.str(), 1, &CArgosRosBot::cmdVelCallback, this);
+  cmdVelSub = nodeHandle->subscribe(cmdVelTopic.str(), 10, &CArgosRosBot::cmdVelCallback, this);
 //  gripperSub = nodeHandle->subscribe(gripperTopic.str(), 1, &CArgosRosBot::gripperCallback, this);
+
+
+  client = nodeHandle->serviceClient<argos_bridge::GetCmds>("/bot0/get_vel_cmd");
 
   // Create the subscribers
 //, gripperTopic;
@@ -103,6 +112,8 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   for(int i = 0; i<NUMOFBOTS-1;i++)
 	  RabList.Rangebearings.push_back(Rab);
 
+
+  first_run = true;
   /*
    * Parse the configuration file
    *
@@ -113,12 +124,24 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   GetNodeAttributeOrDefault(t_node, "stopWithoutSubscriberCount", stopWithoutSubscriberCount, stopWithoutSubscriberCount);
 }
 
+
+void CArgosRosBot::Reset()
+{
+  first_run = true;
+
+}
+
 // Compares pucks for sorting purposes.  We sort by angle.
 bool puckComparator(Puck a, Puck b) {
   return a.angle < b.angle;
 }
 
+bool cmd_is_new = false;
 void CArgosRosBot::ControlStep() {
+
+
+  if(GetId()!="bot1")
+  {
   const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& camReads = m_pcOmniCam->GetReadings();
   PuckList puckList;
   puckList.n = camReads.BlobList.size();
@@ -144,6 +167,7 @@ void CArgosRosBot::ControlStep() {
   const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
   ProximityList proxList;
   proxList.n = tProxReads.size();
+  proxList.header.seq = globalSteps;
   for (size_t i = 0; i < proxList.n; ++i) {
     Proximity prox;
     prox.value = tProxReads[i].Value;
@@ -153,21 +177,20 @@ void CArgosRosBot::ControlStep() {
 
 //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
-  proximityPub.publish(proxList);
 
 
-/*   Get readings from range and bearing sensor
+   //Get readings from range and bearing sensor
    const CCI_RangeAndBearingSensor::TReadings& tRabReads = m_pcRangeBearing->GetReadings();
    RangebearingList RabList;
+   RabList.Rangebearings.resize(tRabReads.size());
    RabList.n = tRabReads.size();
    for (size_t i = 0; i < RabList.n; ++i) {
       Rangebearing Rab;
       Rab.range = tRabReads[i].Range;
       Rab.angle = tRabReads[i].HorizontalBearing.GetValue();
-      RabList.Rangebearings.push_back(Rab);
+      RabList.Rangebearings.at(i)=Rab;
    }
 
-   rangebearingPub.publish(RabList);*/
 
    /*Read out position of bot*/
    const CCI_PositioningSensor::SReading& sPosRead = m_pcPositioning->GetReading();
@@ -180,11 +203,32 @@ void CArgosRosBot::ControlStep() {
    PosQuat.pose.orientation.z = sPosRead.Orientation.GetZ();
    PosQuat.pose.orientation.w = sPosRead.Orientation.GetW();
 
-   posePub.publish(PosQuat);
 
+/*   proximityPub.publish(proxList);
+   rangebearingPub.publish(RabList);
+   posePub.publish(PosQuat);*/
+
+
+
+   argos_bridge::GetCmds srv;
+
+
+   srv.request.RabList = RabList;
+   srv.request.PosQuat = PosQuat;
+   srv.request.proxList = proxList;
+   if(first_run)
+   {
+   srv.request.reset = true;
+   first_run = false;
+   }
+   else
+     srv.request.reset = false;
+
+
+   client.call(srv);
+   cmdVelCallback(srv.response.cmd_vel);
 
   // Wait for any callbacks to be called.
-  ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
 
   // If we haven't heard from the subscriber in a while, set the speed to zero.
   if (stepsSinceCallback > stopWithoutSubscriberCount) {
@@ -194,7 +238,19 @@ void CArgosRosBot::ControlStep() {
     stepsSinceCallback++;
   }
 
+ /* if(cmd_is_new)
+  {*/
+
   m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
+/*
+  cmd_is_new = false;
+  }else
+    m_pcWheels->SetLinearVelocity(0, 0);
+*/
+  globalSteps ++;
+
+
+  }
 }
 
 
@@ -258,7 +314,7 @@ void CArgosRosBot::otherBotPoseCallback(const geometry_msgs::PoseStamped& pose){
 			RabList.Rangebearings[otherId-1].angle=bearing;
 		}
 
-		rangebearingPub.publish(RabList);
+		//rangebearingPub.publish(RabList);
 	}
 }
 
@@ -274,6 +330,7 @@ void CArgosRosBot::cmdVelCallback(const geometry_msgs::Twist& twist) {
   rightSpeed = (v + HALF_BASELINE * w) / WHEEL_RADIUS;
 
   stepsSinceCallback = 0;
+  cmd_is_new =true;
 }
 
 /*
