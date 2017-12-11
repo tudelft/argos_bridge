@@ -84,6 +84,7 @@ void FitnessScoreLoopFunction::PreStep()
      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
      if(embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
      {
+        //std::cout << "Collide!" << std::endl;
        no_son_of_mine = true;
      }
   }
@@ -128,7 +129,7 @@ void FitnessScoreLoopFunction::PostExperiment()
   }
 
   global_fitness_variable = fitness_score;
-
+  std::cout << fitness_score << std::endl;
   std_msgs::Empty empty_msg;
   send_end_of_sim_pub.publish(empty_msg);
 

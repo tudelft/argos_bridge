@@ -26,7 +26,7 @@ echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"a
 
 echo -e "<node pkg=\"neat_ros\" type=\"neat_ros_node\" name=\"neat_ros_node\" output=\"screen\" >"  >> $LAUNCH_FILE
 echo -e "<param name=\"input_file\" value=\"/neat_params.ne\" />"  >> $LAUNCH_FILE
-#echo -e "<param name=\"input_file\" value=\"/overall_winner\" />"  >> $LAUNCH_FILE
+#echo -e "<param name=\"input_file\" value=\"/overall_winner_two_walls_mod\" />"  >> $LAUNCH_FILE
 #echo -e "<param name=\"input_file\" value=\"/gen_15_winner\" />"  >> $LAUNCH_FILE
 echo -e "</node>"  >> $LAUNCH_FILE
 
