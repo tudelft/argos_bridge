@@ -60,16 +60,16 @@
   <!-- * Arena configuration * -->
   <!-- *********************** -->
   <arena size="10, 10, 2" center="0,0,0.5">
-<box id="wall_1" size="10,0.1,0.5" movable="false"> 
+<box id="wall_1" size="10,0.1,0.5" movable="false">
  <body position="0,5,0" orientation="0,0,0"/>
 </box>
-<box id="wall_2" size="10,0.1,0.5" movable="false"> 
+<box id="wall_2" size="10,0.1,0.5" movable="false">
  <body position="0,-5,0" orientation="0,0,0"/>
 </box>
-<box id="wall_3" size="0.1,10,0.5" movable="false"> 
+<box id="wall_3" size="0.1,10,0.5" movable="false">
  <body position="5,0,0" orientation="0,0,0"/>
 </box>
-<box id="wall_4" size="0.1,10,0.5" movable="false"> 
+<box id="wall_4" size="0.1,10,0.5" movable="false">
  <body position="-5,0,0" orientation="0,0,0"/>
 </box>
 <foot-bot id="bot0">
@@ -465,12 +465,12 @@
         Check 'argos3 -q qt-opengl' for more help.
     -->
 <!--Turn of GUI by commenting qt-opengl-->
-    <!--qt-opengl>
+    <qt-opengl>
      <camera>
         <placement idx="0" position="-5.5,-5.5,3" look_at="-4,-4,0" lens_focal_length="20" />
       </camera>
       <user_functions library="libidloop.so"
                       label="id_qtuser_functions" />
-    </qt-opengl-->
+    </qt-opengl>
   </visualization>
 </argos-configuration>

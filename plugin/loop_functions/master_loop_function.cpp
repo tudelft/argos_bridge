@@ -118,9 +118,9 @@ void MasterLoopFunction::SetRobotPosition() {
  */
 void MasterLoopFunction::PreStep()
 {
-  // Print Trajectory 
 
-  // fitnessScoreLoopFunction.PreStep();
+   fitnessScoreLoopFunction.PreStep();
+
   // /* Get the map of all foot-bots from the space */
   // CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
   // /* Go through them */

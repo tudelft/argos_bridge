@@ -83,6 +83,7 @@ void FitnessScoreLoopFunction::PreStep()
      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
      if(embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
      {
+        std::cout << "Collide!" << std::endl;
        no_son_of_mine = true;
      }
   }
