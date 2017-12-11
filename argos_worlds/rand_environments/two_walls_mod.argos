@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<argos-configuration>
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <system threads="0" />
+    <experiment length="240"
+                ticks_per_second="10"
+                random_seed="312" />
+  </framework>
+
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+
+    <!--footbot_manualcontrol_controller id="argos_ros_bot_neat"
+                                      library="libfootbot_manualcontrol">
+      <actuators>
+        <differential_steering implementation="default" />
+        <leds implementation="default" medium="leds" />
+      </actuators>
+      <sensors />
+      <params>
+        <wheel_turning hard_turn_angle_threshold="90"
+                       soft_turn_angle_threshold="70"
+                       no_turn_angle_threshold="10"
+                       max_speed="10" />
+      </params>
+    </footbot_manualcontrol_controller-->
+
+    <argos_ros_bot_neat_controller id="argos_ros_bot_neat" library="libargos_ros_bot_neat.so">
+      <actuators>
+        <differential_steering implementation="default"/>
+      </actuators>
+      <sensors>
+        <footbot_proximity implementation="default" show_rays="true"/>
+        <colored_blob_omnidirectional_camera implementation="rot_z_only"
+                                             medium="leds" show_rays="true"/>
+        <range_and_bearing implementation="medium"
+                           medium="rab"
+                           show_rays="true"
+                           rab_range="30"/>
+        <positioning implementation="default" />
+      </sensors>
+      <params stopWithoutSubscriberCount="10" />
+    </argos_ros_bot_neat_controller>
+  </controllers>
+
+
+  <!-- ****************** -->
+  <!-- * Loop functions * -->
+  <!-- ****************** -->
+
+  <loop_functions library="libmaster_loop.so"
+                  label="master_loop_function"/>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="10, 10, 2" center="0,0,0.5">
+<box id="wall_1" size="10,0.1,0.5" movable="false">
+ <body position="0,5,0" orientation="0,0,0"/>
+</box>
+<box id="wall_2" size="10,0.1,0.5" movable="false">
+ <body position="0,-5,0" orientation="0,0,0"/>
+</box>
+<box id="wall_3" size="0.1,10,0.5" movable="false">
+ <body position="5,0,0" orientation="0,0,0"/>
+</box>
+<box id="wall_4" size="0.1,10,0.5" movable="false">
+ <body position="-5,0,0" orientation="0,0,0"/>
+</box>
+<foot-bot id="bot0">
+<body position="-4,-4,0" orientation="-270,0,0" />
+<controller config="argos_ros_bot_neat"/>
+</foot-bot>
+<foot-bot id="bot1">
+<body position="4,4,0" orientation="-90,0,0" />
+<controller config="argos_ros_bot_neat"/>
+</foot-bot>
+<box id="1" size="0.2,7,0.5" movable="false"> <body position="-3,-1.5,0" orientation="0,0,0"/> </box>
+<box id="2" size="0.2,4,0.5" movable="false"> <body position="0,3,0" orientation="0,0,0"/> </box>
+</arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics2d id="dyn2d"/>
+    <!-- <pointmass3d id="pm3d" iterations="10" /> -->
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media>
+    <led id="leds"/>
+    <range_and_bearing id="rab" />
+  </media>
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+  <visualization>
+    <!--
+        This shows how to add customized drawing in the world
+        using the qt user functions.
+        Check 'argos3 -q qt-opengl' for more help.
+    -->
+<!--Turn of GUI by commenting qt-opengl-->
+    <qt-opengl>
+     <camera>
+        <placement idx="0" position="-5.5,-5.5,3" look_at="-4,-4,0" lens_focal_length="20" />
+      </camera>
+      <user_functions library="libidloop.so"
+                      label="id_qtuser_functions" />
+    </qt-opengl>
+  </visualization>
+</argos-configuration>

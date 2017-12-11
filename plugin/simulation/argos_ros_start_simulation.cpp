@@ -57,6 +57,7 @@ int main(int argc, char **argv)
   //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
 	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
 	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
+	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls_mod.argos");
 
   	cSimulator.LoadExperiment();
 	//start_sim_bool = true;

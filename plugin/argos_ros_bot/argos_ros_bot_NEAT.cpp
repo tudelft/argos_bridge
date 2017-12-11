@@ -45,7 +45,8 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       BEARING_SENSOR_LOWER_BOUND(-M_PI),
       BEARING_SENSOR_UPPER_BOUND(M_PI),
       MAX_WHEEL_SPEED(10),
-      MIN_WHEEL_SPEED(-10)
+      MIN_WHEEL_SPEED(-10),
+      memory(1)      //Memory vector sizeas input
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -83,12 +84,46 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
    * have to recompile if we want to try other settings.
    */
   GetNodeAttributeOrDefault(t_node, "stopWithoutSubscriberCount", stopWithoutSubscriberCount, stopWithoutSubscriberCount);
+
 }
 
 void CArgosRosBotNEAT::ControlStep() {
 
   if(GetId()=="bot0")
     {
+      // std::vector<double> wv = {0.9};
+      // double wi = 1.0;
+      // double jump = 0.0;
+      // double shift = 0.5;
+      //
+      // memory.write(wv, wi, jump, shift);
+      // // std::vector<double> m = memory.read();
+      // //
+      // // for(int i = 0; i < m.size(); i++) {
+      // //
+      // //    std::cout << m[i] << " ";
+      // //
+      // // }
+      // //
+      // // std::cout << std::endl;
+      //
+      // std::vector<double> wv1 = {0.6};
+      // double wi1 = 1.0;
+      // double jump1 = 0.9;
+      // double shift1 = 0.5;
+      //
+      // memory.write(wv1, wi1, jump1, shift1);
+      // std::vector<double> m = memory.read();
+      //
+      // for(int i = 0; i < m.size(); i++) {
+      //
+      //    std::cout << m[i] << " ";
+      //
+      // }
+      //
+      // std::cout << std::endl;
+
+
       /* Get readings from proximity sensor */
       const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
 
