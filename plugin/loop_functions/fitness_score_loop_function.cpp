@@ -82,7 +82,7 @@ void FitnessScoreLoopFunction::PreStep()
      /* Create a pointer to the current foot-bot */
      CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
-     if(embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
+     if(pcFB->GetId()=="bot0"&&embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
      {
         //std::cout << "Collide!" << std::endl;
        no_son_of_mine = true;
