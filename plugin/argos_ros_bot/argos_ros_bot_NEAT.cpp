@@ -19,6 +19,8 @@
 
 using namespace std;
 
+#define GRADIENT_SENSOR_ON false
+
 /****************************************/
 /****************************************/
 
@@ -97,13 +99,15 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //Include inputs for both the range and the bearing
       for(int i = 0; i < tRabReads.size(); i++) {
-        net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
+         net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-      //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
-      //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
-      //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-        net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+         if(GRADIENT_SENSOR_ON) {
+            //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
+            //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
+            //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+            net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+         }
       }
 
       //std::cout << net_inputs.size() << std::endl;
