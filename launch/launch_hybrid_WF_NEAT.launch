@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="argos_bridge" type="argos_ros_start_sim_server" name="argos_ros_start_sim_server" output="screen">
+      <param name="argos_world_file_name" value="/argos_worlds/two_walls_WF_NEAT_hybrid.argos"/>
+    </node>
+
+    <node pkg="neat_ros" type="neat_ros_node" name="neat_ros_node" output="screen" >
+	<param name="input_file" value="/neat_params.ne" />
+	<!--param name="input_file" value="/overall_winner" /-->
+	<!--param name="input_file\" value="/gen_15_winner\" /-->
+    </node>
+</launch>
+
+
+
+

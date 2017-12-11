@@ -49,19 +49,17 @@ int main(int argc, char **argv)
 
 	//Start listening for start_sim service
 	boost::thread spin_thread(&startSimServiceThread);
-
-
   std::string path = ros::package::getPath("argos_bridge");
 
-
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-  //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
-	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
-	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
-	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls_reverse.argos");
-	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
-
-        cSimulator.LoadExperiment();
+	std::string argos_world_file_name;
+	if(ros::param::get("~argos_world_file_name",argos_world_file_name))
+	  cSimulator.SetExperimentFileName(path + argos_world_file_name);
+	else
+	  cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
+  std::cout<<"Opening ARGOS file in :"<<path + argos_world_file_name<<std::endl;
+  	
+  cSimulator.LoadExperiment();
 
 	ros::Rate loop_rate(100);
 
