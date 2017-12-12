@@ -50,7 +50,7 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
  */
 void MasterLoopFunction::Reset(){
 
-   SetRobotPosition();
+   //SetRobotPosition();
 
   fitnessScoreLoopFunction.Reset();
   trajectoryLoopFunction.Reset();

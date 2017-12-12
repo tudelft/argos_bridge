@@ -20,6 +20,7 @@
 using namespace std;
 
 #define GRADIENT_SENSOR_ON false
+#define PROX_SENSOR_ON false
 
 /****************************************/
 /****************************************/
@@ -113,17 +114,20 @@ void CArgosRosBotNEAT::ControlStep() {
       //std::cout << net_inputs.size() << std::endl;
 
       //Proximity sensor inputs
-      for(int i = 0; i < tProxReads.size(); i++) {
-        net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
-                                                             PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-                                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+      if(PROX_SENSOR_ON) {
+         for(int i = 0; i < tProxReads.size(); i++) {
+            net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
+                                                                     PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                                     NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+         }
       }
 
+      std::cout << "----------" <<std::endl;
+      //Net input testing
+      for(int i =0; i < net_inputs.size(); i++) {
+          std::cout << net_inputs[i] << std::endl;
+      }
       // std::cout << "----------" <<std::endl;
-      // //Net input testing
-      // for(int i =0; i < net_inputs.size(); i++) {
-      //     std::cout << net_inputs[i] << std::endl;
-      // }
 
       m_net->load_sensors(net_inputs);
 
@@ -142,11 +146,11 @@ void CArgosRosBotNEAT::ControlStep() {
       //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
       //                                    MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
-      leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
+      leftSpeed = mapValueIntoRange(1.0,
                                           NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
 
-      rightSpeed = mapValueIntoRange(m_net->outputs[1]->activation,
+      rightSpeed = mapValueIntoRange(1.0,
                                           NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
 
