@@ -1,2 +1,3 @@
-bool regenerate_env
+int32 regenerate_env
+int32 select_env
 ---

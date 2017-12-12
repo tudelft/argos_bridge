@@ -12,6 +12,7 @@
 
 bool start_sim_bool = false;
 int regen_env;
+int select_env;
 
 extern double global_fitness_variable;
 
@@ -21,6 +22,9 @@ bool start_sim(neat_ros::StartSim::Request  &req,
 {
   start_sim_bool = true;
   regen_env = req.regenerate_env;
+  select_env = req.select_env;
+  //std::cout << regen_env << std::endl;
+  //std::cout << select_env << std::endl;
 }
 
 //Thread to listen for start sim service
@@ -54,21 +58,21 @@ int main(int argc, char **argv)
   std::string path = ros::package::getPath("argos_bridge");
 
 
-	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-	std::string argos_world_file_name;
-	if(ros::param::get("~argos_world_file_name",argos_world_file_name))
-	  cSimulator.SetExperimentFileName(path + argos_world_file_name);
-	else
-	  cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
+  argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+  std::string argos_world_file_name;
+  if(ros::param::get("~argos_world_file_name",argos_world_file_name))
+   cSimulator.SetExperimentFileName(path + argos_world_file_name);
+  else
+   cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
   std::cout<<"Opening ARGOS file in :"<<path + argos_world_file_name<<std::endl;
-  	
+
   cSimulator.LoadExperiment();
 
-	ros::Rate loop_rate(100);
+  ros::Rate loop_rate(100);
 
   	//Note to self, ros::ok() is a must for while loop in ROS!
    while(ros::ok()) {
-			//std::cout << "Running" << std::endl;
+  	//std::cout << "Running" << std::endl;
    	//Only execute when start_sim is received from service
   		if(start_sim_bool) {
   			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
@@ -78,11 +82,11 @@ int main(int argc, char **argv)
        	cSimulator.Execute();
   			std::cout << "..End sim" << std::endl;
        	start_sim_bool = false;
-			sendFinishedService();
+  	sendFinishedService();
 
   		}
 
-		loop_rate.sleep();
+  loop_rate.sleep();
 
   }
 
