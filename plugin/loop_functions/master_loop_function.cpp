@@ -11,6 +11,7 @@
 
 extern int regen_env;
 extern std::string file_name_env;
+extern int file_name_env_number;
 
 #define RANDOM_ENVIRONMENT_GEN_ON true
 
@@ -51,7 +52,7 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
  */
 void MasterLoopFunction::Reset(){
 
-   SetRobotPosition();
+   SetRandomRobotOrientation();
 
   fitnessScoreLoopFunction.Reset();
   trajectoryLoopFunction.Reset();
@@ -61,12 +62,97 @@ void MasterLoopFunction::Reset(){
     randomEnvironmentGenerator.Reset(file_name_empty);
   }else if(regen_env==3)
     randomEnvironmentGenerator.Reset(file_name_env);
+    SetRobotPosBasedOnMap(file_name_env_number);
 #endif
 
 
 }
 
-void MasterLoopFunction::SetRobotPosition() {
+void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
+
+   /* Get the map of all foot-bots from the space */
+   CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+   /* Go through them */
+   for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+       it != tFBMap.end();
+       ++it) {
+
+      /* Create a pointer to the current foot-bot */
+      CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
+
+      CRadians cOrient;
+      double xPos, yPos;
+
+      if(pcFB->GetId()=="bot0") {
+
+         switch(map_type) {
+
+            case 1:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               cOrient = (CRadians)5*M_PI/4;
+               break;
+
+            case 2:
+
+               xPos = -4.0;
+               yPos = 4.0;
+               cOrient = (CRadians)3*M_PI/4;
+               break;
+
+         }
+
+      } else if(pcFB->GetId()=="bot1") {
+
+         switch(map_type) {
+
+            case 1:
+
+               xPos = 4.0;
+               yPos = 4.0;
+               break;
+
+            case 2:
+
+               xPos = 4.0;
+               yPos = -4.0;
+               break;
+
+         }
+
+      }
+
+      SInitSetup robot_allocation;
+      robot_allocation.Orientation.FromEulerAngles(
+         cOrient,        // rotation around Z
+         CRadians::ZERO, // rotation around Y
+         CRadians::ZERO  // rotation around X
+         );
+      robot_allocation.Position.Set(xPos, yPos, 0.0);
+
+      while (!MoveEntity(
+             *embEntity,     // move the body of the robot
+             robot_allocation.Position,                // to this position
+             robot_allocation.Orientation,             // with this orientation
+             false                                 // this is not a check, leave the robot there
+         )) {
+
+             LOGERR << "Can't move robot in <"
+                       << robot_allocation.Position
+                       << ">, <"
+                       << robot_allocation.Orientation
+                       << ">"
+                       << std::endl;
+
+      }
+
+   }
+
+}
+
+void MasterLoopFunction::SetRandomRobotOrientation() {
 
    /* Get the map of all foot-bots from the space */
    CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");

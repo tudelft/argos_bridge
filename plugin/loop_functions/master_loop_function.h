@@ -50,7 +50,8 @@ public:
 
 private:
 
-   void SetRobotPosition();
+   void SetRandomRobotOrientation();
+   void SetRobotPosBasedOnMap(int map_type);
    CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
    CVector3 GetRobotPositionFromXML();
 

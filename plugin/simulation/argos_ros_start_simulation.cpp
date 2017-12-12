@@ -23,10 +23,9 @@ int file_name_env_number;
 bool start_sim(neat_ros::StartSim::Request  &req,
 	       		neat_ros::StartSim::Response &res)
 {
-  start_sim_bool = true;
   regen_env = req.regenerate_env;
   file_name_env_number = req.select_env;
-
+	start_sim_bool = true;
 }
 
 //Thread to listen for start sim service
@@ -78,7 +77,7 @@ int main(int argc, char **argv)
 
 
 
-  	
+
   cSimulator.LoadExperiment();
 
 	ros::Rate loop_rate(100);

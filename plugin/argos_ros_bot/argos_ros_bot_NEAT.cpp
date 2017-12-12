@@ -19,8 +19,8 @@
 
 using namespace std;
 
-#define GRADIENT_SENSOR_ON false
-#define PROX_SENSOR_ON false
+#define GRADIENT_SENSOR_ON true
+#define PROX_SENSOR_ON true
 
 /****************************************/
 /****************************************/
