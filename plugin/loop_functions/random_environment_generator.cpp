@@ -174,7 +174,7 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
   bin_corridor_img_large = Mat::zeros(environment_width * 20, environment_height * 20, CV_8UC1);
   resize(bin_corridor_img, bin_corridor_img_large, bin_corridor_img_large.size(), 0, 0, INTER_NEAREST);
   corridor_contours_img = Mat::zeros(bin_corridor_img_large.size(), CV_8UC1);
-  std::cout<<"size "<<bin_corridor_img_large.size()<<std::endl;
+  //std::cout<<"size "<<bin_corridor_img_large.size()<<std::endl;
 
   cv::Mat read_img = cv::imread(file_name, CV_LOAD_IMAGE_GRAYSCALE);
   resize(read_img, corridor_contours_img, corridor_contours_img.size(), 0, 0, INTER_NEAREST);
