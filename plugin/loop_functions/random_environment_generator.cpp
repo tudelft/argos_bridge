@@ -51,36 +51,43 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
      initial_bot_positions.push_back(initial_bot_position);
   }
 
-  generateEnvironment();
-
+  initializeGrid();
+  initializeAgents();
+  bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
+  corridor_contours_img = Mat::zeros(bin_corridor_img_large.size(), CV_8UC1);
 
 }
 
-void RandomEnvironmentGenerator::Reset()
+void RandomEnvironmentGenerator::Reset(std::string file_name)
 {
 
  cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
- for(int i = 0;i<total_boxes_generated+1;i++){
-   //auto start_time = std::chrono::high_resolution_clock::now();
+ if(total_boxes_generated!=0)
+ {
+   for(int i = 0;i<total_boxes_generated+1;i++){
+     //auto start_time = std::chrono::high_resolution_clock::now();
 
-    loopfunction.RemoveEntity(*boxEntities.at(i));
-    /* auto end_time = std::chrono::high_resolution_clock::now();
+     loopfunction.RemoveEntity(*boxEntities.at(i));
+     /* auto end_time = std::chrono::high_resolution_clock::now();
     auto time = end_time - start_time;
 
     std::cout << "It took " <<
       std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";*/
+   }
  }
     boxEntities.clear();
     total_boxes_generated =0;
     environment_accepted =false;
 
 
-
-    generateEnvironment();
-
-
+    if(file_name.length()==0)
+      generateEnvironment();
+    else{
+      generateEnvironmentFromFile(file_name);
+     std::cout<<"generate from file_name: "<<file_name<<std::endl;
+    }
 
 }
 void RandomEnvironmentGenerator::Destroy()
@@ -156,6 +163,22 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
 #endif
 
   }
+
+  putBlocksInEnvironment();
+
+}
+
+void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_name)
+{
+
+  bin_corridor_img_large = Mat::zeros(environment_width * 20, environment_height * 20, CV_8UC1);
+  resize(bin_corridor_img, bin_corridor_img_large, bin_corridor_img_large.size(), 0, 0, INTER_NEAREST);
+  corridor_contours_img = Mat::zeros(bin_corridor_img_large.size(), CV_8UC1);
+  std::cout<<"size "<<bin_corridor_img_large.size()<<std::endl;
+
+  cv::Mat read_img = cv::imread(file_name, CV_LOAD_IMAGE_GRAYSCALE);
+  resize(read_img, corridor_contours_img, corridor_contours_img.size(), 0, 0, INTER_NEAREST);
+
 
   putBlocksInEnvironment();
 

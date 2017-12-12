@@ -10,8 +10,9 @@
 #include "master_loop_function.h"
 
 extern int regen_env;
+extern std::string file_name_env;
 
-#define RANDOM_ENVIRONMENT_GEN_ON false
+#define RANDOM_ENVIRONMENT_GEN_ON true
 
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
@@ -56,8 +57,10 @@ void MasterLoopFunction::Reset(){
   trajectoryLoopFunction.Reset();
 #if(RANDOM_ENVIRONMENT_GEN_ON)
   if(regen_env==1) {
-    randomEnvironmentGenerator.Reset();
-  }
+    std::string file_name_empty = "";
+    randomEnvironmentGenerator.Reset(file_name_empty);
+  }else if(regen_env==3)
+    randomEnvironmentGenerator.Reset(file_name_env);
 #endif
 
 

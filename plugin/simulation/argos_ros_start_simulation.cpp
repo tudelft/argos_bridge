@@ -12,15 +12,21 @@
 
 bool start_sim_bool = false;
 int regen_env;
+std::string file_name_env;
+
 
 extern double global_fitness_variable;
+
+int file_name_env_number;
 
 // Start the ARGoS Simulator via callaback
 bool start_sim(neat_ros::StartSim::Request  &req,
 	       		neat_ros::StartSim::Response &res)
 {
   start_sim_bool = true;
-  regen_env = req.regenerate_env;
+  regen_env = 3;//req.regenerate_env;
+  file_name_env_number = req.select_env;
+
 }
 
 //Thread to listen for start sim service
@@ -58,6 +64,20 @@ int main(int argc, char **argv)
 	else
 	  cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
   std::cout<<"Opening ARGOS file in :"<<path + argos_world_file_name<<std::endl;
+
+
+  std::string file_name_env_path_rel;
+  std::string file_name_env_path;
+
+  if(ros::param::get("~file_name_env_path_rel",file_name_env_path_rel))
+    file_name_env_path =  path+file_name_env_path_rel;
+  else
+    file_name_env_path = path+"/argos_worlds/rand_environments/rand_env_";
+  std::cout<<"Opening environment_files in :"<<file_name_env_path<<std::endl;
+
+
+
+
   	
   cSimulator.LoadExperiment();
 
@@ -68,6 +88,12 @@ int main(int argc, char **argv)
 			//std::cout << "Running" << std::endl;
    	//Only execute when start_sim is received from service
   		if(start_sim_bool) {
+
+  		  if (regen_env==3)
+  		  {
+  		    file_name_env = file_name_env_path + std::to_string(file_name_env_number) + ".png";
+  		    std::cout<<"New environment generated with "<< file_name_env<<std::endl;
+  		  }
   			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
        	cSimulator.Reset();
   			std::cout << "..Sim resetted" << std::endl;

@@ -20,7 +20,9 @@ done >> $LAUNCH_FILE
 
 #echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"argos_ros_start_sim_server\" output=\"screen\" launch-prefix=\"gdb -ex run --args\" />"  >> $LAUNCH_FILE
 echo -e "<node pkg=\"argos_bridge\" type=\"argos_ros_start_sim_server\" name=\"argos_ros_start_sim_server\" output=\"screen\">
-<param name=\"argos_world_file_name\" value=\"/argos_worlds/rand_environments/two_walls.argos\"/> </node>"  >> $LAUNCH_FILE
+<param name=\"argos_world_file_name\" value=\"/argos_worlds/simple_environments/no_walls.argos\"/>
+ <param name=\"file_name_env_path_rel\" value=\"/argos_worlds/simple_environments/simple_env_\"/>
+</node>"  >> $LAUNCH_FILE
 #launch-prefix=\"gdb -ex run --args\"/>"
 #echo -e "<node pkg=\"argos_bridge\" type=\"random_environment_generator.py\" name=\"random_environment_generator\" output=\"screen\"/>"  >> $LAUNCH_FILE
 

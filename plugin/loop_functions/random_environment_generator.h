@@ -46,7 +46,7 @@ class RandomEnvironmentGenerator
 public:
   RandomEnvironmentGenerator();
   virtual void Init(TConfigurationNode &t_node);
-  virtual void Reset();
+  virtual void Reset(std::string file_name);
   virtual void Destroy();
 
   void initializeGrid();
@@ -64,6 +64,7 @@ public:
   void makeRandomOpenings();
   void putBlocksInEnvironment();
   void generateEnvironment();
+  void generateEnvironmentFromFile(std::string file_name);
   void dfs(int x, int y, int current_label);
 
 
