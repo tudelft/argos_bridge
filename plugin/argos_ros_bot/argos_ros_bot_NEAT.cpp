@@ -19,8 +19,8 @@
 
 using namespace std;
 
-#define GRADIENT_SENSOR_ON false
-#define PROX_SENSOR_ON false
+#define GRADIENT_SENSOR_ON true
+#define PROX_SENSOR_ON true
 
 /****************************************/
 /****************************************/
@@ -122,11 +122,11 @@ void CArgosRosBotNEAT::ControlStep() {
          }
       }
 
-      std::cout << "----------" <<std::endl;
-      //Net input testing
-      for(int i =0; i < net_inputs.size(); i++) {
-          std::cout << net_inputs[i] << std::endl;
-      }
+      // std::cout << "----------" <<std::endl;
+      // //Net input testing
+      // for(int i =0; i < net_inputs.size(); i++) {
+      //     std::cout << net_inputs[i] << std::endl;
+      // }
       // std::cout << "----------" <<std::endl;
 
       m_net->load_sensors(net_inputs);
@@ -146,11 +146,11 @@ void CArgosRosBotNEAT::ControlStep() {
       //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
       //                                    MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
-      leftSpeed = mapValueIntoRange(1.0,
+      leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
                                           NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
 
-      rightSpeed = mapValueIntoRange(1.0,
+      rightSpeed = mapValueIntoRange(m_net->outputs[1]->activation,
                                           NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
 
