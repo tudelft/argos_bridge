@@ -91,14 +91,14 @@ int main(int argc, char **argv)
   		  if (regen_env==3)
   		  {
   		    file_name_env = file_name_env_path + std::to_string(file_name_env_number) + ".png";
-  		    std::cout<<"New environment generated with "<< file_name_env<<std::endl;
+  		    //std::cout<<"New environment generated with "<< file_name_env<<std::endl;
   		  }
-  			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
+  			//std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
        	cSimulator.Reset();
-  			std::cout << "..Sim resetted" << std::endl;
-  			std::cout << "Start sim.." << std::endl;
+  			//std::cout << "..Sim resetted" << std::endl;
+  			//std::cout << "Start sim.." << std::endl;
        	cSimulator.Execute();
-  			std::cout << "..End sim" << std::endl;
+  			//std::cout << "..End sim" << std::endl;
        	start_sim_bool = false;
 			sendFinishedService();
 
