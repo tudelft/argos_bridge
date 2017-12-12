@@ -19,6 +19,9 @@
 
 using namespace std;
 
+#define GRADIENT_SENSOR_ON false
+#define PROX_SENSOR_ON false
+
 /****************************************/
 /****************************************/
 
@@ -97,22 +100,26 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //Include inputs for both the range and the bearing
       for(int i = 0; i < tRabReads.size(); i++) {
-        net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
+         net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-      //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
-      //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
-      //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-        net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+         if(GRADIENT_SENSOR_ON) {
+            //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
+            //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
+            //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+            net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+         }
       }
 
       //std::cout << net_inputs.size() << std::endl;
 
       //Proximity sensor inputs
-      for(int i = 0; i < tProxReads.size(); i++) {
-        net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
-                                                             PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-                                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+      if(PROX_SENSOR_ON) {
+         for(int i = 0; i < tProxReads.size(); i++) {
+            net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
+                                                                     PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                                     NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+         }
       }
 
       // std::cout << "----------" <<std::endl;
@@ -120,6 +127,7 @@ void CArgosRosBotNEAT::ControlStep() {
       // for(int i =0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
+      // std::cout << "----------" <<std::endl;
 
       m_net->load_sensors(net_inputs);
 
