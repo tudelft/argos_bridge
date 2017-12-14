@@ -9,8 +9,6 @@
 
 #include "fitness_score_loop_function.h"
 
-
-
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
 // ARGoS.  However, we will have one instance of the CArgosRosBot class for each ARGoS robot.
@@ -86,7 +84,11 @@ void FitnessScoreLoopFunction::PreStep()
      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
      if(pcFB->GetId()=="bot0"&&embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
      {
+<<<<<<< HEAD
         //std::cout << "Collide!" << std::endl;
+=======
+        std::cout << "Collide!" << std::endl;
+>>>>>>> ENTM
        no_son_of_mine = true;
      }
   }
@@ -131,7 +133,6 @@ void FitnessScoreLoopFunction::PostExperiment()
   }
 
   global_fitness_variable = fitness_score;
-
   std::cout << fitness_score << std::endl;
   std_msgs::Empty empty_msg;
   send_end_of_sim_pub.publish(empty_msg);

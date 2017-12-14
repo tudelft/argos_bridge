@@ -23,6 +23,7 @@ int file_name_env_number;
 bool start_sim(neat_ros::StartSim::Request  &req,
 	       		neat_ros::StartSim::Response &res)
 {
+
   regen_env = req.regenerate_env;
   file_name_env_number = req.select_env;
 	start_sim_bool = true;
@@ -54,6 +55,8 @@ int main(int argc, char **argv)
 
 	//Start listening for start_sim service
 	boost::thread spin_thread(&startSimServiceThread);
+
+
   std::string path = ros::package::getPath("argos_bridge");
 
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();

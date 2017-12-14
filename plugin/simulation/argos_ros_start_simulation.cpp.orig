@@ -12,15 +12,20 @@
 
 bool start_sim_bool = false;
 int regen_env;
+std::string file_name_env;
+
 
 extern double global_fitness_variable;
+
+int file_name_env_number;
 
 // Start the ARGoS Simulator via callaback
 bool start_sim(neat_ros::StartSim::Request  &req,
 	       		neat_ros::StartSim::Response &res)
 {
-  start_sim_bool = true;
   regen_env = req.regenerate_env;
+  file_name_env_number = req.select_env;
+	start_sim_bool = true;
 }
 
 //Thread to listen for start sim service
@@ -53,22 +58,35 @@ int main(int argc, char **argv)
 
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
 <<<<<<< HEAD
-  //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
-	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/no_walls.argos");
-	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
-	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls_reverse.argos");
-
-        cSimulator.LoadExperiment();
-=======
 	std::string argos_world_file_name;
 	if(ros::param::get("~argos_world_file_name",argos_world_file_name))
 	  cSimulator.SetExperimentFileName(path + argos_world_file_name);
 	else
 	  cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
   std::cout<<"Opening ARGOS file in :"<<path + argos_world_file_name<<std::endl;
-  	
+
+
+  std::string file_name_env_path_rel;
+  std::string file_name_env_path;
+
+  if(ros::param::get("~file_name_env_path_rel",file_name_env_path_rel))
+    file_name_env_path =  path+file_name_env_path_rel;
+  else
+    file_name_env_path = path+"/argos_worlds/rand_environments/rand_env_";
+  std::cout<<"Opening environment_files in :"<<file_name_env_path<<std::endl;
+=======
+  //std::cout<<"Opening ARGOS file in :"<<path<<"/argos_worlds/rand_environments/rand_env_6.argos"<<std::endl;
+	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls.argos");
+	//cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls_mod.argos");
+	// cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/two_walls_reverse.argos");
+	cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/rand_env_8.argos");
+>>>>>>> ENTM
+
+
+
+
+
   cSimulator.LoadExperiment();
->>>>>>> 39e24b0df2ced1f4d5f4dd02dae753a400616770
 
 	ros::Rate loop_rate(100);
 
@@ -77,12 +95,18 @@ int main(int argc, char **argv)
 			//std::cout << "Running" << std::endl;
    	//Only execute when start_sim is received from service
   		if(start_sim_bool) {
-  			std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
+
+  		  if (regen_env==3)
+  		  {
+  		    file_name_env = file_name_env_path + std::to_string(file_name_env_number) + ".png";
+  		    //std::cout<<"New environment generated with "<< file_name_env<<std::endl;
+  		  }
+  			//std::cout << "Resetting sim.." <<std::endl;			//These are here to debug why it sometimes sticks
        	cSimulator.Reset();
-  			std::cout << "..Sim resetted" << std::endl;
-  			std::cout << "Start sim.." << std::endl;
+  			//std::cout << "..Sim resetted" << std::endl;
+  			//std::cout << "Start sim.." << std::endl;
        	cSimulator.Execute();
-  			std::cout << "..End sim" << std::endl;
+  			//std::cout << "..End sim" << std::endl;
        	start_sim_bool = false;
 			sendFinishedService();
 
