@@ -1,6 +1,7 @@
 #include "entm_memory.h"
 
 #include <iostream>
+#include <algorithm>
 
 //Initialise memory
 ENTMMemory::ENTMMemory(const int vector_size) : VECTOR_SIZE_M(vector_size),
@@ -20,7 +21,7 @@ std::vector<double> ENTMMemory::read() {
 }
 
 void ENTMMemory::write(std::vector<double> write_vector, double write_interpolation,
-                       double jump, double shift) {
+                       double jump, double shiftl, double shiftn, double shiftr) {
 
    //Create new content jump default mem location
    if (head == memory.size()-1) memory.push_back(std::vector<double>(VECTOR_SIZE_M, 0.5));
@@ -31,23 +32,23 @@ void ENTMMemory::write(std::vector<double> write_vector, double write_interpolat
    //Jump head to most similar vector if content jump > 0.5
    if (jump > 0.5) jumpHead(write_vector);
 
-   //Shift the head according the the shift input
-   if (shift < 0.33) {
+   std::vector<double> shift_vector = {shiftl, shiftn, shiftr};
+   std::vector<double>::iterator largest_shift_it = std::max_element(shift_vector.begin(), shift_vector.end());
+   int largest_shift_pos = std::distance(shift_vector.begin(), largest_shift_it);
+
+   if (largest_shift_pos == 0) {
 
       head -= 1;
 
       if (head < 0) head = memory.size() - 1;
 
-   } else if (shift >= 0.66) {
+   } else if (largest_shift_pos == 2) {
 
       head += 1;
 
       if (head >= memory.size()) head = 0;
 
    }
-
-   printMemory();
-   std::cout << "----------" << std::endl;
 
 }
 
@@ -81,30 +82,26 @@ std::vector<double> ENTMMemory::interpolate(std::vector<double> write_vector,
 void ENTMMemory::jumpHead(std::vector<double> write_vector) {
 
    //Check for most similar vector
-
-   int most_similar_index = 0;
-   double largest_similarity = 0.0;
+   std::vector<double> similarities(memory.size());
 
    for(int i = 0; i < memory.size(); i++) {
 
-      double current_similarity = vectorSimilarity(write_vector, memory[i]);
-
-      if(current_similarity > largest_similarity) {
-
-         most_similar_index = i;
-         largest_similarity = current_similarity;
-
-      }
+      similarities[i] = vectorSimilarity(write_vector, memory[i]);
 
    }
 
-   if (largest_similarity < MIN_SIMILARITY_THRESHOLD) {
+   std::vector<double>::iterator largest_sim_it = std::min_element(similarities.begin(), similarities.end());
+   int largest_sim_pos = std::distance(similarities.begin(), largest_sim_it);
 
-      head = most_similar_index;
+   //std::cout << *largest_sim_it << " " << MIN_SIMILARITY_THRESHOLD << std::endl;
+
+   if (*largest_sim_it < MIN_SIMILARITY_THRESHOLD) {
+
+      head = largest_sim_pos;
 
    } else {
-
-      head = VECTOR_SIZE_M - 1;
+      //std::cout << "Does not meet similarity threshold!" << std::endl;
+      head = memory.size() - 1;
 
    }
 
@@ -113,14 +110,17 @@ void ENTMMemory::jumpHead(std::vector<double> write_vector) {
 }
 
 double ENTMMemory::vectorSimilarity(std::vector<double> v1, std::vector<double> v2) {
-
+   //std::cout << "Vec sim: " << v1[0] << " " << v2[0] << std::endl;
    double cumm_similarity = 0;
 
    for(int i = 0; i < VECTOR_SIZE_M; i++) {
+      //std::cout << "Diff: " << fabs(v1[i] - v2[i]) << std::endl;
 
-      cumm_similarity += abs(v1[i] - v2[i]);
+      cumm_similarity += fabs(v1[i] - v2[i]);
 
    }
+
+   //std::cout << "Cumm sim: " << cumm_similarity << std::endl;
 
    return cumm_similarity / VECTOR_SIZE_M;
 
@@ -139,5 +139,8 @@ void ENTMMemory::printMemory() {
       std::cout << std::endl;
 
    }
+
+   std::cout << "HEAD: " << head << std::endl;
+   std::cout << "----------" << std::endl;
 
 }

@@ -49,7 +49,7 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       BEARING_SENSOR_UPPER_BOUND(M_PI),
       MAX_WHEEL_SPEED(10),
       MIN_WHEEL_SPEED(-10),
-      memory(1)      //Memory vector sizeas input
+      memory(1)      //Memory vector size as input
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -69,6 +69,8 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
    //Need to set size here otherwise seg fault further on...
    net_inputs.resize(m_net->inputs.size());
    net_outputs.resize(m_net->outputs.size());
+
+   //if(GetId()=="bot0") memory.reset(new ENTMMemory(1));
 
 }
 
@@ -94,28 +96,32 @@ void CArgosRosBotNEAT::ControlStep() {
 
   if(GetId()=="bot0")
     {
-      // std::vector<double> wv = {0.9};
-      // double wi = 1.0;
-      // double jump = 0.0;
-      // double shift = 0.5;
-      //
-      // memory.write(wv, wi, jump, shift);
-      // // std::vector<double> m = memory.read();
-      // //
-      // // for(int i = 0; i < m.size(); i++) {
-      // //
-      // //    std::cout << m[i] << " ";
-      // //
-      // // }
-      // //
-      // // std::cout << std::endl;
-      //
-      // std::vector<double> wv1 = {0.6};
+      // memory.printMemory();
+      // std::vector<double> wv1 = {0.9};
+      // std::vector<double> wv2 = {0.2};
+      // std::vector<double> wv3 = {0.6};
+      // std::vector<double> wv4 = {0.15};
       // double wi1 = 1.0;
-      // double jump1 = 0.9;
-      // double shift1 = 0.5;
+      // double wi2 = 0.0;
+      // double jump1 = 0.0;
+      // double jump2 = 1.0;
+      // double sl1 = 1.0;
+      // double sl2 = 0.5;
+      // double so1 = 1.0;
+      // double so2 = 0.5;
+      // double sr2 = 0.5;
+      // double sr1 = 1.0;
       //
-      // memory.write(wv1, wi1, jump1, shift1);
+      // memory.write(wv1, wi1, jump1, sl2, so2, sr1);
+      // memory.printMemory();
+      // memory.write(wv2, wi1, jump1, sl2, so2, sr1);
+      // memory.printMemory();
+      // memory.write(wv3, wi1, jump1, sl2, so1, sr2);
+      // memory.printMemory();
+      //
+      // memory.write(wv4, wi2, jump2, sl2, so1, sr2);
+      // memory.printMemory();
+      // std::cout << "-----READ------" << std::endl;
       // std::vector<double> m = memory.read();
       //
       // for(int i = 0; i < m.size(); i++) {
