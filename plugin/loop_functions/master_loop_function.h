@@ -53,6 +53,11 @@ private:
    void SetRobotPosition();
    CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
    CVector3 GetRobotPositionFromXML();
+   float GetDistancesBetweenRobots();
+   int environment_height;
+   int environment_width;
+
+
 
 };
 

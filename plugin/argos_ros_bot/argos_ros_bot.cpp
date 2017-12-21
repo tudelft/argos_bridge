@@ -140,8 +140,7 @@ bool cmd_is_new = false;
 void CArgosRosBot::ControlStep() {
 
 
-  if(GetId()!="bot1")
-  {
+
   const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& camReads = m_pcOmniCam->GetReadings();
   PuckList puckList;
   puckList.n = camReads.BlobList.size();
@@ -205,10 +204,11 @@ void CArgosRosBot::ControlStep() {
 
 
 /*   proximityPub.publish(proxList);
-   rangebearingPub.publish(RabList);
-   posePub.publish(PosQuat);*/
+   rangebearingPub.publish(RabList);*/
+   posePub.publish(PosQuat);
 
-
+   if(GetId()!="bot1")
+   {
 
    argos_bridge::GetCmds srv;
 
@@ -326,6 +326,14 @@ void CArgosRosBot::cmdVelCallback(const geometry_msgs::Twist& twist) {
 
   // Use the kinematics of a differential-drive robot to derive the left
   // and right wheel speeds.
+
+ /* srand (time(NULL));
+
+
+
+  float v1 = (float)(rand() % 10 + 95)/ 100;
+  float v2 = (float)(rand() % 10 + 95) / 100;
+*/
   leftSpeed = (v - HALF_BASELINE * w) / WHEEL_RADIUS;
   rightSpeed = (v + HALF_BASELINE * w) / WHEEL_RADIUS;
 

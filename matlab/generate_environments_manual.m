@@ -17,11 +17,12 @@ clear all
 boundaries_with_holes = imread('g_env.png')
 boundaries_with_holes = rgb2gray(boundaries_with_holes)
 boundery_coord_new=[];
+
 [boundery_coord_new(:,2), boundery_coord_new(:,1)] = find(boundaries_with_holes==255);
     figure,imshow(boundaries_with_holes)
 
 width_environment = 5;
-height_environment = 5;
+height_environment =5;
 resolution=2;
 starting_location_agents = [0.75,3.5;3.5,2.5];
 

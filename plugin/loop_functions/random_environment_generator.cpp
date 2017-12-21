@@ -18,12 +18,31 @@ using namespace cv;
 RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   environment_width(10),
   environment_height(10),
-  change_agent_gostraight(0.7f),
-  wanted_corridor_percentage(0.6f),
+  change_agent_gostraight(0.75f),
+  wanted_corridor_percentage(0.4f),
   room_percentage(0.3f),
   total_boxes_generated(0),
-  amount_of_openings(15),
+  amount_of_openings(8),
   environment_accepted(false){}
+
+
+void RandomEnvironmentGenerator::getRobotPositions()
+{
+  CSpace::TMapPerType& tFBMap = CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
+
+  for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+      it != tFBMap.end();
+      ++it) {
+
+     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+     CVector3 pos_bot;
+     pos_bot = pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
+     vector<int> initial_bot_position{0,0};
+     initial_bot_position.at(0)=pos_bot.GetX()/2+environment_width/2;
+     initial_bot_position.at(1)=pos_bot.GetY()/2+environment_height/2;
+     initial_bot_positions.push_back(initial_bot_position);
+  }
+}
 
 void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 {
@@ -35,22 +54,10 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
   environment_width = (int)(cArenaSize.GetX()/2);
   environment_height=(int)(cArenaSize.GetY()/2);
 
-  CSpace::TMapPerType& tFBMap = CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
   /* Go through them */
   int i = 0;
-  for(CSpace::TMapPerType::iterator it = tFBMap.begin();
-      it != tFBMap.end();
-      ++it) {
 
-     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
-     CVector3 pos_bot;
-     pos_bot = pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
-     vector<int> initial_bot_position{0,0};
-     initial_bot_position.at(0)=pos_bot.GetX()/2+environment_width/2;
-     initial_bot_position.at(1)=pos_bot.GetY()/2+environment_width/2;
-     initial_bot_positions.push_back(initial_bot_position);
-  }
-
+  getRobotPositions();
   initializeGrid();
   initializeAgents();
   bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
@@ -58,32 +65,43 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 
 }
 
+
+void RandomEnvironmentGenerator::ClearEnvironment()
+{
+  std::cout<<"clear environment"<<std::endl;
+  CLoopFunctions loopfunction;
+
+  if(total_boxes_generated!=0)
+  {
+    for(int i = 0;i<total_boxes_generated+1;i++){
+      //auto start_time = std::chrono::high_resolution_clock::now();
+
+      loopfunction.RemoveEntity(*boxEntities.at(i));
+      /* auto end_time = std::chrono::high_resolution_clock::now();
+     auto time = end_time - start_time;
+
+     std::cout << "It took " <<
+       std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";*/
+    }
+  }
+     boxEntities.clear();
+     total_boxes_generated =0;
+     environment_accepted =false;
+
+}
+
 void RandomEnvironmentGenerator::Reset(std::string file_name)
 {
 
  cout<<"Regenerate Environment"<<endl;
- CLoopFunctions loopfunction;
-
- if(total_boxes_generated!=0)
- {
-   for(int i = 0;i<total_boxes_generated+1;i++){
-     //auto start_time = std::chrono::high_resolution_clock::now();
-
-     loopfunction.RemoveEntity(*boxEntities.at(i));
-     /* auto end_time = std::chrono::high_resolution_clock::now();
-    auto time = end_time - start_time;
-
-    std::cout << "It took " <<
-      std::chrono::duration_cast<std::chrono::microseconds>(time).count() << " to run.\n";*/
-   }
- }
-    boxEntities.clear();
-    total_boxes_generated =0;
-    environment_accepted =false;
 
 
     if(file_name.length()==0)
+    {
+      initial_bot_positions.clear();
       generateEnvironment();
+    std::cout<<"random generated: "<<file_name<<std::endl;
+    }
     else{
       generateEnvironmentFromFile(file_name);
      std::cout<<"generate from file_name: "<<file_name<<std::endl;
@@ -101,6 +119,7 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
 
   while(!environment_accepted){
     while (!corridors_are_connected) {
+      getRobotPositions();
       initializeGrid();
       initializeAgents();
       bin_corridor_img = Mat::zeros(environment_width, environment_height, CV_8UC1);
@@ -114,32 +133,39 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
           setNextLocation(current_agent_positions.at(it));
 
         }
+
+/*        for (int itx = 0; itx < environment_width; itx++) {
+           for (int ity = 0; ity < environment_height; ity++) {
+               cout<<environment_grid.at(itx).at(ity).is_corridor_present<<" ";
+           }
+           cout<<" "<<endl;
+         }*/
+
         if (getCorridorPercentage() > wanted_corridor_percentage) {
           break;
         }
+
 
       }
 
       checkConnectivity();
 
       if(!corridors_are_connected)
+        cout<<"corridors are not connected!!"<<endl;
         rng = cv::getTickCount();
     }
 
-/*    for (int itx = 0; itx < environment_width; itx++) {
-       for (int ity = 0; ity < environment_height; ity++) {
-           cout<<environment_grid.at(itx).at(ity).is_corridor_present<<" ";
-       }
-       cout<<" "<<endl;
-     }*/
+
     makeBinaryImageCorridors();
     makeBoundariesCorridors();
     makeRooms();
     makeRandomOpenings();
 
+
+
     cv::Rect border(cv::Point(0, 0), corridor_contours_img.size());
 
-    rectangle(corridor_contours_img, border, Scalar(255), 2);
+    rectangle(corridor_contours_img, border, Scalar(255), 3);
     cv::imwrite("environment.png",corridor_contours_img);
 
 
@@ -213,10 +239,10 @@ void RandomEnvironmentGenerator::initializeAgents(void)
 
 
   for (int it = 0; it < initial_bot_positions.size(); it++) {
-    environment_grid.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1)).is_agent_present = true;
+    environment_grid.at(initial_bot_positions.at(it).at(1)).at(initial_bot_positions.at(it).at(0)).is_agent_present = true;
 
     std::rotate(circ_action_init.begin(), circ_action_init.begin() + std::rand()%4, circ_action_init.end());
-    environment_grid.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1)).circ_action = circ_action_init;
+    environment_grid.at(initial_bot_positions.at(it).at(1)).at(initial_bot_positions.at(it).at(0)).circ_action = circ_action_init;
 
   }
 }
@@ -384,10 +410,10 @@ void RandomEnvironmentGenerator::checkConnectivity()
    }
 */
 
-  int label_at_first_location = connectivity_labels.at(initial_bot_positions.at(0).at(0)).at(initial_bot_positions.at(0).at(1));
+  int label_at_first_location = connectivity_labels.at(initial_bot_positions.at(0).at(1)).at(initial_bot_positions.at(0).at(0));
 
   for (int it = 1; it < initial_bot_positions.size(); it++) {
-    int label_at_second_location = connectivity_labels.at(initial_bot_positions.at(it).at(0)).at(initial_bot_positions.at(it).at(1));
+    int label_at_second_location = connectivity_labels.at(initial_bot_positions.at(it).at(1)).at(initial_bot_positions.at(it).at(0));
     if (label_at_first_location == label_at_second_location) {
       corridors_are_connected = true;
     } else {
@@ -402,6 +428,17 @@ void RandomEnvironmentGenerator::makeBoundariesCorridors()
   bin_corridor_img_large = Mat::zeros(environment_width * 20, environment_height * 20, CV_8UC1);
   resize(bin_corridor_img, bin_corridor_img_large, bin_corridor_img_large.size(), 0, 0, INTER_NEAREST);
 
+  dilate(bin_corridor_img_large, bin_corridor_img_large, Mat(), Point(-1, -1), 2, 1, 1);
+  dilate(bin_corridor_img_large, bin_corridor_img_large, Mat(), Point(-1, -1), 2, 1, 1);
+
+  for(int it =0; it<initial_bot_positions.size();it++)
+    rectangle(bin_corridor_img_large, Point(initial_bot_positions.at(it).at(0)*20 + 10 - 20, initial_bot_positions.at(it).at(1)*20 + 10 - 20),
+        Point(initial_bot_positions.at(it).at(0)*20 + 10 + 20, initial_bot_positions.at(it).at(1)*20 + 10 + 20), Scalar(255), CV_FILLED, 8, 0);
+/*  namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+  imshow( "Display window", bin_corridor_img_large );                   // Show our image inside it.
+
+  waitKey(0);*/
+
   vector<vector<Point>> contours_coordinates;
   Mat hierarchy;
 
@@ -410,16 +447,51 @@ void RandomEnvironmentGenerator::makeBoundariesCorridors()
 
   corridor_contours_img = Mat::zeros(bin_corridor_img_large.size(), CV_8UC1);
   for (int i = 0; i < contours_coordinates.size(); i++) {
-    drawContours(corridor_contours_img, contours_coordinates, i, color, 2, 8, hierarchy, 0, Point());
+
+    drawContours(corridor_contours_img, contours_coordinates, i, color, 1  , LINE_4, hierarchy, 0);
   }
 
+    dilate(corridor_contours_img, corridor_contours_img, Mat(), Point(-1, -1), 2, 1, 1);
+
+//Mat element = getStructuringElement(MORPH_RECT, Size(2, 2), Point(1,1) );
 
 
 
 }
 void RandomEnvironmentGenerator::makeRooms()
 {
+  Mat bin_corridor_img_large_inv = Mat::zeros(environment_width * 20, environment_height * 20, CV_8UC1);
+  bitwise_not(bin_corridor_img_large,bin_corridor_img_large_inv);
+  corridor_contours_img.copyTo(corridor_contours_img_save);
+  vector<vector<Point>> contours_coordinates;
+  Mat hierarchy;
 
+  findContours(bin_corridor_img_large_inv, contours_coordinates, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+
+  for(int i = 0; i <contours_coordinates.size();i++ )
+  {
+    Rect boundRect=boundingRect(contours_coordinates.at(i));
+       for(int itx = boundRect.x; itx<(boundRect.x + boundRect.width); itx++)
+    {
+      for(int ity = boundRect.y; ity<(boundRect.y + boundRect.height); ity++)
+      {
+
+        vector<int> coord_mod_rooms{(itx-boundRect.x) % (int)(boundRect.width /2), (ity-boundRect.y) % (int)(boundRect.height /2)};
+        if( boundRect.width<(float)environment_width * 20*room_percentage)
+          coord_mod_rooms.at(0) = 1;
+        if(boundRect.height<(float)environment_height * 20*room_percentage)
+          coord_mod_rooms.at(1) = 1;
+
+    if ((coord_mod_rooms.at(0) == 0 || coord_mod_rooms.at(1) == 0))
+        if (bin_corridor_img_large.at<uchar>(ity, itx) == 0) {
+          rectangle(corridor_contours_img, Point(itx - 1, ity - 1), Point(itx + 1, ity + 1), Scalar(255), 1, 8, 0);
+        }
+      }
+    }
+  }
+
+
+/*
   for (int itx = 0; itx < environment_width * 20; itx++) {
     for (int ity = 0; ity < environment_height * 20; ity++) {
 
@@ -430,18 +502,49 @@ void RandomEnvironmentGenerator::makeRooms()
           rectangle(corridor_contours_img, Point(itx - 1, ity - 1), Point(itx + 1, ity + 1), Scalar(255), 1, 8, 0);
         }
     }
-  }
+  }*/
 }
 
 void RandomEnvironmentGenerator::makeRandomOpenings()
 {
   RNG rng(cv::getTickCount());
-  int half_size_openings = 5;
-  for (int it = 0; it < amount_of_openings; it++) {
+  int half_size_openings = 13;
+  int erosion_size = 1;
+  Mat element = getStructuringElement(cv::MORPH_CROSS,
+         cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+         cv::Point(erosion_size, erosion_size) );
+  Mat corridor_contours_img_temp = Mat::zeros(corridor_contours_img.size(), CV_8UC1);
+
+
+
+  erode(corridor_contours_img_save, corridor_contours_img_temp, element, Point(-1, -1), 2, 1, 1);
+
+
+  for (int itx = 0; itx < environment_width * 20; itx++) {
+    for (int ity = 0; ity < environment_height * 20; ity++) {
+        if(corridor_contours_img_temp.at<uchar>(ity, itx)==255&&  rng.uniform(1, 1000)<amount_of_openings
+            &&itx!=0&&itx!=environment_width* 20
+            &&itx!=0&&itx!=environment_height* 20)
+        {
+          corridor_contours_img.at<uchar>(ity, itx)==0;
+          rectangle(corridor_contours_img, Point(itx - half_size_openings, ity - half_size_openings), Point(itx + half_size_openings, ity + half_size_openings), Scalar(0), CV_FILLED, 8, 0);
+
+        }
+    }
+  }
+
+/*
+  namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+  imshow( "Display window", corridor_contours_img );                   // Show our image inside it.
+
+  waitKey(0);*/
+/*  for (int it = 0; it < amount_of_openings; it++) {
     vector<int> random_coordinate{rng.uniform(half_size_openings, environment_height * 20 - half_size_openings), rng.uniform(half_size_openings, environment_width * 20 - half_size_openings)};
     rectangle(corridor_contours_img, Point(random_coordinate.at(0) - half_size_openings, random_coordinate.at(1) - half_size_openings), Point(random_coordinate.at(0) + half_size_openings, random_coordinate.at(1) + half_size_openings), Scalar(0), CV_FILLED, 8, 0);
+    //circle(corridor_contours_img, Point(random_coordinate.at(0), random_coordinate.at(1)), half_size_openings, Scalar(0), -1, 8, 0);
 
-  }
+
+  }*/
 
 
 }

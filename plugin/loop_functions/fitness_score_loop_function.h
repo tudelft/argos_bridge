@@ -51,6 +51,7 @@ public:
 
 private:
   float distance;
+  std::vector<float> distances;
   std::vector<position_bot_t> position_bots;
   ros::Subscriber botPoseSub1;
   ros::Subscriber botPoseSub2;
@@ -60,6 +61,8 @@ private:
 
   const double MAX_RANGE;
   ros::Publisher send_end_of_sim_pub;
+
+  int time;
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_FITNESS_SCORE_LOOP_FUNCTION_H_ */

@@ -29,11 +29,20 @@ bool start_sim(neat_ros::StartSim::Request  &req,
 
 }
 
+bool stop_sim(std_srvs::Empty::Request  &req,
+                std_srvs::Empty::Request &res)
+{
+  std::cout<<"received_stop_sim"<<std::endl;
+  argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+  cSimulator.Terminate();
+}
+
 //Thread to listen for start sim service
 void startSimServiceThread() {
 
   ros::NodeHandle n;
   ros::ServiceServer service1 = n.advertiseService("start_sim", &start_sim);
+  ros::ServiceServer service2 = n.advertiseService("stop_sim", &stop_sim);
   ros::spin();
 }
 
@@ -101,7 +110,7 @@ int main(int argc, char **argv)
        	cSimulator.Execute();
   			std::cout << "..End sim" << std::endl;
        	start_sim_bool = false;
-			sendFinishedService();
+			  sendFinishedService();
 
   		}
 
