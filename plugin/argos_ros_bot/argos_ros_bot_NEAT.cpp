@@ -96,42 +96,6 @@ void CArgosRosBotNEAT::ControlStep() {
 
   if(GetId()=="bot0")
     {
-      // memory.printMemory();
-      // std::vector<double> wv1 = {0.9};
-      // std::vector<double> wv2 = {0.2};
-      // std::vector<double> wv3 = {0.6};
-      // std::vector<double> wv4 = {0.15};
-      // double wi1 = 1.0;
-      // double wi2 = 0.0;
-      // double jump1 = 0.0;
-      // double jump2 = 1.0;
-      // double sl1 = 1.0;
-      // double sl2 = 0.5;
-      // double so1 = 1.0;
-      // double so2 = 0.5;
-      // double sr2 = 0.5;
-      // double sr1 = 1.0;
-      //
-      // memory.write(wv1, wi1, jump1, sl2, so2, sr1);
-      // memory.printMemory();
-      // memory.write(wv2, wi1, jump1, sl2, so2, sr1);
-      // memory.printMemory();
-      // memory.write(wv3, wi1, jump1, sl2, so1, sr2);
-      // memory.printMemory();
-      //
-      // memory.write(wv4, wi2, jump2, sl2, so1, sr2);
-      // memory.printMemory();
-      // std::cout << "-----READ------" << std::endl;
-      // std::vector<double> m = memory.read();
-      //
-      // for(int i = 0; i < m.size(); i++) {
-      //
-      //    std::cout << m[i] << " ";
-      //
-      // }
-      //
-      // std::cout << std::endl;
-
 
       /* Get readings from proximity sensor */
       const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
