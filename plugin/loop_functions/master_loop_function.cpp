@@ -13,7 +13,7 @@ extern int regen_env;
 extern std::string file_name_env;
 extern int file_name_env_number;
 
-#define RANDOM_ENVIRONMENT_GEN_ON true
+#define RANDOM_ENVIRONMENT_GEN_ON false
 
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in

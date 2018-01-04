@@ -56,17 +56,18 @@ int main(int argc, char **argv)
 	//Start listening for start_sim service
 	boost::thread spin_thread(&startSimServiceThread);
 
-
-  std::string path = ros::package::getPath("argos_bridge");
+  //std::string path = ros::package::getPath("argos_bridge");
+  //std::cout << path << std::endl;
+  std::string path = "/home/james/catkin_ws/src/argos_bridge";
 
 	argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
 	std::string argos_world_file_name;
+
 	if(ros::param::get("~argos_world_file_name",argos_world_file_name))
 	  cSimulator.SetExperimentFileName(path + argos_world_file_name);
 	else
 	  cSimulator.SetExperimentFileName(path + "/argos_worlds/rand_environments/one_wall.argos");
   std::cout<<"Opening ARGOS file in :"<<path + argos_world_file_name<<std::endl;
-
 
   std::string file_name_env_path_rel;
   std::string file_name_env_path;
@@ -76,10 +77,6 @@ int main(int argc, char **argv)
   else
     file_name_env_path = path+"/argos_worlds/rand_environments/rand_env_";
   std::cout<<"Opening environment_files in :"<<file_name_env_path<<std::endl;
-
-
-
-
 
   cSimulator.LoadExperiment();
 

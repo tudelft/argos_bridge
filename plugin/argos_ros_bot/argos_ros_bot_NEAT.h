@@ -130,7 +130,7 @@ private:
   int num_inputs;
 
   //std::unique_ptr<ENTMMemory> memory;
-  ENTMMemory memory;
+  //ENTMMemory memory;
 
 };
 

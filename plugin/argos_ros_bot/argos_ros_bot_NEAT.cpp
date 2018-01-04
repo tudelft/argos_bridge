@@ -48,8 +48,8 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       BEARING_SENSOR_LOWER_BOUND(-M_PI),
       BEARING_SENSOR_UPPER_BOUND(M_PI),
       MAX_WHEEL_SPEED(10),
-      MIN_WHEEL_SPEED(-10),
-      memory(1)      //Memory vector size as input
+      MIN_WHEEL_SPEED(-10)
+      //memory(1)      //Memory vector size as input
 {
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -109,9 +109,14 @@ void CArgosRosBotNEAT::ControlStep() {
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
          if(GRADIENT_SENSOR_ON) {
+            //Gradient sensor 1-0.5-0
+
             //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
             //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
             //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+
+            //Gradient sensor 1-0-1
+
             net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
          }
       }
@@ -128,7 +133,7 @@ void CArgosRosBotNEAT::ControlStep() {
       }
 
       // std::cout << "----------" <<std::endl;
-      // //Net input testing
+      //Net input testing
       // for(int i =0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
