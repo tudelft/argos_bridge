@@ -55,6 +55,8 @@ private:
    CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
    CVector3 GetRobotPositionFromXML();
 
+   int prev_file_name_env_number;
+
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_MASTER_LOOP_FUNCTION_H_ */

@@ -61,7 +61,7 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 void RandomEnvironmentGenerator::Reset(std::string file_name)
 {
 
- //cout<<"Regenerate Environment"<<endl;
+ cout<<"Regenerate Environment"<<endl;
  CLoopFunctions loopfunction;
 
  if(total_boxes_generated!=0)
@@ -86,7 +86,6 @@ void RandomEnvironmentGenerator::Reset(std::string file_name)
       generateEnvironment();
     else{
       generateEnvironmentFromFile(file_name);
-     //std::cout<<"generate from file_name: "<<file_name<<std::endl;
     }
 
 }

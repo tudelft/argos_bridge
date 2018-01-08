@@ -13,7 +13,7 @@ extern int regen_env;
 extern std::string file_name_env;
 extern int file_name_env_number;
 
-#define RANDOM_ENVIRONMENT_GEN_ON false
+#define RANDOM_ENVIRONMENT_GEN_ON true
 
 // Copied from argos_ros_bot.cpp
 // Initialize ROS node.  There will be only one ROS node no matter how many robots are created in
@@ -28,10 +28,8 @@ ros::NodeHandle* initROS() {
 ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 
-MasterLoopFunction::MasterLoopFunction(){
-}
-MasterLoopFunction::~MasterLoopFunction(){
-}
+MasterLoopFunction::MasterLoopFunction() : prev_file_name_env_number(-1) {}
+MasterLoopFunction::~MasterLoopFunction() {}
 
 /*Init: Get all the footbot entities and initialize distance for fitness score
  *
@@ -52,6 +50,10 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
  */
 void MasterLoopFunction::Reset(){
 
+   //if (prev_file_name_env_number == -1) prev_file_name_env_number = file_name_env_number;
+
+   //std::cout << "Reset.." << std::endl;
+
    SetRandomRobotOrientation();
 
   fitnessScoreLoopFunction.Reset();
@@ -60,12 +62,16 @@ void MasterLoopFunction::Reset(){
   if(regen_env==1) {
     std::string file_name_empty = "";
     randomEnvironmentGenerator.Reset(file_name_empty);
-  }else if(regen_env==3)
-    randomEnvironmentGenerator.Reset(file_name_env);
+  }else if(regen_env==3) {
+   //std::cout << "FILE NAME: " << file_name_env << std::endl;
+    if(file_name_env_number != prev_file_name_env_number) randomEnvironmentGenerator.Reset(file_name_env);
     SetRobotPosBasedOnMap(file_name_env_number);
+}
 #endif
 
+   //std::cout << "..resetted" << std::endl;
 
+   prev_file_name_env_number = file_name_env_number;
 }
 
 void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
@@ -81,25 +87,47 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
       CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
       CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
 
-      CRadians cOrient;
+      CRadians cOrient = (CRadians)(((double)rand() / RAND_MAX) * 2 * M_PI);
       double xPos, yPos;
 
       if(pcFB->GetId()=="bot0") {
 
          switch(map_type) {
 
+            //Simple env maps
+
+            // case 1:
+            //
+            //    xPos = -4.0;
+            //    yPos = -4.0;
+            //    cOrient = (CRadians)5*M_PI/4;
+            //    break;
+            //
+            // case 2:
+            //
+            //    xPos = -4.0;
+            //    yPos = 4.0;
+            //    cOrient = (CRadians)3*M_PI/4;
+            //    break;
+
+            //Experiment maps
+
             case 1:
 
                xPos = -4.0;
                yPos = -4.0;
-               cOrient = (CRadians)5*M_PI/4;
                break;
 
             case 2:
 
                xPos = -4.0;
-               yPos = 4.0;
-               cOrient = (CRadians)3*M_PI/4;
+               yPos = -4.0;
+               break;
+
+            case 3:
+
+               xPos = -4.0;
+               yPos = -4.0;
                break;
 
          }
@@ -108,6 +136,20 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
 
          switch(map_type) {
 
+            //Simple env maps
+
+            // case 1:
+            //
+            //    xPos = 4.0;
+            //    yPos = 4.0;
+            //    break;
+            //
+            // case 2:
+            //
+            //    xPos = 4.0;
+            //    yPos = -4.0;
+            //    break;
+
             case 1:
 
                xPos = 4.0;
@@ -117,7 +159,13 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
             case 2:
 
                xPos = 4.0;
-               yPos = -4.0;
+               yPos = 4.0;
+               break;
+
+            case 3:
+
+               xPos = 4.0;
+               yPos = 4.0;
                break;
 
          }

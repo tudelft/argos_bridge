@@ -25,7 +25,9 @@ bool start_sim(neat_ros::StartSim::Request  &req,
 {
 
   regen_env = req.regenerate_env;
+  //std::cout << "Regen Env: " << regen_env << std::endl;
   file_name_env_number = req.select_env;
+  //std::cout << "Env Num: " << file_name_env_number << std::endl;
 	start_sim_bool = true;
 }
 
@@ -72,10 +74,12 @@ int main(int argc, char **argv)
   std::string file_name_env_path_rel;
   std::string file_name_env_path;
 
-  if(ros::param::get("~file_name_env_path_rel",file_name_env_path_rel))
+  if(ros::param::get("~file_name_env_path_rel",file_name_env_path_rel)) {
     file_name_env_path =  path+file_name_env_path_rel;
-  else
+	 //std::cout << "FILE NAME: " << file_name_env_path << std::endl;
+  }else {
     file_name_env_path = path+"/argos_worlds/rand_environments/rand_env_";
+  }
   std::cout<<"Opening environment_files in :"<<file_name_env_path<<std::endl;
 
   cSimulator.LoadExperiment();

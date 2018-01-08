@@ -109,7 +109,7 @@ void CArgosRosBotNEAT::ControlStep() {
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
          if(GRADIENT_SENSOR_ON) {
-            //Gradient sensor 1-0.5-0
+            //Gradient sensor 1-0.5-1
 
             //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
             //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
@@ -167,7 +167,7 @@ void CArgosRosBotNEAT::ControlStep() {
       //ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
       //ConvertDifferentialDriveToSpeed(0.075, 50);
 
-      //leftSpeed = 7.5;
+      //leftSpeed = -7.5;
       //rightSpeed = 7.5;
       //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
 
