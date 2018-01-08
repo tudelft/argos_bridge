@@ -180,7 +180,8 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
   resize(read_img, corridor_contours_img, corridor_contours_img.size(), 0, 0, INTER_NEAREST);
 
 
-  putBlocksInEnvironment();
+
+  putLinesInEnvironment();
 
 }
 
@@ -487,5 +488,64 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
     }
   }
   total_boxes_generated=i-1;
+
+}
+
+void RandomEnvironmentGenerator::putLinesInEnvironment()
+{
+
+  // Show our image inside it.
+  vector<Vec4i> lines;
+  HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
+  namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
+  imshow( "corridor_contours_img", corridor_contours_img );
+  namedWindow( "img_lines ", WINDOW_AUTOSIZE );
+
+  //Show the hough detection
+  Mat img_lines = corridor_contours_img.clone();
+  for( size_t i = 0; i < lines.size(); i++ )
+  {
+    Vec4i l = lines[i];
+    line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);
+    imshow( "img_lines ", img_lines );
+    waitKey(0);
+  }
+
+
+
+  // Initialize box entity characteristics
+  CBoxEntity* boxEntity;
+  CQuaternion boxEntityRot{0, 0, 0, 0};
+  CVector3 boxEntitySize{0.1, 0.1, 0.5};
+  std::ostringstream box_name;
+
+  int it = 0;
+  CLoopFunctions loopfunction;
+
+  for( size_t i = 0; i < lines.size(); i++ )
+  {
+    // Transform the hough line coordinates to argos coordinates
+    Vec4i l = lines[i];
+    vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
+    CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
+    double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
+    boxEntitySize.Set(box_lenght,0.1,0.5);
+    const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
+    const CRadians zero_angle = (CRadians)0;
+    boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
+
+    // Set entity in environment
+    box_name.str("");
+    box_name << "box" << (it);
+    boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
+    loopfunction.AddEntity(*boxEntity);
+
+    // Save the box entities to be accurately removed with reset
+    boxEntities.push_back(boxEntity);
+    it++;
+
+  }
+
+  total_boxes_generated=it-1;
 
 }

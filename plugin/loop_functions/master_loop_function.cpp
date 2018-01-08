@@ -53,7 +53,6 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
 void MasterLoopFunction::Reset(){
 
    SetRandomRobotOrientation();
-
   fitnessScoreLoopFunction.Reset();
   trajectoryLoopFunction.Reset();
 #if(RANDOM_ENVIRONMENT_GEN_ON)
