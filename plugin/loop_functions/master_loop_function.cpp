@@ -130,6 +130,12 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
                yPos = -4.0;
                break;
 
+            case 4:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
          }
 
       } else if(pcFB->GetId()=="bot1") {
@@ -163,6 +169,12 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
                break;
 
             case 3:
+
+               xPos = 4.0;
+               yPos = 4.0;
+               break;
+
+            case 4:
 
                xPos = 4.0;
                yPos = 4.0;
