@@ -55,7 +55,6 @@ void MasterLoopFunction::Reset(){
    //std::cout << "Reset.." << std::endl;
 
    SetRandomRobotOrientation();
-
   fitnessScoreLoopFunction.Reset();
   trajectoryLoopFunction.Reset();
 #if(RANDOM_ENVIRONMENT_GEN_ON)

@@ -63,6 +63,7 @@ public:
   void makeRooms();
   void makeRandomOpenings();
   void putBlocksInEnvironment();
+  void putLinesInEnvironment();
   void generateEnvironment();
   void generateEnvironmentFromFile(std::string file_name);
   void dfs(int x, int y, int current_label);
