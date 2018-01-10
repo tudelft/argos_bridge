@@ -496,9 +496,9 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   // Show our image inside it.
   vector<Vec4i> lines;
   HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
-  namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
-  imshow( "corridor_contours_img", corridor_contours_img );
-  namedWindow( "img_lines ", WINDOW_AUTOSIZE );
+  // namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
+  // imshow( "corridor_contours_img", corridor_contours_img );
+  // namedWindow( "img_lines ", WINDOW_AUTOSIZE );
 
   //Show the hough detection
   Mat img_lines = corridor_contours_img.clone();
@@ -506,8 +506,8 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   {
     Vec4i l = lines[i];
     line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);
-    imshow( "img_lines ", img_lines );
-    waitKey(0);
+   //  imshow( "img_lines ", img_lines );
+   //  waitKey(0);
   }
 
 
