@@ -132,7 +132,7 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
             case 4:
 
                xPos = -4.0;
-               yPos = -4.0;
+               yPos = 4.0;
                break;
 
          }
@@ -176,7 +176,7 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
             case 4:
 
                xPos = 4.0;
-               yPos = 4.0;
+               yPos = -4.0;
                break;
 
          }
