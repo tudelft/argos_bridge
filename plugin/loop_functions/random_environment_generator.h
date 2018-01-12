@@ -66,6 +66,8 @@ public:
   void putLinesInEnvironment();
   void generateEnvironment();
   void generateEnvironmentFromFile(std::string file_name);
+  void getRobotPositions();
+  void ClearEnvironment();
   void dfs(int x, int y, int current_label);
 
 
@@ -80,6 +82,8 @@ private:
   cv::Mat bin_corridor_img;
   cv::Mat bin_corridor_img_large;
   cv::Mat corridor_contours_img;
+  cv::Mat corridor_contours_img_save;
+
   float room_percentage;
   int total_boxes_generated;
   std::vector<CBoxEntity*> boxEntities;

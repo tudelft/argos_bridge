@@ -71,10 +71,7 @@ void CTrajectoryLoopFunctions::PostStep() {
       /* Create a pointer to the current foot-bot */
       CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
       /* Add the current position of the foot-bot if it's sufficiently far from the last */
-      if(SquareDistance(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position,
-                        m_tWaypoints[pcFB].back()) > MIN_DISTANCE_SQUARED) {
-         m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-      }
+      m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
    }
 }
 

@@ -78,18 +78,29 @@ void FitnessScoreLoopFunction::PreStep()
   /* Get the map of all foot-bots from the space */
   CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
   /* Go through them */
+  int id_it = 0;
   for(CSpace::TMapPerType::iterator it = tFBMap.begin();
       it != tFBMap.end();
       ++it) {
      /* Create a pointer to the current foot-bot */
      CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+     struct position_bot_t position_bot;
+     position_bot.position =pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
+     position_bot.bot_id_number = id_it;
+     position_bots.push_back(position_bot);
+     id_it ++;
+
      CEmbodiedEntity*  embEntity = GetEmbodiedEntity(pcFB);
      if(pcFB->GetId()=="bot0"&&embEntity->IsCollidingWithSomething()&&no_son_of_mine==false)
      {
-        //std::cout << "Collide!" << std::endl;
        no_son_of_mine = true;
      }
   }
+
+  calculateBotDistances();
+  position_bots.clear();
+
+  distances.push_back(distance);
 
 }
 
@@ -118,11 +129,17 @@ void FitnessScoreLoopFunction::PostExperiment()
 
 
   calculateBotDistances();
+  position_bots.clear();
 
-  std::ofstream myfile;
-  myfile.open ("fitness.txt");
-  myfile << distance << ", " <<no_son_of_mine<<"\n";
-  myfile.close();
+  std::ofstream file_fitness, file_distance;
+  file_fitness.open ("fitness.txt");
+  file_fitness << distance << ", " <<no_son_of_mine<<"\n";
+  file_fitness.close();
+
+  file_distance.open("distances.txt");
+  for(int it = 0;it<distances.size();it++)
+    file_distance << distances.at(it)<<"\n";
+  file_distance.close();
 
   double fitness_score = MAX_RANGE - distance;
   if(no_son_of_mine)
@@ -143,7 +160,7 @@ void FitnessScoreLoopFunction::PostExperiment()
  */
 void FitnessScoreLoopFunction::Reset(){
   distance= 0.0f;
-  position_bots.clear();
+  distances.clear();
   no_son_of_mine =  false;
 
 }

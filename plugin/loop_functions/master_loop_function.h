@@ -43,7 +43,6 @@ public:
   virtual void Reset();
   virtual void PreStep();
   virtual void PostExperiment();
-
   RandomEnvironmentGenerator randomEnvironmentGenerator;
   FitnessScoreLoopFunction fitnessScoreLoopFunction;
   CTrajectoryLoopFunctions trajectoryLoopFunction;
@@ -51,9 +50,15 @@ public:
 private:
 
    void SetRandomRobotOrientation();
+   void SetRandomRobotPosition();
    void SetRobotPosBasedOnMap(int map_type);
    CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
    CVector3 GetRobotPositionFromXML();
+   float GetDistancesBetweenRobots();
+   int environment_height;
+   int environment_width;
+
+
 
    int prev_file_name_env_number;
 
