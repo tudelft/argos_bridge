@@ -92,7 +92,7 @@ private:
   cv::RNG rng;
   std::vector<std::vector<int>> connectivity_labels;
 
-
+  int it_box;
 
   bool corridors_are_connected;
 

@@ -14,6 +14,7 @@
 using namespace std;
 using namespace cv;
 
+#define EFFICIENT_ENVIRONMENT true
 
 RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   environment_width(10),
@@ -55,7 +56,7 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
   environment_height=(int)(cArenaSize.GetY()/2);
 
   /* Go through them */
-  int i = 0;
+  it_box = 0;
 
   getRobotPositions();
   initializeGrid();
@@ -95,7 +96,7 @@ void RandomEnvironmentGenerator::Reset(std::string file_name)
 
  cout<<"Regenerate Environment"<<endl;
 
-
+    it_box = 0;
     if(file_name.length()==0)
     {
       initial_bot_positions.clear();
@@ -191,8 +192,12 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
 
   }
 
+#if EFFICIENT_ENVIRONMENT
+  putLinesInEnvironment();
   putBlocksInEnvironment();
-
+#else
+  putBlocksInEnvironment();
+#endif
 }
 
 void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_name)
@@ -208,7 +213,12 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 
 
 
+#if EFFICIENT_ENVIRONMENT
   putLinesInEnvironment();
+  putBlocksInEnvironment();
+#else
+  putBlocksInEnvironment();
+#endif
 
 }
 
@@ -453,7 +463,11 @@ void RandomEnvironmentGenerator::makeBoundariesCorridors()
     drawContours(corridor_contours_img, contours_coordinates, i, color, 1  , LINE_4, hierarchy, 0);
   }
 
-    dilate(corridor_contours_img, corridor_contours_img, Mat(), Point(-1, -1), 2, 1, 1);
+#if !EFFICIENT_ENVIRONMENT
+  dilate(corridor_contours_img, corridor_contours_img, Mat(), Point(-1, -1), 2, 1, 1);
+#endif
+
+    //
 
 //Mat element = getStructuringElement(MORPH_RECT, Size(2, 2), Point(1,1) );
 
@@ -486,7 +500,13 @@ void RandomEnvironmentGenerator::makeRooms()
 
     if ((coord_mod_rooms.at(0) == 0 || coord_mod_rooms.at(1) == 0))
         if (bin_corridor_img_large.at<uchar>(ity, itx) == 0) {
-          rectangle(corridor_contours_img, Point(itx - 1, ity - 1), Point(itx + 1, ity + 1), Scalar(255), 1, 8, 0);
+#if EFFICIENT_ENVIRONMENT
+          rectangle(corridor_contours_img, Point(itx, ity ), Point(itx , ity ), Scalar(255), 1, 8, 0);
+
+#else
+          rectangle(corridor_contours_img, Point(itx-1, ity-1 ), Point(itx+1 , ity+1 ), Scalar(255), 1, 8, 0);
+
+#endif
         }
       }
     }
@@ -518,9 +538,11 @@ void RandomEnvironmentGenerator::makeRandomOpenings()
   Mat corridor_contours_img_temp = Mat::zeros(corridor_contours_img.size(), CV_8UC1);
 
 
-
+#if EFFICIENT_ENVIRONMENT
+  corridor_contours_img_save.copyTo(corridor_contours_img_temp);
+#else
   erode(corridor_contours_img_save, corridor_contours_img_temp, element, Point(-1, -1), 2, 1, 1);
-
+#endif
 
   for (int itx = 0; itx < environment_width * 20; itx++) {
     for (int ity = 0; ity < environment_height * 20; ity++) {
@@ -555,7 +577,11 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
 {
 
   CBoxEntity* boxEntity;
+#if EFFICIENT_ENVIRONMENT
+  CVector3 boxEntitySize{0.3, 0.3, 0.5};
+#else
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
+#endif
   CQuaternion boxEntityRot{0, 0, 0, 0};
 
   std::ostringstream box_name;
@@ -571,14 +597,13 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
   }*/
 
   CLoopFunctions loopfunction;
-  int i = 0;
   for (int itx = 0; itx < environment_width * 20; itx++) {
     for (int ity = 0; ity < environment_height * 20; ity++) {
       if (corridor_contours_img.at<uchar>(ity, itx) == 255) {
         box_name.str("");
-        box_name << "box" << (i);
+        box_name << "box" << (it_box);
         vector<double> argos_coordinates{(double)(itx - environment_width * 10) / 10.0f, (double)(ity - environment_height * 10) / 10.0f};
-        CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
+        CVector3 boxEntityPos{argos_coordinates.at(1), argos_coordinates.at(0), 0};
         boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
 
         loopfunction.AddEntity(*boxEntity);
@@ -586,33 +611,36 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
         boxEntities.push_back(boxEntity);
 
 
-        i++;
+        it_box++;
       }
 
     }
   }
-  total_boxes_generated=i-1;
+  total_boxes_generated=it_box-1;
 
 }
+
 
 void RandomEnvironmentGenerator::putLinesInEnvironment()
 {
 
   // Show our image inside it.
   vector<Vec4i> lines;
-  HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
-  // namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
-  // imshow( "corridor_contours_img", corridor_contours_img );
-  // namedWindow( "img_lines ", WINDOW_AUTOSIZE );
+  HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0 );
+/*   namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
+   imshow( "corridor_contours_img", corridor_contours_img );
+   namedWindow( "img_lines ", WINDOW_AUTOSIZE );*/
 
   //Show the hough detection
   Mat img_lines = corridor_contours_img.clone();
   for( size_t i = 0; i < lines.size(); i++ )
   {
+
     Vec4i l = lines[i];
     line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);
-   //  imshow( "img_lines ", img_lines );
-   //  waitKey(0);
+    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
+/*     imshow( "img_lines ", img_lines );
+     waitKey(0);*/
   }
 
 
@@ -623,9 +651,7 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
   std::ostringstream box_name;
 
-  int it = 0;
   CLoopFunctions loopfunction;
-
   for( size_t i = 0; i < lines.size(); i++ )
   {
     // Transform the hough line coordinates to argos coordinates
@@ -633,23 +659,23 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
     vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
     CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
     double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
-    boxEntitySize.Set(box_lenght,0.1,0.5);
+    boxEntitySize.Set(box_lenght,0.4,0.5);
     const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
     const CRadians zero_angle = (CRadians)0;
     boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
 
     // Set entity in environment
     box_name.str("");
-    box_name << "box" << (it);
+    box_name << "box" << (it_box);
     boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
     loopfunction.AddEntity(*boxEntity);
 
     // Save the box entities to be accurately removed with reset
     boxEntities.push_back(boxEntity);
-    it++;
+    it_box++;
 
   }
 
-  total_boxes_generated=it-1;
+  total_boxes_generated=it_box-1;
 
 }
