@@ -108,12 +108,12 @@
         Check 'argos3 -q qt-opengl' for more help.
     -->
 <!--Turn of GUI by commenting qt-opengl-->
-    <qt-opengl>
+    <!-- <qt-opengl>
      <camera>
         <placement idx="0" position="-5.5,-5.5,3" look_at="-4,-4,0" lens_focal_length="20" />
       </camera>
       <user_functions library="libidloop.so"
                       label="id_qtuser_functions" />
-    </qt-opengl>
+    </qt-opengl> -->
   </visualization>
 </argos-configuration>

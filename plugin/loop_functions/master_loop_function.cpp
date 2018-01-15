@@ -73,7 +73,10 @@ void MasterLoopFunction::Reset(){
     randomEnvironmentGenerator.Reset(file_name_empty);
   }else if(regen_env==3) {
    //std::cout << "FILE NAME: " << file_name_env << std::endl;
-    if(file_name_env_number != prev_file_name_env_number) randomEnvironmentGenerator.Reset(file_name_env);
+    if(file_name_env_number != prev_file_name_env_number) {
+      randomEnvironmentGenerator.ClearEnvironment();
+      randomEnvironmentGenerator.Reset(file_name_env);
+   }
     SetRobotPosBasedOnMap(file_name_env_number);
 }
 #endif
