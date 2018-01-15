@@ -16,6 +16,8 @@
 #include <math.h>
 #include "tf/LinearMath/Transform.h"
 
+#include <chrono>
+
 
 using namespace std;
 
@@ -94,6 +96,8 @@ void CArgosRosBotNEAT::Init(TConfigurationNode& t_node) {
 
 void CArgosRosBotNEAT::ControlStep() {
 
+   //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
   if(GetId()=="bot0")
     {
 
@@ -156,6 +160,10 @@ void CArgosRosBotNEAT::ControlStep() {
       //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
       //                                    MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
+      //Map to wheel speed outputs
+      //std::cout << m_net->outputs[0]->activation << std::endl;
+      //std::cout << m_net->outputs[1]->activation << std::endl;
+
       leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
                                           NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                           MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
@@ -174,6 +182,10 @@ void CArgosRosBotNEAT::ControlStep() {
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
     }
+
+    //std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    //std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    //cout << time_span.count() << std::endl;
 
 }
 
