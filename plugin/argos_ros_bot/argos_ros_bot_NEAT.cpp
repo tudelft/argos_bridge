@@ -121,9 +121,29 @@ void CArgosRosBotNEAT::ControlStep() {
 
             //Gradient sensor 1-0-1
 
-            net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+            //net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
 
             //Gradient sensor - left and right bearing sensors
+
+            double bearing = tRabReads[i].HorizontalBearing.GetValue();
+            double left_bearing_angle, right_bearing_angle;
+
+            //Get the angular distances for each of the bearing sensors and normalise
+            if(bearing < 0) {
+               left_bearing_angle = mapValueIntoRange(abs(bearing),
+                                                      0, 2*M_PI,
+                                                      NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+               right_bearing_angle = 1 - left_bearing_angle;
+            } else {
+               right_bearing_angle = mapValueIntoRange(bearing,
+                                                      0, 2*M_PI,
+                                                      NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+               left_bearing_angle = 1 - right_bearing_angle;
+            }
+
+            //std::cout << right_bearing_angle << std::endl;
+            net_inputs[(i*2)+2] = right_bearing_angle;
+            net_inputs[(i*2)+3] = left_bearing_angle;
 
          }
       }
@@ -133,7 +153,8 @@ void CArgosRosBotNEAT::ControlStep() {
       //Proximity sensor inputs
       if(PROX_SENSOR_ON) {
          for(int i = 0; i < tProxReads.size(); i++) {
-            net_inputs[i+(tRabReads.size()*2)+1] = mapValueIntoRange(tProxReads[i].Value,
+            //Change to (tRabReads.size()*2) if changing back to old bearing sensor
+            net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
                                                                      PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
                                                                      NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
          }
