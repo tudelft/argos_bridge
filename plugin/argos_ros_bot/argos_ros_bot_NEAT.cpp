@@ -122,6 +122,9 @@ void CArgosRosBotNEAT::ControlStep() {
             //Gradient sensor 1-0-1
 
             net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
+
+            //Gradient sensor - left and right bearing sensors
+
          }
       }
 
