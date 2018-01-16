@@ -46,7 +46,7 @@ class RandomEnvironmentGenerator
 public:
   RandomEnvironmentGenerator();
   virtual void Init(TConfigurationNode &t_node);
-  virtual void Reset(std::string file_name);
+  virtual void Reset(std::string file_name, int map_request_type);
   virtual void Destroy();
 
   void initializeGrid();
@@ -95,6 +95,8 @@ private:
   int it_box;
 
   bool corridors_are_connected;
+
+  int _map_request_type;
 
 
 

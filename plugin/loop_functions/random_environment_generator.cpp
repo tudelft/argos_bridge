@@ -91,8 +91,10 @@ void RandomEnvironmentGenerator::ClearEnvironment()
 
 }
 
-void RandomEnvironmentGenerator::Reset(std::string file_name)
+void RandomEnvironmentGenerator::Reset(std::string file_name, int map_request_type)
 {
+
+   _map_request_type = map_request_type;
 
  cout<<"Regenerate Environment"<<endl;
 
@@ -625,7 +627,13 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
 
   // Show our image inside it.
   vector<Vec4i> lines;
-  HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
+  //Check to see whether map is randomly generated or taken from .png
+  //this affects how the walls scale
+  if(_map_request_type == 3) {
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
+  } else {
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0);
+ }
   // namedWindow( "corridor_contours_img", WINDOW_AUTOSIZE );
   // imshow( "corridor_contours_img", corridor_contours_img );
   // namedWindow( "img_lines ", WINDOW_AUTOSIZE );
@@ -658,7 +666,13 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
     vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
     CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
     double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
-    boxEntitySize.Set(box_lenght,0.1,0.5);
+    //Check to see whether map is randomly generated or taken from .png
+    //this affects how the walls scale
+    if(_map_request_type == 3) {
+      boxEntitySize.Set(box_lenght,0.1,0.5);
+   } else {
+      boxEntitySize.Set(box_lenght,0.2,0.5);
+   }
     const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
     const CRadians zero_angle = (CRadians)0;
     boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
