@@ -63,6 +63,9 @@ private:
   ros::Publisher send_end_of_sim_pub;
 
   int time;
+
+  const double CLOSE_TOO_TOWER;
+
 };
 
 #endif /* ARGOS_BRIDGE_PLUGIN_LOOP_FUNCTIONS_FITNESS_SCORE_LOOP_FUNCTION_H_ */
