@@ -19,11 +19,11 @@ using namespace cv;
 RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
   environment_width(10),
   environment_height(10),
-  change_agent_gostraight(0.75f),
+  change_agent_gostraight(0.7f),
   wanted_corridor_percentage(0.4f),
-  room_percentage(0.3f),
+  room_percentage(0.4f),
   total_boxes_generated(0),
-  amount_of_openings(8),
+  amount_of_openings(11),
   environment_accepted(false){}
 
 
@@ -493,9 +493,9 @@ void RandomEnvironmentGenerator::makeRooms()
       {
 
         vector<int> coord_mod_rooms{(itx-boundRect.x) % (int)(boundRect.width /2), (ity-boundRect.y) % (int)(boundRect.height /2)};
-        if( boundRect.width<(float)environment_width * 20*room_percentage)
+        if( boundRect.width<(float)environment_width * 20 *room_percentage)
           coord_mod_rooms.at(0) = 1;
-        if(boundRect.height<(float)environment_height * 20*room_percentage)
+        if(boundRect.height<(float)environment_height * 20 *room_percentage)
           coord_mod_rooms.at(1) = 1;
 
     if ((coord_mod_rooms.at(0) == 0 || coord_mod_rooms.at(1) == 0))
