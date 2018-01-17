@@ -159,6 +159,42 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
                yPos = 4.0;
                break;
 
+            case 7:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
+            case 8:
+
+               xPos = -4.0;
+               yPos = 4.0;
+               break;
+
+            case 9:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
+            case 10:
+
+               xPos = -4.0;
+               yPos = 4.0;
+               break;
+
+            case 11:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
+            case 12:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
          }
 
       } else if(pcFB->GetId()=="bot1") {
@@ -213,6 +249,42 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
 
                xPos = 4.0;
                yPos = -4.0;
+               break;
+
+            case 7:
+
+               xPos = 4.0;
+               yPos = -3.0;
+               break;
+
+            case 8:
+
+               xPos = 4.0;
+               yPos = 3.0;
+               break;
+
+            case 9:
+
+               xPos = 4.0;
+               yPos = 4.0;
+               break;
+
+            case 10:
+
+               xPos = 4.0;
+               yPos = -4.0;
+               break;
+
+            case 11:
+
+               xPos = 4.0;
+               yPos = 4.0;
+               break;
+
+            case 12:
+
+               xPos = 4.0;
+               yPos = 4.0;
                break;
 
          }

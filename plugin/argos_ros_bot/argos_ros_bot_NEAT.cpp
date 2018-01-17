@@ -153,16 +153,24 @@ void CArgosRosBotNEAT::ControlStep() {
       //Proximity sensor inputs
       if(PROX_SENSOR_ON) {
          for(int i = 0; i < tProxReads.size(); i++) {
-            //Change to (tRabReads.size()*2) if changing back to old bearing sensor
-            net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
+            //Inverted laser
+            double reading = tProxReads[i].Value;
+            if(reading == 0) net_inputs[i+(tRabReads.size()*3)+1] = 0;
+            else net_inputs[i+(tRabReads.size()*3)+1] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
                                                                      PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
                                                                      NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+
+            //Normal laser
+            //Change to (tRabReads.size()*2) if changing back to old bearing sensor
+            // net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
+            //                                                          PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+            //                                                          NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
          }
       }
 
-      // std::cout << "----------" <<std::endl;
+       //std::cout << "----------" <<std::endl;
       //Net input testing
-      // for(int i =0; i < net_inputs.size(); i++) {
+      // for(int i =4; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
       // std::cout << "----------" <<std::endl;
@@ -199,7 +207,7 @@ void CArgosRosBotNEAT::ControlStep() {
       //ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
       //ConvertDifferentialDriveToSpeed(0.075, 50);
 
-      //leftSpeed = -7.5;
+      //leftSpeed = 7.5;
       //rightSpeed = 7.5;
       //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
 
