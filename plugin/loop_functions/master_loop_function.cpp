@@ -105,22 +105,6 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
 
          switch(map_type) {
 
-            //Simple env maps
-
-            // case 1:
-            //
-            //    xPos = -4.0;
-            //    yPos = -4.0;
-            //    cOrient = (CRadians)5*M_PI/4;
-            //    break;
-            //
-            // case 2:
-            //
-            //    xPos = -4.0;
-            //    yPos = 4.0;
-            //    cOrient = (CRadians)3*M_PI/4;
-            //    break;
-
             //Experiment maps
 
             case 1:
@@ -195,25 +179,29 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
                yPos = -4.0;
                break;
 
+            case 13:
+
+               xPos = -4.0;
+               yPos = 4.0;
+               break;
+
+            case 16:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
+            case 17:
+
+               xPos = -4.0;
+               yPos = -4.0;
+               break;
+
          }
 
       } else if(pcFB->GetId()=="bot1") {
 
          switch(map_type) {
-
-            //Simple env maps
-
-            // case 1:
-            //
-            //    xPos = 4.0;
-            //    yPos = 4.0;
-            //    break;
-            //
-            // case 2:
-            //
-            //    xPos = 4.0;
-            //    yPos = -4.0;
-            //    break;
 
             case 1:
 
@@ -285,6 +273,22 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
 
                xPos = 4.0;
                yPos = 4.0;
+               break;
+
+            case 13:
+
+               xPos = 4.5;
+               yPos = -4.0;
+               break;
+
+            case 16:
+               xPos = 1.0;
+               yPos = -1.0;
+               break;
+
+            case 17:
+               xPos = 1.0;
+               yPos = 0.0;
                break;
 
          }

@@ -217,6 +217,7 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 
 #if EFFICIENT_ENVIRONMENT
   putLinesInEnvironment();
+  putBlocksInEnvironment();
 #else
   putBlocksInEnvironment();
 #endif
@@ -579,7 +580,8 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
 
   CBoxEntity* boxEntity;
 #if EFFICIENT_ENVIRONMENT
-  CVector3 boxEntitySize{0.3, 0.3, 0.5};
+  //CVector3 boxEntitySize{0.3, 0.3, 0.5};
+  CVector3 boxEntitySize{0.1, 0.1, 0.5};
 #else
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
 #endif
@@ -624,13 +626,18 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
 
 void RandomEnvironmentGenerator::putLinesInEnvironment()
 {
+   Mat dst;
+   Canny(corridor_contours_img, dst, 50, 200, 3);     //This never used to be here
 
   // Show our image inside it.
   vector<Vec4i> lines;
   //Check to see whether map is randomly generated or taken from .png
   //this affects how the walls scale
   if(_map_request_type == 3) {
-     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );
+     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 5, 5);      //Works quite well with canny
+     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 3, 5);
+
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );      //Old version
   } else {
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0);
  }
@@ -639,15 +646,16 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   // namedWindow( "img_lines ", WINDOW_AUTOSIZE );
 
   //Show the hough detection
-  Mat img_lines = corridor_contours_img.clone();
+  //Mat img_lines = corridor_contours_img.clone();
   for( size_t i = 0; i < lines.size(); i++ )
   {
 
     Vec4i l = lines[i];
-    line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);
-    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
-/*     imshow( "img_lines ", img_lines );
-     waitKey(0);*/
+    //line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);       //original
+    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);    //original
+    //line(dst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
+     //imshow( "img_lines ", corridor_contours_img);
+     //waitKey(0);
   }
 
 
