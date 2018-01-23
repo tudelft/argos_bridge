@@ -639,9 +639,7 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
      //HoughLinesP(dst, lines, 1, CV_PI/180*45, 20, 0, 5);
 
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 0, 5 );      //Old version
-     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5 );
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);
-     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 15, 3, 0);
   } else {
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0);
  }
@@ -656,7 +654,7 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
 
     Vec4i l = lines[i];
     //line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);       //original
-    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);    //original
+    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 1, CV_AA);  
     //line(dst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
      //imshow( "img_lines ", corridor_contours_img);
      //waitKey(0);

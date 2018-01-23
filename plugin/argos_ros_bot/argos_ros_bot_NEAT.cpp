@@ -23,7 +23,7 @@ using namespace std;
 
 #define BEARING_SENSOR_ON true
 #define PROX_SENSOR_ON true
-#define LIN_VEL_ON false
+#define LIN_VEL_ON true
 
 /****************************************/
 /****************************************/
@@ -44,9 +44,9 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       NET_OUTPUT_LOWER_BOUND(0.0),
       NET_OUTPUT_UPPER_BOUND(1.0),
       MIN_LINEAR_VEL(0.0),
-      MAX_LINEAR_VEL(0.075),
+      MAX_LINEAR_VEL(10),
       MIN_ANGULAR_VEL(0.0),
-      MAX_ANGULAR_VEL(40),
+      MAX_ANGULAR_VEL(50),
       PROX_SENSOR_LOWER_BOUND(0.0),
       PROX_SENSOR_UPPER_BOUND(0.1),
       BEARING_SENSOR_LOWER_BOUND(-M_PI),
@@ -204,21 +204,28 @@ void CArgosRosBotNEAT::ControlStep() {
       if(LIN_VEL_ON) {
 
          //Linear velocity - mapped to a maximum speed
-
+         //std::cout << m_net->outputs[0]->activation << std::endl;
          double mapped_lin_vel = mapValueIntoRange(m_net->outputs[0]->activation,
                                             NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                             MIN_LINEAR_VEL, MAX_LINEAR_VEL);
-
+         //std::cout << mapped_lin_vel << std::endl;
+         //mapped_lin_vel = 10;
          //Angular velocity - mapped to a maximum turning speed
+         //std::cout << m_net->outputs[1]->activation << std::endl;
          double mapped_ang_vel = mapValueIntoRange(m_net->outputs[1]->activation,
                                             NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                             MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
-
+         //std::cout << mapped_ang_vel << std::endl;
+         //mapped_ang_vel = 100;
          //This function changes leftSpeed and rightSpeed
          ConvertLinVelToWheelSpeed(mapped_lin_vel, mapped_ang_vel);
 
          //Set currently angular vel as previous angular vel
          prev_ang_vel = mapped_ang_vel;
+         //std:cout << "------------" << std::endl;
+         // std::cout << mapped_ang_vel << std::endl;
+         // std::cout << prev_ang_vel << std::endl;
+         // std::cout << "--------------" << std::endl;
 
       } else {
 
@@ -235,6 +242,7 @@ void CArgosRosBotNEAT::ControlStep() {
       //leftSpeed = 7.5;
       //rightSpeed = 7.5;
       //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
+      //std::cout << "------------" << std::endl;
 
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
@@ -255,17 +263,15 @@ double CArgosRosBotNEAT::mapHorizontalAngle(double angle) {
 
 void CArgosRosBotNEAT::ConvertLinVelToWheelSpeed(Real linear_x, Real angular_z) {
 
-  Real v = linear_x * 100;// Forward speed
+  Real v = linear_x;// Forward speed
   Real w = angular_z; // Rotational speed
-
-  //34.34 with lin_vel = 1.0 and angular_vel = 0.0
 
   // Use the kinematics of a differential-drive robot to derive the left
   // and right wheel speeds.
   leftSpeed = v - HALF_BASELINE * w;
   rightSpeed = v + HALF_BASELINE * w;
 
-  stepsSinceCallback = 0;
+  //stepsSinceCallback = 0;
 }
 
 double CArgosRosBotNEAT::mapValueIntoRange(const double input, const double input_start,
