@@ -582,6 +582,7 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
 #if EFFICIENT_ENVIRONMENT
   //CVector3 boxEntitySize{0.3, 0.3, 0.5};
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
+  //CVector3 boxEntitySize{0.2, 0.2, 0.5};
 #else
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
 #endif
@@ -635,9 +636,12 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   //this affects how the walls scale
   if(_map_request_type == 3) {
      //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 5, 5);      //Works quite well with canny
-     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 3, 5);
+     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 20, 0, 5);
 
-     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 20, 5 );      //Old version
+     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 0, 5 );      //Old version
+     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5 );
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);
+     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 15, 3, 0);
   } else {
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0);
  }
@@ -674,10 +678,12 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
     vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
     CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
     double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
+    //double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+4)/10.0f;
     //Check to see whether map is randomly generated or taken from .png
     //this affects how the walls scale
     if(_map_request_type == 3) {
-      boxEntitySize.Set(box_lenght,0.1,0.5);
+      boxEntitySize.Set(box_lenght,0.2,0.5);
+      //boxEntitySize.Set(box_lenght,0.1,0.5);
    } else {
       boxEntitySize.Set(box_lenght,0.2,0.5);
    }

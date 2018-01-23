@@ -21,8 +21,9 @@
 
 using namespace std;
 
-#define GRADIENT_SENSOR_ON true
+#define BEARING_SENSOR_ON true
 #define PROX_SENSOR_ON true
+#define LIN_VEL_ON false
 
 /****************************************/
 /****************************************/
@@ -35,6 +36,7 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       stepsSinceCallback(0),
       leftSpeed(0),
       rightSpeed(0),
+      prev_ang_vel(0),
       NET_INPUT_LOWER_BOUND(0.0),
       NET_INPUT_UPPER_BOUND(1.0),
       RANGE_SENSOR_LOWER_BOUND(0.0),
@@ -112,18 +114,19 @@ void CArgosRosBotNEAT::ControlStep() {
          net_inputs[(i*2)+1] = mapValueIntoRange(tRabReads[i].Range,
                                             RANGE_SENSOR_LOWER_BOUND, RANGE_SENSOR_UPPER_BOUND,
                                             NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-         if(GRADIENT_SENSOR_ON) {
-            //Gradient sensor 1-0.5-1
+
+         if(BEARING_SENSOR_ON) {
+            //Bearing sensor 1-0.5-1
 
             //   net_inputs[(i*2)+2] = mapValueIntoRange(tRabReads[i].HorizontalBearing.GetValue(),
             //                                       BEARING_SENSOR_LOWER_BOUND, BEARING_SENSOR_UPPER_BOUND,
             //                                       NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
 
-            //Gradient sensor 1-0-1
+            //Bearing sensor 1-0-1
 
             //net_inputs[(i*2)+2] = mapHorizontalAngle(tRabReads[i].HorizontalBearing.GetValue());
 
-            //Gradient sensor - left and right bearing sensors
+            //Bearing sensor - left and right bearing sensors
 
             double bearing = tRabReads[i].HorizontalBearing.GetValue();
             double left_bearing_angle, right_bearing_angle;
@@ -145,6 +148,11 @@ void CArgosRosBotNEAT::ControlStep() {
             net_inputs[(i*2)+2] = right_bearing_angle;
             net_inputs[(i*2)+3] = left_bearing_angle;
 
+         } else {
+
+            //Take previous angular velocity as input
+            net_inputs[(i*2)+2] = prev_ang_vel;
+
          }
       }
 
@@ -152,25 +160,37 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //Proximity sensor inputs
       if(PROX_SENSOR_ON) {
-         for(int i = 0; i < tProxReads.size(); i++) {
-            //Inverted laser
-            double reading = tProxReads[i].Value;
-            if(reading == 0) net_inputs[i+(tRabReads.size()*3)+1] = 0;
-            else net_inputs[i+(tRabReads.size()*3)+1] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
-                                                                     PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-                                                                     NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+         if(BEARING_SENSOR_ON) {
+            for(int i = 0; i < tProxReads.size(); i++) {
+               //Inverted laser
+               double reading = tProxReads[i].Value;
+               if(reading == 0) net_inputs[i+(tRabReads.size()*3)+1] = 0;
+               else net_inputs[i+(tRabReads.size()*3)+1] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
+                                                                        PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                                        NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
 
-            //Normal laser
-            //Change to (tRabReads.size()*2) if changing back to old bearing sensor
-            // net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
-            //                                                          PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-            //                                                          NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+               //Normal laser
+               //Change to (tRabReads.size()*2) if changing back to old bearing sensor
+               // net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
+               //                                                          PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+               //                                                          NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+            }
+         } else {
+            for(int i = 0; i < tProxReads.size(); i++) {
+               //Inverted laser
+               double reading = tProxReads[i].Value;
+               int net_input_index = i+(tRabReads.size()*2)+1;
+               if(reading == 0) net_inputs[net_input_index] = 0;
+               else net_inputs[net_input_index] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
+                                                                        PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                                        NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+            }
          }
       }
 
        //std::cout << "----------" <<std::endl;
       //Net input testing
-      // for(int i =4; i < net_inputs.size(); i++) {
+      // for(int i = 0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
       // }
       // std::cout << "----------" <<std::endl;
@@ -181,31 +201,36 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //Get outputs
 
-      //Linear velocity - mapped to a maximum speed
+      if(LIN_VEL_ON) {
 
-      // net_outputs[0] = mapValueIntoRange(m_net->outputs[0]->activation,
-      //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-      //                                    MIN_LINEAR_VEL, MAX_LINEAR_VEL);
-      //
-      // //Angular velocity - mapped to a maximum turning speed
-      // net_outputs[1] = mapValueIntoRange(m_net->outputs[1]->activation,
-      //                                    NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-      //                                    MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
+         //Linear velocity - mapped to a maximum speed
 
-      //Map to wheel speed outputs
-      //std::cout << m_net->outputs[0]->activation << std::endl;
-      //std::cout << m_net->outputs[1]->activation << std::endl;
+         double mapped_lin_vel = mapValueIntoRange(m_net->outputs[0]->activation,
+                                            NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                            MIN_LINEAR_VEL, MAX_LINEAR_VEL);
 
-      leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
-                                          NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-                                          MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+         //Angular velocity - mapped to a maximum turning speed
+         double mapped_ang_vel = mapValueIntoRange(m_net->outputs[1]->activation,
+                                            NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                            MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
 
-      rightSpeed = mapValueIntoRange(m_net->outputs[1]->activation,
-                                          NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
-                                          MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+         //This function changes leftSpeed and rightSpeed
+         ConvertLinVelToWheelSpeed(mapped_lin_vel, mapped_ang_vel);
 
-      //ConvertDifferentialDriveToSpeed(net_outputs[0], net_outputs[1]);
-      //ConvertDifferentialDriveToSpeed(0.075, 50);
+         //Set currently angular vel as previous angular vel
+         prev_ang_vel = mapped_ang_vel;
+
+      } else {
+
+         leftSpeed = mapValueIntoRange(m_net->outputs[0]->activation,
+                                             NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                             MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+
+         rightSpeed = mapValueIntoRange(m_net->outputs[1]->activation,
+                                             NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
+                                             MIN_WHEEL_SPEED, MAX_WHEEL_SPEED);
+
+      }
 
       //leftSpeed = 7.5;
       //rightSpeed = 7.5;
@@ -228,7 +253,7 @@ double CArgosRosBotNEAT::mapHorizontalAngle(double angle) {
 
 }
 
-void CArgosRosBotNEAT::ConvertDifferentialDriveToSpeed(Real linear_x, Real angular_z) {
+void CArgosRosBotNEAT::ConvertLinVelToWheelSpeed(Real linear_x, Real angular_z) {
 
   Real v = linear_x * 100;// Forward speed
   Real w = angular_z; // Rotational speed
@@ -284,6 +309,8 @@ void CArgosRosBotNEAT::Reset() {
    //     net_outputs[i] = 1.0;
    //
    // }
+
+   prev_ang_vel = 0;
 
 }
 

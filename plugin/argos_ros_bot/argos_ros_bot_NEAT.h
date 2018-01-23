@@ -65,7 +65,7 @@ public:
    */
   virtual void Destroy() {};
 
-  void ConvertDifferentialDriveToSpeed(Real linear_x, Real angular_z);
+  void ConvertLinVelToWheelSpeed(Real linear_x, Real angular_z);
 
 
 private:
@@ -121,6 +121,8 @@ private:
   // Most recent left and right wheel speeds, converted from the ROS twist
   // message.
   Real leftSpeed, rightSpeed;
+
+  double prev_ang_vel;
 
   NEAT::Network* m_net;
 
