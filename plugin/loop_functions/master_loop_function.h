@@ -51,7 +51,7 @@ private:
 
    void SetRandomRobotOrientation();
    void SetRandomRobotPosition();
-   void SetRobotPosBasedOnMap(int map_type);
+   void SetRobotPosBasedOnMap(int map_type, int trial_num);
    CEmbodiedEntity* GetEmbodiedEntity(CEntity* pc_entity);
    CVector3 GetRobotPositionFromXML();
    float GetDistancesBetweenRobots();

@@ -215,7 +215,7 @@ void CArgosRosBotNEAT::ControlStep() {
          double mapped_ang_vel = mapValueIntoRange(m_net->outputs[1]->activation,
                                             NET_OUTPUT_LOWER_BOUND, NET_OUTPUT_UPPER_BOUND,
                                             MIN_ANGULAR_VEL, MAX_ANGULAR_VEL);
-         //std::cout << mapped_ang_vel << std::endl;
+         //std::cout << m_net->outputs[1]->activation << std::endl;
          //mapped_ang_vel = 100;
          //This function changes leftSpeed and rightSpeed
          ConvertLinVelToWheelSpeed(mapped_lin_vel, mapped_ang_vel);

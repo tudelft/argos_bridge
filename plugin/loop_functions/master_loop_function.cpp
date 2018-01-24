@@ -12,6 +12,7 @@
 extern int regen_env;
 extern std::string file_name_env;
 extern int file_name_env_number;
+extern int trial_num;
 
 #define RANDOM_ENVIRONMENT_GEN_ON true
 #define RANDOM_STARTING_ORIEN_ON true
@@ -77,7 +78,7 @@ void MasterLoopFunction::Reset(){
       randomEnvironmentGenerator.ClearEnvironment();
       randomEnvironmentGenerator.Reset(file_name_env, regen_env);
    }
-    SetRobotPosBasedOnMap(file_name_env_number);
+    SetRobotPosBasedOnMap(file_name_env_number, trial_num);
 }
 #endif
 
@@ -85,7 +86,7 @@ void MasterLoopFunction::Reset(){
 
    prev_file_name_env_number = file_name_env_number;
 }
-void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
+void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
 
    /* Get the map of all foot-bots from the space */
    CSpace::TMapPerType& tFBMap =  CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
@@ -108,115 +109,115 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
             //Experiment maps
 
             case 1:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 2:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 3:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 4:
-
                xPos = -4.0;
                yPos = 4.0;
                break;
 
             case 5:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 6:
-
                xPos = -4.0;
                yPos = 4.0;
                break;
 
             case 7:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 8:
-
                xPos = -4.0;
                yPos = 4.0;
                break;
 
             case 9:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 10:
-
                xPos = -4.0;
                yPos = 4.0;
                break;
 
             case 11:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 12:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 13:
-
                xPos = -4.0;
                yPos = 4.0;
                break;
 
             case 14:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 15:
-
                xPos = -4.0;
                yPos = -4.0;
+
+               switch(trial_num) {
+                  case 1:
+                     cOrient = (CRadians)(0);
+                     break;
+                  case 2:
+                     cOrient = (CRadians)(M_PI/2);
+                     break;
+                  case 3:
+                     cOrient = (CRadians)(M_PI);
+                     break;
+                  case 4:
+                     cOrient = (CRadians)(3*M_PI/2);
+                     break;
+                  case 5:
+                     cOrient = (CRadians)(5*M_PI/4);
+                     break;
+               }
+
                break;
 
             case 16:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 17:
-
                xPos = -4.0;
                yPos = -4.0;
                break;
 
             case 18:
-
                xPos = -2.0;
                yPos = -2.0;
                break;
 
             case 19:
-
                xPos = -2.0;
                yPos = -2.0;
                break;
@@ -228,91 +229,76 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
          switch(map_type) {
 
             case 1:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 2:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 3:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 4:
-
                xPos = 4.0;
                yPos = -4.0;
                break;
 
             case 5:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 6:
-
                xPos = 4.0;
                yPos = -4.0;
                break;
 
             case 7:
-
                xPos = 4.0;
                yPos = -3.0;
                break;
 
             case 8:
-
                xPos = 4.0;
                yPos = 3.0;
                break;
 
             case 9:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 10:
-
                xPos = 4.0;
                yPos = -4.0;
                break;
 
             case 11:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 12:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 13:
-
                xPos = 4.5;
                yPos = -4.0;
                break;
 
             case 14:
-
                xPos = 4.5;
                yPos = 4.0;
                break;
 
             case 15:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
@@ -328,13 +314,11 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
                break;
 
             case 18:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
 
             case 19:
-
                xPos = 4.0;
                yPos = 4.0;
                break;
