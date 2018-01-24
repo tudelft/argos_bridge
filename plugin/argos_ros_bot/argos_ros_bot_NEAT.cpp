@@ -23,7 +23,7 @@ using namespace std;
 
 #define BEARING_SENSOR_ON true
 #define PROX_SENSOR_ON true
-#define LIN_VEL_ON false
+#define LIN_VEL_ON true
 
 /****************************************/
 /****************************************/
@@ -45,7 +45,7 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       NET_OUTPUT_UPPER_BOUND(1.0),
       MIN_LINEAR_VEL(0.0),
       MAX_LINEAR_VEL(10),
-      MIN_ANGULAR_VEL(0.0),
+      MIN_ANGULAR_VEL(-50),
       MAX_ANGULAR_VEL(50),
       PROX_SENSOR_LOWER_BOUND(0.0),
       PROX_SENSOR_UPPER_BOUND(0.1),
