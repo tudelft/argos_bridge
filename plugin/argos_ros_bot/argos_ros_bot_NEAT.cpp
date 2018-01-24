@@ -23,7 +23,7 @@ using namespace std;
 
 #define BEARING_SENSOR_ON true
 #define PROX_SENSOR_ON true
-#define LIN_VEL_ON true
+#define LIN_VEL_ON false
 
 /****************************************/
 /****************************************/

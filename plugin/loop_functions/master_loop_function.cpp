@@ -211,14 +211,14 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type) {
 
             case 18:
 
-               xPos = -4.0;
-               yPos = -4.0;
+               xPos = -2.0;
+               yPos = -2.0;
                break;
 
             case 19:
 
-               xPos = -4.0;
-               yPos = -4.0;
+               xPos = -2.0;
+               yPos = -2.0;
                break;
 
          }
