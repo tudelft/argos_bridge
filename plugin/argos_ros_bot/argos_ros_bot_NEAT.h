@@ -122,8 +122,6 @@ private:
   // message.
   Real leftSpeed, rightSpeed;
 
-  double prev_ang_vel;
-
   NEAT::Network* m_net;
 
   std::vector<float> net_inputs;
@@ -133,6 +131,13 @@ private:
 
   //std::unique_ptr<ENTMMemory> memory;
   //ENTMMemory memory;
+
+  //Info for the network
+  double prev_ang_vel;
+  double range_tminus1;
+  double range_tminus2;
+
+  bool first_time_step;
 
 };
 

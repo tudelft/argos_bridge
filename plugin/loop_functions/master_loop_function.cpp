@@ -102,6 +102,10 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
       CRadians cOrient = (CRadians)(((double)rand() / RAND_MAX) * 2 * M_PI);
       double xPos, yPos;
 
+      //Overide set orientation, remove this in future if you want to
+      //change the orientation based on the environment.
+      cOrient = (CRadians)(M_PI/4);
+
       if(pcFB->GetId()=="bot0") {
 
          switch(map_type) {
@@ -198,6 +202,9 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
                   case 5:
                      cOrient = (CRadians)(5*M_PI/4);
                      break;
+                  case 6:
+                     cOrient = (CRadians)(M_PI/4);
+                     break;
                }
 
                break;
@@ -220,6 +227,11 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
             case 19:
                xPos = -2.0;
                yPos = -2.0;
+               break;
+
+            case 20:
+               xPos = -4.0;
+               yPos = -4.0;
                break;
 
          }
@@ -319,6 +331,11 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
                break;
 
             case 19:
+               xPos = 4.0;
+               yPos = 4.0;
+               break;
+
+            case 20:
                xPos = 4.0;
                yPos = 4.0;
                break;

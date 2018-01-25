@@ -28,7 +28,7 @@ bool start_sim(neat_ros::StartSim::Request  &req,
   //std::cout << "Regen Env: " << regen_env << std::endl;
   file_name_env_number = req.select_env;
   //std::cout << "Env Num: " << file_name_env_number << std::endl;
-  std::cout << "Trial num: " << req.trial_num << std::endl;
+  //std::cout << "Trial num: " << req.trial_num << std::endl;
   trial_num = req.trial_num;
 	start_sim_bool = true;
 }

@@ -23,7 +23,7 @@ using namespace std;
 
 #define BEARING_SENSOR_ON true
 #define PROX_SENSOR_ON true
-#define LIN_VEL_ON true
+#define LIN_VEL_ON false
 
 /****************************************/
 /****************************************/
@@ -37,6 +37,9 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
       leftSpeed(0),
       rightSpeed(0),
       prev_ang_vel(0),
+      range_tminus1(0),
+      range_tminus2(0),
+      first_time_step(true),
       NET_INPUT_LOWER_BOUND(0.0),
       NET_INPUT_UPPER_BOUND(1.0),
       RANGE_SENSOR_LOWER_BOUND(0.0),
@@ -153,6 +156,31 @@ void CArgosRosBotNEAT::ControlStep() {
             //Take previous angular velocity as input
             net_inputs[(i*2)+2] = prev_ang_vel;
 
+            //If it is the first time step, set the previous ranges to the
+            //same as the first range rather than 0, otherwise the derivative
+            //makes it seem like the range has instantly changed.
+            if(first_time_step) {
+
+               range_tminus1 = net_inputs[1];
+               range_tminus2 = net_inputs[1];
+
+               first_time_step = false;
+
+            }
+
+            //Take first derivative of range as input
+            net_inputs[(i*2)+3] = net_inputs[1] - range_tminus1;
+
+            //Take second derivative of range as input
+            net_inputs[(i*2)+4] = (net_inputs[1] - range_tminus1) - (range_tminus1 - range_tminus2);
+
+            std::cout << "R: " << net_inputs[1] << std::endl;
+            std::cout << "Rt-1: " << range_tminus1 << std::endl;
+            std::cout << "Rt-2: " << range_tminus2 << std::endl;
+            std::cout << "R1deriv: " << net_inputs[1] - range_tminus1 << std::endl;
+            std::cout << "R2deriv: " << (net_inputs[1] - range_tminus1) - (range_tminus1 - range_tminus2) << std::endl;
+            std::cout << "----------------" << std::endl;
+
          }
       }
 
@@ -160,35 +188,24 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //Proximity sensor inputs
       if(PROX_SENSOR_ON) {
-         if(BEARING_SENSOR_ON) {
-            for(int i = 0; i < tProxReads.size(); i++) {
-               //Inverted laser
-               double reading = tProxReads[i].Value;
-               if(reading == 0) net_inputs[i+(tRabReads.size()*3)+1] = 0;
-               else net_inputs[i+(tRabReads.size()*3)+1] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
-                                                                        PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-                                                                        NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
 
-               //Normal laser
-               //Change to (tRabReads.size()*2) if changing back to old bearing sensor
-               // net_inputs[i+(tRabReads.size()*3)+1] = mapValueIntoRange(tProxReads[i].Value,
-               //                                                          PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-               //                                                          NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-            }
-         } else {
-            for(int i = 0; i < tProxReads.size(); i++) {
-               //Inverted laser
-               double reading = tProxReads[i].Value;
-               int net_input_index = i+(tRabReads.size()*2)+1;
-               if(reading == 0) net_inputs[net_input_index] = 0;
-               else net_inputs[net_input_index] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
-                                                                        PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
-                                                                        NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
-            }
+         int net_input_index;
+         for(int i = 0; i < tProxReads.size(); i++) {
+
+            if(BEARING_SENSOR_ON) net_input_index = i+(tRabReads.size()*3)+1;
+            else net_input_index = i+(tRabReads.size()*4)+1;
+
+            //Inverted laser
+            double reading = tProxReads[i].Value;
+            if(reading == 0) net_inputs[net_input_index] = 0;
+            else net_inputs[net_input_index] = NET_INPUT_UPPER_BOUND - mapValueIntoRange(tProxReads[i].Value,
+                                                                     PROX_SENSOR_LOWER_BOUND, PROX_SENSOR_UPPER_BOUND,
+                                                                     NET_INPUT_LOWER_BOUND, NET_INPUT_UPPER_BOUND);
+
          }
       }
 
-       //std::cout << "----------" <<std::endl;
+      //  std::cout << "----------" <<std::endl;
       //Net input testing
       // for(int i = 0; i < net_inputs.size(); i++) {
       //     std::cout << net_inputs[i] << std::endl;
@@ -221,11 +238,15 @@ void CArgosRosBotNEAT::ControlStep() {
          ConvertLinVelToWheelSpeed(mapped_lin_vel, mapped_ang_vel);
 
          //Set currently angular vel as previous angular vel
-         prev_ang_vel = mapped_ang_vel;
+         prev_ang_vel = m_net->outputs[1]->activation;
          //std:cout << "------------" << std::endl;
-         // std::cout << mapped_ang_vel << std::endl;
+         //std::cout << mapped_ang_vel << std::endl;
          // std::cout << prev_ang_vel << std::endl;
          // std::cout << "--------------" << std::endl;
+
+         //Set previous ranges
+         range_tminus2 = range_tminus1;
+         range_tminus1 = net_inputs[1];
 
       } else {
 
@@ -239,14 +260,16 @@ void CArgosRosBotNEAT::ControlStep() {
 
       }
 
-      //leftSpeed = 7.5;
-      //rightSpeed = 7.5;
+      //leftSpeed = 10.0;
+      //rightSpeed = 10.0;
       //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
       //std::cout << "------------" << std::endl;
 
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
 
     }
+
+
 
     //std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     //std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

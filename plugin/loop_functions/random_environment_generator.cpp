@@ -217,7 +217,7 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 
 #if EFFICIENT_ENVIRONMENT
   putLinesInEnvironment();
-  putBlocksInEnvironment();
+  //putBlocksInEnvironment();
 #else
   putBlocksInEnvironment();
 #endif
@@ -636,10 +636,10 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   //this affects how the walls scale
   if(_map_request_type == 3) {
      //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 5, 5);      //Works quite well with canny
-     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 20, 0, 5);
-
+     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 18, 0, 5);
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 20, 5 );
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 0, 5 );      //Old version
-     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);
+     //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);     //New
   } else {
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*90, 10, 0, 0);
  }
@@ -654,9 +654,9 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
 
     Vec4i l = lines[i];
     //line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);       //original
-    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 1, CV_AA);  
+    line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 1, CV_AA);
     //line(dst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
-     //imshow( "img_lines ", corridor_contours_img);
+    // imshow( "img_lines ", corridor_contours_img);
      //waitKey(0);
   }
 
@@ -680,8 +680,8 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
     //Check to see whether map is randomly generated or taken from .png
     //this affects how the walls scale
     if(_map_request_type == 3) {
-      boxEntitySize.Set(box_lenght,0.2,0.5);
-      //boxEntitySize.Set(box_lenght,0.1,0.5);
+      //boxEntitySize.Set(box_lenght,0.2,0.5);
+      boxEntitySize.Set(box_lenght,0.1,0.5);
    } else {
       boxEntitySize.Set(box_lenght,0.2,0.5);
    }
