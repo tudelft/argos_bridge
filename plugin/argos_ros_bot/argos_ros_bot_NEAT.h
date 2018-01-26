@@ -18,6 +18,7 @@
 
 #include "../../ext_lib/NEAT/include/population.h"
 #include "../../ext_lib/NEAT/include/network.h"
+#include "../../ext_lib/NEAT/include/organism.h"
 
 #include "entm_memory.h"
 
@@ -122,6 +123,7 @@ private:
   // message.
   Real leftSpeed, rightSpeed;
 
+  NEAT::Organism* neatOrg;
   NEAT::Network* m_net;
 
   std::vector<float> net_inputs;

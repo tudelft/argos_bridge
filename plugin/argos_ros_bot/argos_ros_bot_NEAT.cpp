@@ -68,12 +68,17 @@ CArgosRosBotNEAT::CArgosRosBotNEAT() :
    iFile >> id;
 
    NEAT::Genome *start_genome = new NEAT::Genome(id,iFile);
+   //NEAT::Genome start_genome = NEAT::Genome(id,iFile);
    iFile.close();
 
-   NEAT::Organism *neatOrg = new NEAT::Organism(0.0,start_genome,1);
+   //NEAT::Organism *neatOrg = new NEAT::Organism(0.0,&start_genome,1);
+   neatOrg = new NEAT::Organism(0.0,start_genome,1);
    m_net = neatOrg->net;
 
    //Need to set size here otherwise seg fault further on...
+   // net_inputs.resize(m_net->inputs.size());
+   // net_outputs.resize(m_net->outputs.size());
+
    net_inputs.resize(m_net->inputs.size());
    net_outputs.resize(m_net->outputs.size());
 
@@ -311,7 +316,8 @@ double CArgosRosBotNEAT::mapValueIntoRange(const double input, const double inpu
 }
 
 void CArgosRosBotNEAT::Reset() {
-
+   
+   delete neatOrg;
    //Read in new genome
 
    std::ifstream iFile ("ibug_working_directory/temp/temp_gnome");
@@ -326,8 +332,10 @@ void CArgosRosBotNEAT::Reset() {
    NEAT::Genome *start_genome = new NEAT::Genome(id,iFile);
    iFile.close();
 
-   NEAT::Organism *neatOrg = new NEAT::Organism(0.0,start_genome,1);
+   neatOrg = new NEAT::Organism(0.0,start_genome,1);
    m_net = neatOrg->net;
+
+   //delete start_genome;
 
    net_inputs[0] = 1.0;                            //Bias node
 

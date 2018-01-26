@@ -69,7 +69,7 @@ void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 
 void RandomEnvironmentGenerator::ClearEnvironment()
 {
-  std::cout<<"clear environment"<<std::endl;
+  std::cout<<"Clear environment!!"<<std::endl;
   CLoopFunctions loopfunction;
 
   if(total_boxes_generated!=0)
@@ -108,6 +108,8 @@ void RandomEnvironmentGenerator::Reset(std::string file_name, int map_request_ty
     else{
       generateEnvironmentFromFile(file_name);
     }
+
+    //std::cout << boxEntities.size() << std::endl;
 
 }
 void RandomEnvironmentGenerator::Destroy()

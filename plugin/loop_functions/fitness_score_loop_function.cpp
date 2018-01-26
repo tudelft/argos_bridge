@@ -101,7 +101,7 @@ void FitnessScoreLoopFunction::PreStep()
   position_bots.clear();
 
   distances.push_back(distance);
-  //std::cout << distance << std::endl;
+  //std::cout << distances.size() << std::endl;
   //Check to see whether the robot is close enough to the tower to terminate
   if(distance < CLOSE_TOO_TOWER) {
      std::cout << "Close!" << std::endl;

@@ -58,8 +58,6 @@ private:
    int environment_height;
    int environment_width;
 
-
-
    int prev_file_name_env_number;
 
 };
