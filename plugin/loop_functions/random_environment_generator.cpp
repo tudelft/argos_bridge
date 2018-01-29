@@ -637,9 +637,8 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   //Check to see whether map is randomly generated or taken from .png
   //this affects how the walls scale
   if(_map_request_type == 3) {
-     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 7, 5, 5);      //Works quite well with canny
-     //HoughLinesP(dst, lines, 1, CV_PI/180*45, 18, 0, 5);
-     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 20, 5 );
+
+     HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 20, 5 );     //New new
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 0, 5 );      //Old version
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);     //New
   } else {
