@@ -36,7 +36,7 @@ bool start_sim(neat_ros::StartSim::Request  &req,
 bool stop_sim(std_srvs::Empty::Request  &req,
                 std_srvs::Empty::Request &res)
 {
-  std::cout<<"received_stop_sim"<<std::endl;
+  //std::cout<<"received_stop_sim"<<std::endl;
   argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
   cSimulator.Terminate();
 }
