@@ -17,13 +17,21 @@ using namespace cv;
 #define EFFICIENT_ENVIRONMENT true
 
 RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
+  // environment_width(10),
+  // environment_height(10),
+  // change_agent_gostraight(0.75f),
+  // wanted_corridor_percentage(0.4f),
+  // room_percentage(0.3f),
+  // total_boxes_generated(0),
+  // amount_of_openings(8),
+  // environment_accepted(false){}
   environment_width(10),
   environment_height(10),
-  change_agent_gostraight(0.75f),
+  change_agent_gostraight(0.7f),
   wanted_corridor_percentage(0.4f),
-  room_percentage(0.3f),
+  room_percentage(0.4f),
   total_boxes_generated(0),
-  amount_of_openings(8),
+  amount_of_openings(11),
   environment_accepted(false){}
 
 
@@ -119,7 +127,7 @@ void RandomEnvironmentGenerator::Destroy()
 void RandomEnvironmentGenerator::generateEnvironment(void)
 {
 
-  std::cout<<"check"<<std::endl;
+  //std::cout<<"check"<<std::endl;
   corridors_are_connected = false;
   rng = cv::getTickCount();
 
@@ -157,7 +165,7 @@ void RandomEnvironmentGenerator::generateEnvironment(void)
       checkConnectivity();
 
       if(!corridors_are_connected)
-        cout<<"corridors are not connected!!"<<endl;
+        //cout<<"corridors are not connected!!"<<endl;
         rng = cv::getTickCount();
     }
 
@@ -219,7 +227,7 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 
 #if EFFICIENT_ENVIRONMENT
   putLinesInEnvironment();
-  //putBlocksInEnvironment();
+  putBlocksInEnvironment();
 #else
   putBlocksInEnvironment();
 #endif
@@ -583,8 +591,8 @@ void RandomEnvironmentGenerator::putBlocksInEnvironment()
   CBoxEntity* boxEntity;
 #if EFFICIENT_ENVIRONMENT
   //CVector3 boxEntitySize{0.3, 0.3, 0.5};
-  CVector3 boxEntitySize{0.1, 0.1, 0.5};
-  //CVector3 boxEntitySize{0.2, 0.2, 0.5};
+  //CVector3 boxEntitySize{0.1, 0.1, 0.5};
+  CVector3 boxEntitySize{0.2, 0.2, 0.5};
 #else
   CVector3 boxEntitySize{0.1, 0.1, 0.5};
 #endif

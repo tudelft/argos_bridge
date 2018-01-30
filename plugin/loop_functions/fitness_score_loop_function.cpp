@@ -26,7 +26,7 @@ ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 FitnessScoreLoopFunction::FitnessScoreLoopFunction() :
 		    distance(0.), position_bots(2), MAX_RANGE(14.2),
-		    no_son_of_mine(false), CLOSE_TOO_TOWER(0.32){
+		    no_son_of_mine(false), CLOSE_TOO_TOWER(0.32) /*CLOSE_TOO_TOWER(1.0)*/{
 }
 FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
 }
@@ -104,12 +104,23 @@ void FitnessScoreLoopFunction::PreStep()
   //std::cout << distances.size() << std::endl;
   //Check to see whether the robot is close enough to the tower to terminate
   if(distance < CLOSE_TOO_TOWER) {
+
      std::cout << "Close!" << std::endl;
+
      ros::NodeHandle n;
-     ros::ServiceClient client = n.serviceClient<std_srvs::Empty>("/stop_sim");
+
+     ros::ServiceClient client_run = n.serviceClient<std_srvs::Empty>("/stop_run");
+     std_srvs::Empty stop_run_srv;
+
+     if (!client_run.call(stop_run_srv)) {
+        ROS_ERROR("Failed to tell run about stopping");
+        exit(0);
+     }
+
+     ros::ServiceClient client_sim = n.serviceClient<std_srvs::Empty>("/stop_sim");
      std_srvs::Empty stop_sim_srv;
 
-     if (!client.call(stop_sim_srv)) {
+     if (!client_sim.call(stop_sim_srv)) {
         ROS_ERROR("Failed to stop sim");
         exit(0);
      }

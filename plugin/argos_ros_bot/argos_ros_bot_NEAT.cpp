@@ -267,7 +267,7 @@ void CArgosRosBotNEAT::ControlStep() {
 
       //leftSpeed = 10.0;
       //rightSpeed = 10.0;
-      //std::cout << "\n" << leftSpeed << " " << rightSpeed << std::endl;
+      //std::cout << leftSpeed << " " << rightSpeed << std::endl;
       //std::cout << "------------" << std::endl;
 
       m_pcWheels->SetLinearVelocity(leftSpeed, rightSpeed);
@@ -316,7 +316,7 @@ double CArgosRosBotNEAT::mapValueIntoRange(const double input, const double inpu
 }
 
 void CArgosRosBotNEAT::Reset() {
-   
+
    delete neatOrg;
    //Read in new genome
 

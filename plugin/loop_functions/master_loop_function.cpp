@@ -15,7 +15,7 @@ extern int file_name_env_number;
 extern int trial_num;
 
 #define RANDOM_ENVIRONMENT_GEN_ON true
-#define RANDOM_STARTING_ORIEN_ON true
+#define RANDOM_STARTING_ORIEN_ON false
 #define RANDOM_STARTING_POSITION_ON false
 
 // Copied from argos_ros_bot.cpp
@@ -224,7 +224,7 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
                yPos = -2.0;
 
                switch (trial_num) {
-                  case 5:
+                  case 12:
                      cOrient = (CRadians)(7*M_PI/4);
                      break;
                }
@@ -236,7 +236,7 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
                yPos = -2.0;
 
                switch (trial_num) {
-                  case 7:
+                  case 14:
                      cOrient = (CRadians)(7*M_PI/4);
                      break;
                }
