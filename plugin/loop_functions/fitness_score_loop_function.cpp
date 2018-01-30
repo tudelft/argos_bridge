@@ -109,13 +109,13 @@ void FitnessScoreLoopFunction::PreStep()
 
      ros::NodeHandle n;
 
-     ros::ServiceClient client_run = n.serviceClient<std_srvs::Empty>("/stop_run");
-     std_srvs::Empty stop_run_srv;
-
-     if (!client_run.call(stop_run_srv)) {
-        ROS_ERROR("Failed to tell run about stopping");
-        exit(0);
-     }
+   //   ros::ServiceClient client_run = n.serviceClient<std_srvs::Empty>("/stop_run");
+   //   std_srvs::Empty stop_run_srv;
+     //
+   //   if (!client_run.call(stop_run_srv)) {
+   //      ROS_ERROR("Failed to tell run about stopping");
+   //      exit(0);
+   //   }
 
      ros::ServiceClient client_sim = n.serviceClient<std_srvs::Empty>("/stop_sim");
      std_srvs::Empty stop_sim_srv;
