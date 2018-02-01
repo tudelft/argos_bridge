@@ -26,7 +26,7 @@ ros::NodeHandle* FitnessScoreLoopFunction::nodeHandle = initROS();
 
 FitnessScoreLoopFunction::FitnessScoreLoopFunction() :
 		    distance(0.), position_bots(2), MAX_RANGE(14.2),
-		    no_son_of_mine(false), CLOSE_TOO_TOWER(0.32) /*CLOSE_TOO_TOWER(1.0)*/{
+		    no_son_of_mine(false), CLOSE_TOO_TOWER(0.32) /*CLOSE_TOO_TOWER(1.0)*/ {
 }
 FitnessScoreLoopFunction::~FitnessScoreLoopFunction(){
 }

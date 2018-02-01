@@ -79,6 +79,11 @@ void MasterLoopFunction::Reset(){
       randomEnvironmentGenerator.Reset(file_name_env, regen_env);
    }
     SetRobotPosBasedOnMap(file_name_env_number, trial_num);
+}else if(regen_env==4) {
+   if(file_name_env_number != prev_file_name_env_number) {
+     randomEnvironmentGenerator.ClearEnvironment();
+     randomEnvironmentGenerator.Reset(file_name_env, regen_env);
+  }
 }
 #endif
 

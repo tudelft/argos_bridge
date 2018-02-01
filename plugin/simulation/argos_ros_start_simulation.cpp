@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
   if(ros::param::get("~file_name_env_path_rel",file_name_env_path_rel)) {
     file_name_env_path =  path+file_name_env_path_rel;
-	 //std::cout << "FILE NAME: " << file_name_env_path << std::endl;
+	 std::cout << "FILE NAME: " << file_name_env_path << std::endl;
   }else {
     file_name_env_path = path+"/argos_worlds/rand_environments/rand_env_";
   }
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
    	//Only execute when start_sim is received from service
   		if(start_sim_bool) {
 
-  		  if (regen_env==3)
+  		  if (regen_env==3 || regen_env==4)
   		  {
   		    file_name_env = file_name_env_path + std::to_string(file_name_env_number) + ".png";
   		    //std::cout<<"New environment generated with "<< file_name_env<<std::endl;

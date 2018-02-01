@@ -101,7 +101,6 @@ void RandomEnvironmentGenerator::ClearEnvironment()
 
 void RandomEnvironmentGenerator::Reset(std::string file_name, int map_request_type)
 {
-
    _map_request_type = map_request_type;
 
  cout<<"Regenerate Environment"<<endl;
@@ -645,7 +644,6 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   //Check to see whether map is randomly generated or taken from .png
   //this affects how the walls scale
   if(_map_request_type == 3) {
-
      HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 20, 5 );     //New new
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 20, 0, 5 );      //Old version
      //HoughLinesP(corridor_contours_img, lines, 1, CV_PI/180*45, 18, 0, 5);     //New
@@ -657,19 +655,19 @@ void RandomEnvironmentGenerator::putLinesInEnvironment()
   // namedWindow( "img_lines ", WINDOW_AUTOSIZE );
 
   //Show the hough detection
-  //Mat img_lines = corridor_contours_img.clone();
+  Mat img_lines = corridor_contours_img.clone();
   for( size_t i = 0; i < lines.size(); i++ )
   {
 
     Vec4i l = lines[i];
-    //line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);       //original
+    line( img_lines, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(100,100,100), 3, CV_AA);       //original
     line(corridor_contours_img, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 1, CV_AA);
     //line(dst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 2, CV_AA);
-    // imshow( "img_lines ", corridor_contours_img);
-     //waitKey(0);
+
+
   }
-
-
+  //imshow( "img_lines ", corridor_contours_img);
+  //waitKey(0);
 
   // Initialize box entity characteristics
   CBoxEntity* boxEntity;
