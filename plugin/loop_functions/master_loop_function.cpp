@@ -120,6 +120,19 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
             case 1:
                xPos = -4.0;
                yPos = -4.0;
+
+               switch(trial_num) {
+                  case 1:
+                     cOrient = (CRadians)(0);
+                     break;
+                  case 2:
+                     cOrient = (CRadians)(M_PI);
+                     break;
+                  case 3:
+                     cOrient = (CRadians)(M_PI/2);
+                     break;
+               }
+
                break;
 
             case 2:
@@ -135,6 +148,19 @@ void MasterLoopFunction::SetRobotPosBasedOnMap(int map_type, int trial_num) {
             case 4:
                xPos = -4.0;
                yPos = 4.0;
+
+               switch(trial_num) {
+                  case 4:
+                     cOrient = (CRadians)(0);
+                     break;
+                  case 5:
+                     cOrient = (CRadians)(M_PI);
+                     break;
+                  case 6:
+                     cOrient = (CRadians)(3*M_PI/2);
+                     break;
+               }
+
                break;
 
             case 5:
