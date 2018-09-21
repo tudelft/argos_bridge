@@ -52,6 +52,9 @@ void MasterLoopFunction::Init(TConfigurationNode& t_node)
  */
 void MasterLoopFunction::Reset(){
 
+
+	std::cout<<regen_env<<std::endl;
+
    //if (prev_file_name_env_number == -1) prev_file_name_env_number = file_name_env_number;
 
    //std::cout << "Reset.." << std::endl;
@@ -70,12 +73,17 @@ void MasterLoopFunction::Reset(){
  #if RANDOM_STARTING_POSITION_ON
     SetRandomRobotPosition();
  #endif
-    randomEnvironmentGenerator.Reset(file_name_empty);
+    randomEnvironmentGenerator.Reset(file_name_empty,1);
   }else if(regen_env==3) {
-   //std::cout << "FILE NAME: " << file_name_env << std::endl;
-    if(file_name_env_number != prev_file_name_env_number) randomEnvironmentGenerator.Reset(file_name_env);
-    SetRobotPosBasedOnMap(file_name_env_number);
-}
+	  //std::cout << "FILE NAME: " << file_name_env << std::endl;
+	  if(file_name_env_number != prev_file_name_env_number) randomEnvironmentGenerator.Reset(file_name_env,3);
+	  SetRobotPosBasedOnMap(file_name_env_number);
+  }else if(regen_env==4)
+  {
+git st
+	  randomEnvironmentGenerator.ClearEnvironment();
+	  randomEnvironmentGenerator.Reset(file_name_env,4);
+  }
 #endif
 
    //std::cout << "..resetted" << std::endl;

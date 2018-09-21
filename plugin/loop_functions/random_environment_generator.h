@@ -46,7 +46,7 @@ class RandomEnvironmentGenerator
 public:
   RandomEnvironmentGenerator();
   virtual void Init(TConfigurationNode &t_node);
-  virtual void Reset(std::string file_name);
+  virtual void Reset(std::string file_name, int reset_flag);
   virtual void Destroy();
 
   void initializeGrid();
@@ -66,6 +66,8 @@ public:
   void putLinesInEnvironment();
   void generateEnvironment();
   void generateEnvironmentFromFile(std::string file_name);
+  void generateEnvironmentFromFileLines(std::string file_name);
+
   void getRobotPositions();
   void ClearEnvironment();
   void dfs(int x, int y, int current_label);

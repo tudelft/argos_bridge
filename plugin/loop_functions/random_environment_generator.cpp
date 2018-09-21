@@ -91,12 +91,12 @@ void RandomEnvironmentGenerator::ClearEnvironment()
 
 }
 
-void RandomEnvironmentGenerator::Reset(std::string file_name)
+void RandomEnvironmentGenerator::Reset(std::string file_name, int reset_flag)
 {
 
  cout<<"Regenerate Environment"<<endl;
-
     it_box = 0;
+
     if(file_name.length()==0)
     {
       initial_bot_positions.clear();
@@ -104,7 +104,12 @@ void RandomEnvironmentGenerator::Reset(std::string file_name)
     std::cout<<"random generated: "<<file_name<<std::endl;
     }
     else{
-      generateEnvironmentFromFile(file_name);
+      if(reset_flag==4)
+      {
+
+      }else
+          generateEnvironmentFromFile(file_name);
+
     }
 
 }
@@ -219,6 +224,57 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 #else
   putBlocksInEnvironment();
 #endif
+
+}
+
+void RandomEnvironmentGenerator::generateEnvironmentFromFileLines(std::string file_name)
+{
+	ifstream myReadFile;
+
+    myReadFile.open("Map.txt");
+
+
+    // Initialize box entity characteristics
+    CBoxEntity* boxEntity;
+    CQuaternion boxEntityRot{0, 0, 0, 0};
+    CVector3 boxEntitySize{0.1, 0.1, 0.5};
+    std::ostringstream box_name;
+    CLoopFunctions loopfunction;
+
+    int tmp_value = 0;
+    while(myReadFile.is_open())
+    {
+    	Vec4i l;
+    	myReadFile>>l[0];
+    	myReadFile>>l[1];
+    	myReadFile>>l[2];
+    	myReadFile>>l[3];
+
+
+    	vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
+    	CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
+    	double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
+    	boxEntitySize.Set(box_lenght,0.4,0.5);
+    	const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
+    	const CRadians zero_angle = (CRadians)0;
+    	boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
+
+    	// Set entity in environment
+    	box_name.str("");
+    	box_name << "box" << (it_box);
+    	boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
+    	loopfunction.AddEntity(*boxEntity);
+
+    	// Save the box entities to be accurately removed with reset
+    	boxEntities.push_back(boxEntity);
+    	it_box++;
+
+
+
+    }
+
+
+    total_boxes_generated=it_box-1;
 
 }
 

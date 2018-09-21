@@ -59,7 +59,7 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="14,14, 2" center="0,0,0.5">
+  <arena size="20,20, 2" center="0,0,0.5">
 <!--box id="wall_1" size="20,0.1,0.5" movable="false">
  <body position="0,10,0" orientation="0,0,0"/>
 </box>
@@ -107,11 +107,11 @@
         using the qt user functions.
         Check 'argos3 -q qt-opengl' for more help.
     -->
-<!--Turn of GUI by commenting qt-opengl>
+<!--Turn of GUI by commenting qt-opengl-->
     <qt-opengl>
      <camera>
         <placement idx="0" position="0,0,20" look_at="-1,-1,0" lens_focal_length="20" />
       </camera>
-    </qt-opengl-->
+    </qt-opengl>
   </visualization>
 </argos-configuration>
