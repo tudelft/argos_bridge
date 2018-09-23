@@ -13,6 +13,8 @@
 
 using namespace std;
 using namespace cv;
+#include "ros/ros.h"
+#include "geometry_msgs/PoseStamped.h"
 
 #define EFFICIENT_ENVIRONMENT true
 
@@ -29,21 +31,48 @@ RandomEnvironmentGenerator::RandomEnvironmentGenerator() :
 
 void RandomEnvironmentGenerator::getRobotPositions()
 {
+	  ros::NodeHandle n;
+
+
+
   CSpace::TMapPerType& tFBMap = CSimulator::GetInstance().GetSpace().GetEntitiesByType("foot-bot");
 
   for(CSpace::TMapPerType::iterator it = tFBMap.begin();
-      it != tFBMap.end();
-      ++it) {
+		  it != tFBMap.end();
+		  ++it) {
 
-     CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
-     CVector3 pos_bot;
-     pos_bot = pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
-     vector<int> initial_bot_position{0,0};
-     initial_bot_position.at(0)=pos_bot.GetX()/2+environment_width/2;
-     initial_bot_position.at(1)=pos_bot.GetY()/2+environment_height/2;
-     initial_bot_positions.push_back(initial_bot_position);
+	  CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+	  CVector3 pos_bot;//0;//;
+	  pos_bot = pcFB->GetEmbodiedEntity().GetOriginAnchor().Position;
+
+	  stringstream  poseTopic;
+	  ros::Publisher posePub;
+
+	  poseTopic << "/" << pcFB->GetId() << "/position";
+	  posePub = n.advertise<geometry_msgs::PoseStamped>(poseTopic.str(), 1000);
+	  geometry_msgs::PoseStamped PosQuat;
+
+	  PosQuat.header.frame_id = pcFB->GetId();
+	  PosQuat.pose.position.x = pos_bot.GetX();
+	  PosQuat.pose.position.y = pos_bot.GetY();
+	  PosQuat.pose.position.z = pos_bot.GetZ();
+	  PosQuat.pose.orientation.x = 0;//pos_bot.GetX();
+	  PosQuat.pose.orientation.y =0;// pos_bot.GetY();
+	  PosQuat.pose.orientation.z =0;// pos_bot.GetZ();
+	  PosQuat.pose.orientation.w =0;// pos_bot.GetW();
+
+
+
+	  posePub.publish(PosQuat);
+
+	  vector<int> initial_bot_position{0,0};
+	  initial_bot_position.at(0)=pos_bot.GetX()/2+environment_width/2;
+	  initial_bot_position.at(1)=pos_bot.GetY()/2+environment_height/2;
+	  initial_bot_positions.push_back(initial_bot_position);
   }
 }
+
+
 
 void RandomEnvironmentGenerator::Init(TConfigurationNode &t_node)
 {
@@ -99,15 +128,18 @@ void RandomEnvironmentGenerator::Reset(std::string file_name, int reset_flag)
 
     if(file_name.length()==0)
     {
-      initial_bot_positions.clear();
-      generateEnvironment();
-    std::cout<<"random generated: "<<file_name<<std::endl;
+        if(reset_flag==1)
+        {
+          initial_bot_positions.clear();
+          generateEnvironment();
+          std::cout<<"random generated: "<<file_name<<std::endl;
+        }else if(reset_flag==4){
+            initial_bot_positions.clear();
+        	generateEnvironmentFromFileLines(file_name);
+        }
+
     }
     else{
-      if(reset_flag==4)
-      {
-
-      }else
           generateEnvironmentFromFile(file_name);
 
     }
@@ -229,10 +261,11 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFile(std::string file_na
 
 void RandomEnvironmentGenerator::generateEnvironmentFromFileLines(std::string file_name)
 {
+
 	ifstream myReadFile;
 
-    myReadFile.open("Map.txt");
-
+    myReadFile.open("environment_lines.txt");
+    std::cout<<myReadFile.is_open()<<std::endl;
 
     // Initialize box entity characteristics
     CBoxEntity* boxEntity;
@@ -242,35 +275,41 @@ void RandomEnvironmentGenerator::generateEnvironmentFromFileLines(std::string fi
     CLoopFunctions loopfunction;
 
     int tmp_value = 0;
-    while(myReadFile.is_open())
-    {
-    	Vec4i l;
-    	myReadFile>>l[0];
-    	myReadFile>>l[1];
-    	myReadFile>>l[2];
-    	myReadFile>>l[3];
+
+    if(myReadFile.is_open()){
+
+    	while(!myReadFile.eof())
+    	{
+
+    		Vec4i l;
+    		myReadFile>>l[0];
+    		myReadFile>>l[1];
+    		myReadFile>>l[2];
+    		myReadFile>>l[3];
+
+    		//std::cout<<l[0]<<" "<<l[1]<<" "<<l[2]<<" "<<l[3]<<" "<<std::endl;
+
+    		vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
+    		CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
+    		double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
+    		boxEntitySize.Set(box_lenght,0.1,0.5);
+    		const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
+    		const CRadians zero_angle = (CRadians)0;
+    		boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
+
+    		// Set entity in environment
+    		box_name.str("");
+    		box_name << "box" << (it_box);
+    		boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
+    		loopfunction.AddEntity(*boxEntity);
+
+    		// Save the box entities to be accurately removed with reset
+    		boxEntities.push_back(boxEntity);
+    		it_box++;
 
 
-    	vector<double> argos_coordinates{(double)((l[1]+l[3])/2 - environment_width * 20 / 2) / 10.0f, (double)((l[0]+l[2])/2 - environment_height *20/ 2) / 10.0f};
-    	CVector3 boxEntityPos{argos_coordinates.at(0), argos_coordinates.at(1), 0};
-    	double box_lenght = (sqrt(pow((double)(l[2]-l[0]),2.0f)+pow((double)(l[3]-l[1]),2.0f))+2)/10.0f;
-    	boxEntitySize.Set(box_lenght,0.4,0.5);
-    	const CRadians orientation = (CRadians)(atan2(l[2]-l[0],l[3]-l[1]));
-    	const CRadians zero_angle = (CRadians)0;
-    	boxEntityRot.FromEulerAngles(orientation,zero_angle,zero_angle);
 
-    	// Set entity in environment
-    	box_name.str("");
-    	box_name << "box" << (it_box);
-    	boxEntity = new CBoxEntity(box_name.str(), boxEntityPos, boxEntityRot, false, boxEntitySize);
-    	loopfunction.AddEntity(*boxEntity);
-
-    	// Save the box entities to be accurately removed with reset
-    	boxEntities.push_back(boxEntity);
-    	it_box++;
-
-
-
+    	}
     }
 
 

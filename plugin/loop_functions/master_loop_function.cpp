@@ -80,8 +80,10 @@ void MasterLoopFunction::Reset(){
 	  SetRobotPosBasedOnMap(file_name_env_number);
   }else if(regen_env==4)
   {
-git st
+	  std::cout<<" regen env from external package"<<std::endl;
 	  randomEnvironmentGenerator.ClearEnvironment();
+	  randomEnvironmentGenerator.getRobotPositions();
+
 	  randomEnvironmentGenerator.Reset(file_name_env,4);
   }
 #endif
@@ -471,7 +473,6 @@ CVector3 MasterLoopFunction::GetRobotPositionFromXML() {
              GetNodeAttribute(*itArenaItem, "id", arena_item_name);
 
              if(arena_item_name.compare("bot0") == 0) {
-
                 argos::TConfigurationNode& body_node = GetNode(*itArenaItem, "body");
 
                 CVector3 position;

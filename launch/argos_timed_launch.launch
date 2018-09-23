@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+
+
+
+
+
+    <node pkg="argos_bridge" type="argos_ros_start_sim_server" name="argos_ros_start_sim_server" output="screen"  >  
+#launch-prefix="gdb -ex run --args"
+    <param name="argos_world_file_name" value="/argos_worlds/simple_environments/no_walls_no_neat.argos"/>
+    <!--param name="argos_world_file_name" value="/argos_worlds/rand_env_test.argos"/-->
+ <!--param name="file_name_env_path_rel" value="/argos_worlds/experiment_envs/"/-->
+     </node>
+
+
+
+
+
+
+
+</launch>
+
+
+
+
+

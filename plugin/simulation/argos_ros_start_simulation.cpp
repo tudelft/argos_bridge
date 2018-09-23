@@ -93,6 +93,7 @@ int main(int argc, char **argv)
 
   cSimulator.LoadExperiment();
 
+
 	ros::Rate loop_rate(100);
 
   	//Note to self, ros::ok() is a must for while loop in ROS!

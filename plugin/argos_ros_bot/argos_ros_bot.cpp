@@ -6,6 +6,10 @@
 #include <argos3/core/utility/configuration/argos_configuration.h>
 /* 2D vector definition */
 #include <argos3/core/utility/math/vector2.h>
+#include <argos3/core/simulator/loop_functions.h>
+#include <argos3/plugins/simulator/entities/box_entity.h>
+#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
+#include <argos3/core/simulator/entity/entity.h>
 
 #include <sstream>
 #include <string>
@@ -76,7 +80,11 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
 //  gripperSub = nodeHandle->subscribe(gripperTopic.str(), 1, &CArgosRosBot::gripperCallback, this);
 
 
-  client = nodeHandle->serviceClient<argos_bridge::GetCmds>("/bot0/get_vel_cmd");
+  stringstream getcmdVelTopic;
+
+  getcmdVelTopic << "/" << GetId() << "/get_vel_cmd";
+
+  client = nodeHandle->serviceClient<argos_bridge::GetCmds>(getcmdVelTopic.str());
 
   // Create the subscribers
 //, gripperTopic;
@@ -104,6 +112,11 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   m_pcOmniCam->Enable();
 
 
+
+
+
+
+
   Rangebearing Rab;
   Rab.angle = 0.0f;
   Rab.range = 0.0f;
@@ -122,6 +135,7 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
    * have to recompile if we want to try other settings.
    */
   GetNodeAttributeOrDefault(t_node, "stopWithoutSubscriberCount", stopWithoutSubscriberCount, stopWithoutSubscriberCount);
+
 }
 
 
@@ -174,7 +188,7 @@ void CArgosRosBot::ControlStep() {
     proxList.proximities.push_back(prox);
 
 
-//cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
+   //cout << GetId() << ": value: " << prox.value << ": angle: " << prox.angle << endl;
   }
 
 
@@ -207,7 +221,7 @@ void CArgosRosBot::ControlStep() {
    rangebearingPub.publish(RabList);*/
    posePub.publish(PosQuat);
 
-   if(GetId()!="bot1")
+   if(GetId()!="tower")
    {
 
    argos_bridge::GetCmds srv;
