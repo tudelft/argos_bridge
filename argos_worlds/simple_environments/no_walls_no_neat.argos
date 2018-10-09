@@ -4,8 +4,8 @@
   <!-- * General configuration * -->
   <!-- ************************* -->
   <framework>
-    <system threads="0" />
-    <experiment length="100"
+    <system threads="2" />
+    <experiment length="3000"
                 ticks_per_second="10"
                 random_seed="312" />
   </framework>
@@ -73,7 +73,15 @@
  <body position="-10,0,0" orientation="0,0,0"/>
 </box-->
 <foot-bot id="bot1">
-<body position="-5.5,-5.5,0" orientation="0,0,0" />
+<body position="-8,-8,0" orientation="0,0,0" />
+<controller config="argos_ros_bot"/>
+</foot-bot>
+<foot-bot id="bot2">
+<body position="8,-8,0" orientation="0,0,0" />
+<controller config="argos_ros_bot"/>
+</foot-bot>
+<foot-bot id="bot3">
+<body position="-8,8,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
 </foot-bot>
 <foot-bot id="tower">

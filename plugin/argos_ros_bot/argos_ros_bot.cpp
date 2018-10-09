@@ -25,6 +25,7 @@
 
 #include "argos_bridge/GetCmds.h"
 
+#include <chrono>
 
 using namespace std;
 using namespace argos_bridge;
@@ -154,7 +155,6 @@ bool cmd_is_new = false;
 void CArgosRosBot::ControlStep() {
 
 
-
   const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& camReads = m_pcOmniCam->GetReadings();
   PuckList puckList;
   puckList.n = camReads.BlobList.size();
@@ -225,11 +225,25 @@ void CArgosRosBot::ControlStep() {
    {
 
    argos_bridge::GetCmds srv;
-
+   std_msgs::String bot_ID;
+   if(GetId()=="bot1")
+   {
+	   bot_ID.data = "bot1";
+   }
+   if(GetId()=="bot2")
+   {
+	   bot_ID.data = "bot2";
+   }
+   if(GetId()=="bot3")
+   {
+	   bot_ID.data = "bot3";
+   }
 
    srv.request.RabList = RabList;
    srv.request.PosQuat = PosQuat;
    srv.request.proxList = proxList;
+
+   srv.request.botID = bot_ID;
    if(first_run)
    {
    srv.request.reset = true;
@@ -238,11 +252,8 @@ void CArgosRosBot::ControlStep() {
    else
      srv.request.reset = false;
 
-
    client.call(srv);
    cmdVelCallback(srv.response.cmd_vel);
-
-  // Wait for any callbacks to be called.
 
   // If we haven't heard from the subscriber in a while, set the speed to zero.
   if (stepsSinceCallback > stopWithoutSubscriberCount) {
@@ -262,6 +273,8 @@ void CArgosRosBot::ControlStep() {
     m_pcWheels->SetLinearVelocity(0, 0);
 */
   globalSteps ++;
+
+
 
 
   }

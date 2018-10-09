@@ -7,6 +7,9 @@
 
 #include "argos_ros_start_simulation.h"
 #include "neat_ros/FinishedSim.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "../loop_functions/fitness_score_loop_function.h"
 
@@ -19,11 +22,14 @@ extern double global_fitness_variable;
 
 int file_name_env_number;
 
+int stop_sim_counter = 0;
+
+
 // Start the ARGoS Simulator via callaback
 bool start_sim(neat_ros::StartSim::Request  &req,
 	       		neat_ros::StartSim::Response &res)
 {
-
+	stop_sim_counter = 0;
   regen_env = req.regenerate_env;
   //std::cout << "Regen Env: " << regen_env << std::endl;
   file_name_env_number = req.select_env;
@@ -34,9 +40,28 @@ bool start_sim(neat_ros::StartSim::Request  &req,
 bool stop_sim(std_srvs::Empty::Request  &req,
                 std_srvs::Empty::Request &res)
 {
-  std::cout<<"received_stop_sim"<<std::endl;
-  argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
-  cSimulator.Terminate();
+	std::fstream myReadFile;
+	myReadFile.open("did_it_make_it.txt", std::ios::out);
+
+	std::cout<<"received_stop_sim"<<std::endl;
+	std::cout<<stop_sim_counter<<std::endl;
+	if(stop_sim_counter < 2)
+	{
+		stop_sim_counter++;
+		myReadFile<<0;
+		myReadFile.close();
+
+
+	}else{
+
+
+		myReadFile<<1;
+		myReadFile.close();
+
+		argos::CSimulator& cSimulator = argos::CSimulator::GetInstance();
+		cSimulator.Terminate();
+		stop_sim_counter = 0;
+		  }
 }
 
 //Thread to listen for start sim service
@@ -92,6 +117,7 @@ int main(int argc, char **argv)
   std::cout<<"Opening environment_files in :"<<file_name_env_path<<std::endl;
 
   cSimulator.LoadExperiment();
+
 
 
 	ros::Rate loop_rate(100);
