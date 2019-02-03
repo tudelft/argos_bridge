@@ -63,6 +63,18 @@ target_link_libraries(master_loop
   argos3plugin_simulator_footbot
   ${OpenCV_LIBS} 
 )
+
+add_library(libid_loop_functions SHARED id_qtuser_functions.cpp id_qtuser_functions.h)
+
+target_link_libraries(libid_loop_functions
+  argos3core_simulator
+  argos3plugin_simulator_entities
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_qtopengl
+  ${OpenCV_LIBS} 
+)
+
+
 endif(OpenCV_FOUND)
 
 #if(ARGOS_COMPILE_QTOPENGL)

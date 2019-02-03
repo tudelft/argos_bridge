@@ -35,7 +35,7 @@
 
 using namespace argos;
 
-#define NUMOFBOTS 2
+#define NUMOFBOTS 3
 
 class CArgosRosBot : public CCI_Controller {
 

@@ -43,9 +43,8 @@ bool stop_sim(std_srvs::Empty::Request  &req,
 	std::fstream myReadFile;
 	myReadFile.open("did_it_make_it.txt", std::ios::out);
 
-	std::cout<<"received_stop_sim"<<std::endl;
-	std::cout<<stop_sim_counter<<std::endl;
-	if(stop_sim_counter < 2)
+	std::cout<<"received bug "<<stop_sim_counter+1<<" completion"<<std::endl;
+	if(stop_sim_counter < 5)
 	{
 		stop_sim_counter++;
 		myReadFile<<0;
@@ -54,6 +53,7 @@ bool stop_sim(std_srvs::Empty::Request  &req,
 
 	}else{
 
+		std::cout<<"All bugs made it, stop simulator"<<std::endl;
 
 		myReadFile<<1;
 		myReadFile.close();

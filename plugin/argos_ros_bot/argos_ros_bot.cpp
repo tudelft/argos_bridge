@@ -224,9 +224,10 @@ void CArgosRosBot::ControlStep() {
    if(GetId()!="tower")
    {
 
+
    argos_bridge::GetCmds srv;
    std_msgs::String bot_ID;
-   if(GetId()=="bot1")
+   /*if(GetId()=="bot1")
    {
 	   bot_ID.data = "bot1";
    }
@@ -237,7 +238,9 @@ void CArgosRosBot::ControlStep() {
    if(GetId()=="bot3")
    {
 	   bot_ID.data = "bot3";
-   }
+   }*/
+
+   bot_ID.data = GetId();
 
    srv.request.RabList = RabList;
    srv.request.PosQuat = PosQuat;
