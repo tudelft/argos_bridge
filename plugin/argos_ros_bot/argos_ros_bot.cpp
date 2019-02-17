@@ -92,8 +92,8 @@ void CArgosRosBot::Init(TConfigurationNode& t_node) {
   for(int n=0;n<NUMOFBOTS;n++)
   {
 	  stringstream otherBotPoseTopic;
-  otherBotPoseTopic << "/bot" << to_string(n) << "/position";
-  cout<<otherBotPoseTopic.str()<<endl;
+  otherBotPoseTopic << "/bot" << to_string(n+1) << "/position";
+  //cout<<otherBotPoseTopic.str()<<endl;
 
 //  gripperTopic << "/" << GetId() << "/gripper";
   otherBotSub[n] = nodeHandle->subscribe(otherBotPoseTopic.str(), 1, &CArgosRosBot::otherBotPoseCallback, this);

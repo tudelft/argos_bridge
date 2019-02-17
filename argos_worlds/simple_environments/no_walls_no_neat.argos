@@ -4,8 +4,8 @@
   <!-- * General configuration * -->
   <!-- ************************* -->
   <framework>
-    <system threads="2" />
-    <experiment length="3000"
+    <system threads="4" />
+    <experiment length="1200"
                 ticks_per_second="10"
                 random_seed="312" />
   </framework>
@@ -100,7 +100,7 @@
 <controller config="argos_ros_bot"/>
 </foot-bot>
 <foot-bot id="bot4">
-<body position="0,0,0" orientation="0,0,0" />
+<body position="-1,1,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
 </foot-bot>
 <foot-bot id="bot5">
@@ -111,18 +111,22 @@
 <body position="1,0,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
 </foot-bot>
-<!--foot-bot id="bot7">
-<body position="2,2,0" orientation="0,0,0" />
+<foot-bot id="bot7">
+<body position="1,1,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
 </foot-bot>
 <foot-bot id="bot8">
-<body position="2,3,0" orientation="0,0,0" />
+<body position="1,-1,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
-</foot-bot-->
-<!--foot-bot id="bot9">
-<body position="9,9,0" orientation="0,0,0" />
+</foot-bot>
+<foot-bot id="bot9">
+<body position="0.5,0.5,0" orientation="0,0,0" />
 <controller config="argos_ros_bot"/>
-</foot-bot-->
+</foot-bot>
+<foot-bot id="bot10">
+<body position="-0.5,-0.5,0" orientation="0,0,0" />
+<controller config="argos_ros_bot"/>
+</foot-bot>
 <foot-bot id="tower">
 <body position="0,0,0" orientation="-90,0,0" />
 <controller config="argos_ros_bot_t"/>
@@ -154,13 +158,14 @@
         using the qt user functions.
         Check 'argos3 -q qt-opengl' for more help.
     -->
-<!--Turn of GUI by commenting qt-opengl>
+
+<!--Turn of GUI by commenting qt-opengl-->
     <qt-opengl>
      <camera>
         <placement idx="0" position="0,0,20" look_at="-1,-1,0" lens_focal_length="20" />
+        <placement idx="1" position="0,0,0.5" look_at="1,1,0.5" lens_focal_length="20" />
       </camera>
-      <user_functions library="liblibid_loop_functions.so"
-                      label="id_qtuser_functions" />
-    </qt-opengl-->
+    </qt-opengl>
   </visualization>
+
 </argos-configuration>
