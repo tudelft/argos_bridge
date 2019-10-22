@@ -44,7 +44,7 @@ bool stop_sim(std_srvs::Empty::Request  &req,
 	myReadFile.open("did_it_make_it.txt", std::ios::out);
 
 	std::cout<<"received bug "<<stop_sim_counter+1<<" completion"<<std::endl;
-	if(stop_sim_counter < 9)
+	if(stop_sim_counter < 0)
 	{
 		stop_sim_counter++;
 		myReadFile<<0;
