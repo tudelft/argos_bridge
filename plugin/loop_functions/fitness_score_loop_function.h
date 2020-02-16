@@ -12,7 +12,7 @@
 //ROS Libraries and msgs
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "neat_ros/FinishedSim.h"
+//#include "neat_ros/FinishedSim.h"
 #include "std_srvs/Empty.h"
 #include "std_msgs/Empty.h"
 
